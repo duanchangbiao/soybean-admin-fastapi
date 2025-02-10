@@ -2,7 +2,14 @@
 import {computed, reactive, ref, watch} from "vue";
 import {$t} from "@/locales";
 import {statusTypeOptions, userGenderOptions} from "@/constants/business";
-import {fetchAddRole, fetchAddUser, fetchUpdateRole, fetchUpdateUser} from "@/service/api";
+import {
+  fetchAddLicense,
+  fetchAddRole,
+  fetchAddUser,
+  fetchUpdateLicense,
+  fetchUpdateRole,
+  fetchUpdateUser
+} from "@/service/api";
 import {useNaiveForm} from "@/hooks/common/form";
 
 defineOptions({
@@ -27,7 +34,7 @@ const emit = defineEmits<Emits>();
 
 const props = defineProps<Props>();
 
-const model: Api.Business.LicenseUpdateParams = reactive(createDefaultModel());
+const model: Api.Business.LicenseAddParams = reactive(createDefaultModel());
 
 function createDefaultModel(): Api.Business.LicenseAddParams {
   return {
@@ -75,13 +82,13 @@ async function handleSubmit() {
   // request
 
   if (props.operateType === 'add') {
-    const {error} = await fetchAddUser(model);
+    const {error} = await fetchAddLicense(model);
     if (!error) {
       window.$message?.success($t('common.addSuccess'));
     }
   } else if (props.operateType === 'edit') {
     console.log(model);
-    const {error} = await fetchUpdateUser(model);
+    const {error} = await fetchUpdateLicense(model);
     if (!error) {
       window.$message?.success($t('common.updateSuccess'));
     }
@@ -100,7 +107,7 @@ watch(visible, () => {
 </script>
 
 <template>
-  <NModal v-model:show="visible" preset="dialog" :title="title" width="800px">
+  <NModal v-model:show="visible" preset="dialog" :title="title" class="min-w-200">
     <NForm
       ref="formRef"
       :model="model"
@@ -108,12 +115,12 @@ watch(visible, () => {
       label-width="auto"
       require-mark-placement="right-hanging"
       size="medium"
-      class="max-w-630"
+      class="max-w-230"
     >
-      <NFormItem :label="$t('page.manage.user.userName')" path="userName">
+      <NFormItem :label="$t('page.business.license.licenseId')" path="licenseId">
         <NInput
           v-model:value="model.licenseId"
-          :placeholder="$t('page.manage.user.form.userName')"
+          :placeholder="$t('page.business.license.form.licenseId')"
           :on-update-value="
             (value: string) => {
               model.licenseId = value;
@@ -121,32 +128,44 @@ watch(visible, () => {
           "
         />
       </NFormItem>
-      <NFormItem :label="$t('page.manage.user.password')" path="password">
-        <NInput v-model:value="model.password" :placeholder="$t('page.manage.user.form.password')"/>
+      <NFormItem :label="$t('page.business.license.issuanceTime')" path="password">
+        <NInput v-model:value="model.issuanceTime" :placeholder="$t('page.business.license.form.issuanceTime')"/>
       </NFormItem>
-      <NFormItem :label="$t('page.manage.user.nickName')" path="nickName">
-        <NInput v-model:value="model.nickName" :placeholder="$t('page.manage.user.form.nickName')"/>
+      <NFormItem :label="$t('page.business.license.licenseType')" path="nickName">
+        <NInput v-model:value="model.licenseType" :placeholder="$t('page.business.license.form.licenseType')"/>
       </NFormItem>
-      <NFormItem :label="$t('page.manage.user.userPhone')" path="userPhone">
-        <NInput v-model:value="model.userPhone" :placeholder="$t('page.manage.user.form.userPhone')"/>
+      <NFormItem :label="$t('page.business.license.licenseCategory')" path="userPhone">
+        <NInput v-model:value="model.licenseCategory" :placeholder="$t('page.business.license.form.licenseCategory')"/>
       </NFormItem>
-      <NFormItem :label="$t('page.manage.user.userEmail')" path="email">
-        <NInput v-model:value="model.userEmail" :placeholder="$t('page.manage.user.form.userEmail')"/>
+      <NFormItem :label="$t('page.business.license.licenseCompany')" path="email">
+        <NInput v-model:value="model.licenseCompany" :placeholder="$t('page.business.license.form.licenseCompany')"/>
       </NFormItem>
-      <NFormItem :label="$t('page.manage.user.userRole')" path="roles">
-        <NSelect
-          v-model:value="model.byUserRoleCodeList"
-          multiple
-          filterable
-          clearable
-          :options="roleOptions"
-          :placeholder="$t('page.manage.user.form.userRole')"
-        />
+      <NFormItem :label="$t('page.business.license.taxIdentificationNumber')" path="taxIdentificationNumber">
+        <NInput v-model:value="model.taxIdentificationNumber"
+                :placeholder="$t('page.business.license.form.taxIdentificationNumber')"/>
       </NFormItem>
-      <NFormItem :label="$t('page.manage.user.userStatusType')" path="status">
-        <NRadioGroup v-model:value="model.statusType">
-          <NRadio v-for="item in statusTypeOptions" :key="item.value" :value="item.value" :label="$t(item.label)"/>
-        </NRadioGroup>
+      <NFormItem :label="$t('page.business.license.companyAddress')" path="companyAddress">
+        <NInput v-model:value="model.companyAddress" :placeholder="$t('page.business.license.form.companyAddress')"/>
+      </NFormItem>
+      <NFormItem :label="$t('page.business.license.companyName')" path="companyName">
+        <NInput v-model:value="model.companyName" :placeholder="$t('page.business.license.form.companyName')"/>
+      </NFormItem>
+      <NFormItem :label="$t('page.business.license.factoryRegistrationNumber')" path="factoryRegistrationNumber">
+        <NInput v-model:value="model.factoryRegistrationNumber"
+                :placeholder="$t('page.business.license.form.factoryRegistrationNumber')"/>
+      </NFormItem>
+      <NFormItem :label="$t('page.business.license.factoryAddress')" path="factoryAddress">
+        <NInput v-model:value="model.factoryAddress" :placeholder="$t('page.business.license.form.factoryAddress')"/>
+      </NFormItem>
+      <NFormItem :label="$t('page.business.license.details')" path="details">
+        <NInput v-model:value="model.details"
+                type="textarea"
+                size="small"
+                :autosize="{
+                  minRows: 3,
+                  maxRows: 5,
+                }"
+                :placeholder="$t('page.business.license.form.details')"/>
       </NFormItem>
     </NForm>
     <template #action>

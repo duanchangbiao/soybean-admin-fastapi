@@ -317,7 +317,33 @@ export function fetchGetLicenseList(data?: Api.Business.LicencesListParams) {
 /** delete license */
 export function fetchDeleteLicense(data?: Api.SystemManage.CommonDeleteParams) {
   return request<Api.Business.LicencesList>({
-    url: `/license/${data?.id}`,
+    url: `/license/delete/${data?.id}`,
     method: 'delete'
+  });
+}
+
+
+/** batch delete license */
+export function fetchBatchDeleteLicense(data?: Api.SystemManage.CommonBatchDeleteParams) {
+  return request<Api.Business.LicencesList>({
+    url: '/license/delete/batch',
+    method: 'delete',
+    params: {ids: data?.ids.join(',')}
+  });
+}
+
+export function fetchAddLicense(data?: Api.Business.LicenseAddParams) {
+  return request<Api.Business.LicencesList, 'json'>({
+    url: '/license/add',
+    method: 'post',
+    data
+  });
+}
+
+export function fetchUpdateLicense(data?: Api.Business.LicenseUpdateParams) {
+  return request<Api.Business.LicencesList, 'json'>({
+    url: `/license/update/${data?.id}`,
+    method: 'patch',
+    data
   });
 }

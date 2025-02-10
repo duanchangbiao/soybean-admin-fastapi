@@ -2,10 +2,9 @@
 import {NButton, NPopconfirm} from 'naive-ui';
 import {$t} from '@/locales';
 import {useAppStore} from '@/store/modules/app';
-import {fetchBatchDeleteUser, fetchDeleteLicense, fetchGetLicenseList} from '@/service/api';
+import {fetchBatchDeleteLicense, fetchDeleteLicense, fetchGetLicenseList} from '@/service/api';
 import {useTable, useTableOperate} from '@/hooks/common/table';
 import CompanySearch from "@/views/company-info/moudules/company-search.vue";
-import RoleOperateDrawer from "@/views/manage/role/modules/role-operate-drawer.vue";
 import CompanyOperateModal from "@/views/company-info/moudules/company-operate-modal.vue";
 
 const appStore = useAppStore();
@@ -32,6 +31,11 @@ const {
     companyName: null
   },
   columns: () => [
+    {
+      type: 'selection',
+      align: 'center',
+      width: 48
+    },
     {
       key: 'index',
       title: $t('common.index'),
@@ -74,20 +78,6 @@ const {
       align: 'center',
       width: 120
     },
-    // {
-    //   key: 'ctime',
-    //   dataIndex: 'ctime',
-    //   title: $t('page.business.license.ctime'),
-    //   align: 'center',
-    //   width: 150
-    // },
-    // {
-    //   key: 'mtime',
-    //   dataIndex: 'mtime',
-    //   title: $t('page.business.license.mtime'),
-    //   align: 'center',
-    //   width: 150
-    // },
     {
       key: 'operate',
       title: $t('common.operate'),
@@ -127,7 +117,7 @@ const {
 } = useTableOperate(data, getData);
 
 
-async function handleDeleteLicense(id: number) {
+async function handleDeleteLicense({id}: { id: number }) {
   // request
   const {error} = await fetchDeleteLicense({id});
   if (!error) {
@@ -145,7 +135,7 @@ async function handleDelete(id: number) {
 
 async function handleBatchDelete() {
   // request
-  const {error} = await fetchBatchDeleteUser({ids: checkedRowKeys.value});
+  const {error} = await fetchBatchDeleteLicense({ids: checkedRowKeys.value});
   if (!error) {
     onBatchDeleted();
   }

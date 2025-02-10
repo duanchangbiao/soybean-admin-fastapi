@@ -764,8 +764,16 @@ declare namespace App {
             details: string;
             form: {
               companyName: string;
+              companyAddress: string;
+              factoryAddress: string;
+              factoryRegistrationNumber: string;
+              issuanceTime: string;
+              licenseCategory: string;
+              licenseCompany: string;
               licenseId: string;
+              licenseType: string;
               taxIdentificationNumber: string;
+              details: string;
             };
             addLicense: string;
             editLicense: string;

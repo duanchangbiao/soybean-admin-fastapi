@@ -5,7 +5,7 @@ from app.api.v1.utils import insert_log
 from app.controllers import license_controller
 from app.models.system import LogType, LogDetailType
 from app.schemas.base import SuccessExtra, Success, CommonIds
-from app.schemas.license import LicenseCreate
+from app.schemas.license import LicenseCreate, LicenseUpdate
 
 router = APIRouter()
 
@@ -42,7 +42,8 @@ async def get_user(user_id: int):
 
 @router.post("/add", summary="创建许可信息")
 async def _(license_in: LicenseCreate):
-    license = await license_controller.model.exists(license_id=license_in.role_code)
+    print(license_in)
+    license = await license_controller.model.exists(license_id=license_in.license_id)
     if license:
         return Success(code="4090", msg="The license with this code already exists in the system.")
 
@@ -52,30 +53,29 @@ async def _(license_in: LicenseCreate):
 
 
 @router.patch("/update/{license_id}", summary="更新许可证")
-async def _(license_id: int, license_in: LicenseCreate):
-    user = await license_controller.update(license_id=license_id, obj_in=license_in)
-    if not license_in.by_user_role_code_list:
-        return Success(code="4090", msg="The license must exists.")
-
-    await license_controller.update_roles_by_code(user, license_in.by_user_role_code_list)
+async def _(license_id: int, license_in: LicenseUpdate):
+    license = await license_controller.update(id=license_id, obj_in=license_in)
+    if license is None:
+        return Success(code="4090", msg="The license with this code not exists in the system.")
     await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.UserUpdateOne, by_user_id=0)
     return Success(msg="Updated Successfully", data={"updated_id": license_id})
 
 
-@router.delete("/delete/{user_id}", summary="删除许可证")
-async def _(user_id: int):
-    await license_controller.remove(id=user_id)
+@router.delete("/delete/{license_id}", summary="删除许可证")
+async def _(license_id: int):
+    await license_controller.remove(id=license_id)
     await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.UserDeleteOne, by_user_id=0)
-    return Success(msg="Deleted Successfully", data={"deleted_id": user_id})
+    return Success(msg="Deleted Successfully", data={"deleted_id": license_id})
 
 
-@router.delete("/delete/batch", summary="批量删除用户")
-async def _(obj_in: CommonIds):
+@router.delete("/delete/batch", summary="批量删除许可证")
+# async def _(ids: str = Query(..., description="删除许可证ID列表, 用逗号隔开")):
+async def _(ids: CommonIds):
+    print(ids)
+    license_ids = ids.split(",")
     deleted_ids = []
-    for license_id in obj_in.ids:
-        license_obj = await license_controller.get(id=int(license_id))
-        await license_obj.delete()
-        deleted_ids.append(int(license_id))
-
-    await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.UserBatchDeleteOne, by_user_id=0)
+    # for license_id in license_ids:
+    #     license_obj = await license_controller.get(id=int(license_id))
+    #     await license_obj.delete()
+    #     deleted_ids.append(int(license_id))
     return Success(msg="Deleted Successfully", data={"deleted_ids": deleted_ids})

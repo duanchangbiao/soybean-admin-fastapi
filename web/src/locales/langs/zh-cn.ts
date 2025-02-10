@@ -572,8 +572,16 @@ const local: App.I18n.Schema = {
         details: '说明',
         form: {
           companyName: '请输入工厂名称',
+          companyAddress: '请输入公司地址',
+          factoryAddress: '请输入工厂地址',
+          factoryRegistrationNumber: '请输入工厂注册号',
+          issuanceTime: '请输入发放日期',
+          licenseCategory: '请输入类别',
+          licenseCompany: '请输入授权公司',
           licenseId: '请输入许可证编号',
-          taxIdentificationNumber: '请输入纳税人标识'
+          licenseType: '请输入TIS编号',
+          taxIdentificationNumber: '请输入纳税人标识',
+          details: '请输入说明',
         },
         addLicense: '添加许可信息',
         editLicense: '编辑许可信息',
