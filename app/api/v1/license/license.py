@@ -68,14 +68,12 @@ async def _(license_id: int):
     return Success(msg="Deleted Successfully", data={"deleted_id": license_id})
 
 
-@router.delete("/delete/batch", summary="批量删除许可证")
-# async def _(ids: str = Query(..., description="删除许可证ID列表, 用逗号隔开")):
-async def _(ids: CommonIds):
-    print(ids)
+@router.delete("/batch", summary="批量删除许可证")
+async def _(ids: str = Query(..., description="删除许可证ID列表, 用逗号隔开")):
     license_ids = ids.split(",")
     deleted_ids = []
-    # for license_id in license_ids:
-    #     license_obj = await license_controller.get(id=int(license_id))
-    #     await license_obj.delete()
-    #     deleted_ids.append(int(license_id))
+    for license_id in license_ids:
+        license_obj = await license_controller.get(id=int(license_id))
+        await license_obj.delete()
+        deleted_ids.append(int(license_id))
     return Success(msg="Deleted Successfully", data={"deleted_ids": deleted_ids})

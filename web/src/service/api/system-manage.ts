@@ -326,7 +326,7 @@ export function fetchDeleteLicense(data?: Api.SystemManage.CommonDeleteParams) {
 /** batch delete license */
 export function fetchBatchDeleteLicense(data?: Api.SystemManage.CommonBatchDeleteParams) {
   return request<Api.Business.LicencesList>({
-    url: '/license/delete/batch',
+    url: '/license/batch',
     method: 'delete',
     params: {ids: data?.ids.join(',')}
   });
