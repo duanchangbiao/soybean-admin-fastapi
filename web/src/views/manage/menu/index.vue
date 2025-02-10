@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import type { Ref } from 'vue';
 import { NButton, NPopconfirm, NTag } from 'naive-ui';
 import { useBoolean } from '@sa/hooks';
-import { fetchGetAllPages, fetchGetMenuList } from '@/service/api';
+import {fetchDeleteMenu, fetchGetAllPages, fetchGetMenuList} from '@/service/api';
 import { useAppStore } from '@/store/modules/app';
 import { useTable, useTableOperate } from '@/hooks/common/table';
 import { $t } from '@/locales';
@@ -186,10 +186,16 @@ async function handleBatchDelete() {
   onBatchDeleted();
 }
 
+async function handleDeleteMenu({ id }: { id: number }) {
+  const { error } = await fetchDeleteMenu({ id });
+  if (!error) {
+    await getData();
+  }
+}
+
 function handleDelete(id: number) {
   // request
-  console.log(id);
-
+  handleDeleteMenu({ id })
   onDeleted();
 }
 

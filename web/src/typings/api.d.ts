@@ -321,7 +321,7 @@ declare namespace Api {
         | 'byUser'
         | 'xRequestId'
       > &
-        CommonSearchParams & { timeRange: [number, number] }
+      CommonSearchParams & { timeRange: [number, number] }
     >;
 
     /** log list */
@@ -383,7 +383,7 @@ declare namespace Api {
         | 'statusType'
         | 'byUserRoleCodeList'
       > &
-        CommonSearchParams
+      CommonSearchParams
     >;
 
     /** user list */
@@ -515,5 +515,54 @@ declare namespace Api {
       pId: number;
       children?: ButtonTree[];
     };
+  }
+
+
+  namespace Business {
+
+    type  License = Common.CommonRecord<{
+      title: string;
+      companyName: string;
+      companyAddress: string;
+      factoryAddress: string;
+      factoryRegistrationNumber: string;
+      issuanceTime: string;
+      licenseCategory: string;
+      licenseCompany: string;
+      licenseId: string;
+      licenseType: string;
+      taxIdentificationNumber: string;
+      details: string;
+      ctime: string;
+      mtime: string;
+    }>;
+
+    type BusinessLicenseParams = Pick<
+      Api.Business.License,
+      | 'licenseId'
+      | 'companyName'
+      | 'taxIdentificationNumber'
+    >;
+    /** 分页查询参数 */
+    type LicencesListParams = CommonType.RecordNullable<Pick<Api.Business.License, 'id'>> & BusinessLicenseParams;
+    /** 分页查询返回类 */
+    type LicencesList = Common.PaginatingQueryRecord<License>;
+
+    type LicenseAddParams = Pick<
+      Api.Business.License,
+      | 'companyName'
+      | 'companyAddress'
+      | 'factoryAddress'
+      | 'factoryRegistrationNumber'
+      | 'issuanceTime'
+      | 'licenseCategory'
+      | 'licenseCompany'
+      | 'licenseId'
+      | 'licenseType'
+      | 'taxIdentificationNumber'
+      | 'details'
+    >;
+
+    type LicenseUpdateParams = CommonType.RecordNullable<Pick<Api.Business.License, 'id'> & LicenseAddParams>;
   }
 }

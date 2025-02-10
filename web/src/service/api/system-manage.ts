@@ -1,4 +1,4 @@
-import { request } from '../request';
+import {request} from '../request';
 
 /** get role list */
 export function fetchGetRoleList(params?: Api.SystemManage.RoleSearchParams) {
@@ -71,9 +71,10 @@ export function fetchBatchDeleteLog(data?: Api.SystemManage.CommonBatchDeletePar
   return request<Api.SystemManage.LogList>({
     url: '/system-manage/logs',
     method: 'delete',
-    params: { ids: data?.ids.join(',') }
+    params: {ids: data?.ids.join(',')}
   });
 }
+
 /** update log */
 export function fetchUpdateLog(data?: Api.SystemManage.LogUpdateParams) {
   return request<Api.SystemManage.LogList, 'json'>({
@@ -137,9 +138,10 @@ export function fetchBatchDeleteApi(data?: Api.SystemManage.CommonBatchDeletePar
   return request<Api.SystemManage.ApiList>({
     url: '/system-manage/apis',
     method: 'delete',
-    params: { ids: data?.ids.join(',') }
+    params: {ids: data?.ids.join(',')}
   });
 }
+
 /** update api */
 export function fetchUpdateApi(data?: Api.SystemManage.ApiUpdateParams) {
   return request<Api.SystemManage.ApiList, 'json'>({
@@ -179,7 +181,7 @@ export function fetchBatchDeleteUser(data?: Api.SystemManage.CommonBatchDeletePa
   return request<Api.SystemManage.UserList>({
     url: '/system-manage/users',
     method: 'delete',
-    params: { ids: data?.ids.join(',') }
+    params: {ids: data?.ids.join(',')}
   });
 }
 
@@ -204,7 +206,7 @@ export function fetchBatchDeleteRole(data?: Api.SystemManage.CommonBatchDeletePa
   return request<Api.SystemManage.RoleList>({
     url: '/system-manage/roles',
     method: 'delete',
-    params: { ids: data?.ids.join(',') }
+    params: {ids: data?.ids.join(',')}
   });
 }
 
@@ -289,7 +291,7 @@ export function fetchBatchDeleteMenu(data?: Api.SystemManage.CommonBatchDeletePa
   return request<Api.SystemManage.MenuList>({
     url: '/system-manage/menus',
     method: 'delete',
-    params: { ids: data?.ids.join(',') }
+    params: {ids: data?.ids.join(',')}
   });
 }
 
@@ -299,5 +301,23 @@ export function fetchUpdateMenu(data?: Api.SystemManage.MenuUpdateParams) {
     url: `/system-manage/menus/${data?.id}`,
     method: 'patch',
     data
+  });
+}
+
+
+/** get license list */
+export function fetchGetLicenseList(data?: Api.Business.LicencesListParams) {
+  return request<Api.Business.LicencesList>({
+    url: '/license/list',
+    method: 'post',
+    params: data
+  });
+}
+
+/** delete license */
+export function fetchDeleteLicense(data?: Api.SystemManage.CommonDeleteParams) {
+  return request<Api.Business.LicencesList>({
+    url: `/license/${data?.id}`,
+    method: 'delete'
   });
 }

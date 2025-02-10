@@ -8,9 +8,19 @@ from pydantic import Field
 def tortoise_orm_factory() -> dict[str, Any]:
     return {
         "connections": {
+            # "conn_system": {
+            #     "engine": "tortoise.backends.sqlite",
+            #     "credentials": {"file_path": "app_system.sqlite3"}
+            # }
             "conn_system": {
-                "engine": "tortoise.backends.sqlite",
-                "credentials": {"file_path": "app_system.sqlite3"}
+                "engine": "tortoise.backends.mysql",
+                "credentials": {
+                    "host": "119.28.1.136",  # 替换为你的MySQL主机地址
+                    "port": 3306,  # 替换为你的MySQL端口号
+                    "user": "root",  # 替换为你的MySQL用户名
+                    "password": "zkkj@123!",  # 替换为你的MySQL密码
+                    "database": "soybean_admin"  # 替换为你的MySQL数据库名
+                }
             }
         },
         "apps": {

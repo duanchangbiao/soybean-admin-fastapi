@@ -80,7 +80,6 @@ async function getRoleOptions() {
 
 function handleInitModel() {
   Object.assign(model, createDefaultModel());
-
   if (props.operateType === 'edit' && props.rowData) {
     console.log('props.rowData', props.rowData);
     Object.assign(model, props.rowData);

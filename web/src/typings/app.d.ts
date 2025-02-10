@@ -456,19 +456,6 @@ declare namespace App {
             title: string;
           };
         };
-        about: {
-          title: string;
-          introduction: string;
-          projectInfo: {
-            title: string;
-            version: string;
-            latestBuildTime: string;
-            githubLink: string;
-            previewLink: string;
-          };
-          prdDep: string;
-          devDep: string;
-        };
         home: {
           branchDesc: string;
           greeting: string;
@@ -534,20 +521,6 @@ declare namespace App {
             repeatedError: string;
             repeatedErrorMsg1: string;
             repeatedErrorMsg2: string;
-          };
-        };
-        alova: {
-          scenes: {
-            captchaSend: string;
-            autoRequest: string;
-            visibilityRequestTips: string;
-            pollingRequestTips: string;
-            networkRequestTips: string;
-            refreshTime: string;
-            startRequest: string;
-            stopRequest: string;
-            requestCrossComponent: string;
-            triggerAllRequest: string;
           };
         };
         manage: {
@@ -773,6 +746,31 @@ declare namespace App {
             };
           };
         };
+        business: {
+          license: {
+            title: string;
+            companyName: string;
+            companyAddress: string;
+            factoryAddress: string;
+            factoryRegistrationNumber: string;
+            issuanceTime: string;
+            licenseCategory: string;
+            licenseCompany: string;
+            licenseId: string;
+            licenseType: string;
+            taxIdentificationNumber: string;
+            ctime: string;
+            mtime: string;
+            details: string;
+            form: {
+              companyName: string;
+              licenseId: string;
+              taxIdentificationNumber: string;
+            };
+            addLicense: string;
+            editLicense: string;
+          };
+        };
       };
       form: {
         required: string;
@@ -813,13 +811,21 @@ declare namespace App {
 
     interface $T {
       (key: I18nKey): string;
+
       (key: I18nKey, plural: number, options?: TranslateOptions<LangType>): string;
+
       (key: I18nKey, defaultMsg: string, options?: TranslateOptions<I18nKey>): string;
+
       (key: I18nKey, list: unknown[], options?: TranslateOptions<I18nKey>): string;
+
       (key: I18nKey, list: unknown[], plural: number): string;
+
       (key: I18nKey, list: unknown[], defaultMsg: string): string;
+
       (key: I18nKey, named: Record<string, unknown>, options?: TranslateOptions<LangType>): string;
+
       (key: I18nKey, named: Record<string, unknown>, plural: number): string;
+
       (key: I18nKey, named: Record<string, unknown>, defaultMsg: string): string;
     }
   }

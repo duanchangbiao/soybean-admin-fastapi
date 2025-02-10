@@ -172,6 +172,7 @@ const local: App.I18n.Schema = {
     home: '首页',
     document: '文档',
     document_project: '项目文档',
+    'company-info': '数据中心',
     'document_project-link': '项目文档(外链)',
     document_vue: 'Vue文档',
     document_vite: 'Vite文档',
@@ -180,21 +181,6 @@ const local: App.I18n.Schema = {
     document_antd: 'Ant Design Vue文档',
     document_alova: 'Alova文档',
     'user-center': '个人中心',
-    about: '关于',
-    function: '系统功能',
-    alova: 'alova示例',
-    alova_request: 'alova请求',
-    alova_user: '用户列表',
-    alova_scenes: '场景化请求',
-    function_tab: '标签页',
-    'function_multi-tab': '多标签页',
-    'function_hide-child': '隐藏子菜单',
-    'function_hide-child_one': '隐藏子菜单',
-    'function_hide-child_two': '菜单二',
-    'function_hide-child_three': '菜单三',
-    function_request: '请求',
-    'function_toggle-auth': '切换权限',
-    'function_super-page': '超级管理员可见',
     manage: '系统管理',
     manage_log: '日志管理',
     manage_api: 'API管理',
@@ -202,12 +188,6 @@ const local: App.I18n.Schema = {
     'manage_user-detail': '用户详情',
     manage_role: '角色管理',
     manage_menu: '菜单管理',
-    'multi-menu': '多级菜单',
-    'multi-menu_first': '菜单一',
-    'multi-menu_first_child': '菜单一子菜单',
-    'multi-menu_second': '菜单二',
-    'multi-menu_second_child': '菜单二子菜单',
-    'multi-menu_second_child_home': '菜单二子菜单首页',
     exception: '异常页',
     exception_403: '403',
     exception_404: '404',
@@ -284,19 +264,6 @@ const local: App.I18n.Schema = {
         title: '绑定微信'
       }
     },
-    about: {
-      title: '关于',
-      introduction: `SoybeanAdmin 是一个优雅且功能强大的后台管理模板，基于最新的前端技术栈，包括 Vue3, Vite5, TypeScript, Pinia 和 UnoCSS。它内置了丰富的主题配置和组件，代码规范严谨，实现了自动化的文件路由系统。此外，它还采用了基于 ApiFox 的在线Mock数据方案。SoybeanAdmin 为您提供了一站式的后台管理解决方案，无需额外配置，开箱即用。同样是一个快速学习前沿技术的最佳实践。`,
-      projectInfo: {
-        title: '项目信息',
-        version: '版本',
-        latestBuildTime: '最新构建时间',
-        githubLink: 'Github 地址',
-        previewLink: '预览地址'
-      },
-      prdDep: '生产依赖',
-      devDep: '开发依赖'
-    },
     home: {
       branchDesc:
         '为了方便大家开发和更新合并，我们对main分支的代码进行了精简，只保留了首页菜单，其余内容已移至example分支进行维护。预览地址显示的内容即为example分支的内容。',
@@ -363,20 +330,6 @@ const local: App.I18n.Schema = {
         repeatedError: '重复请求错误',
         repeatedErrorMsg1: '自定义请求错误 1',
         repeatedErrorMsg2: '自定义请求错误 2'
-      }
-    },
-    alova: {
-      scenes: {
-        captchaSend: '发送验证码',
-        autoRequest: '自动请求',
-        visibilityRequestTips: '浏览器窗口切换自动请求数据',
-        pollingRequestTips: '每3秒自动请求一次',
-        networkRequestTips: '网络重连后自动请求',
-        refreshTime: '更新时间',
-        startRequest: '开始请求',
-        stopRequest: '停止请求',
-        requestCrossComponent: '跨组件触发请求',
-        triggerAllRequest: '手动触发所有自动请求'
       }
     },
     manage: {
@@ -599,6 +552,31 @@ const local: App.I18n.Schema = {
           iconify: 'iconify图标',
           local: '本地图标'
         }
+      }
+    },
+    business: {
+      license: {
+        title: '工业产品标准许可证信息',
+        companyName: '工厂名称',
+        companyAddress: '公司地址',
+        factoryAddress: '工厂地址',
+        factoryRegistrationNumber: '工厂注册号',
+        issuanceTime: '发放日期',
+        licenseCategory: '类别',
+        licenseCompany: '授权公司',
+        licenseId: '许可证编号',
+        licenseType: 'TIS编号',
+        taxIdentificationNumber: '纳税人标识',
+        ctime: '创建时间',
+        mtime: '修改时间',
+        details: '说明',
+        form: {
+          companyName: '请输入工厂名称',
+          licenseId: '请输入许可证编号',
+          taxIdentificationNumber: '请输入纳税人标识'
+        },
+        addLicense: '添加许可信息',
+        editLicense: '编辑许可信息',
       }
     }
   },
