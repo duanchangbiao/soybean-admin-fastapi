@@ -167,6 +167,44 @@ export const generatedRoutes: GeneratedRoute[] = [
     ]
   },
   {
+    name: 'monitor',
+    path: '/monitor',
+    component: 'layout.base',
+    meta: {
+      title: 'monitor',
+      i18nKey: 'route.monitor'
+    },
+    children: [
+      {
+        name: 'monitor_aft',
+        path: '/monitor/aft',
+        component: 'view.monitor_aft',
+        meta: {
+          title: 'monitor_aft',
+          i18nKey: 'route.monitor_aft'
+        }
+      },
+      {
+        name: 'monitor_mor',
+        path: '/monitor/mor',
+        component: 'view.monitor_mor',
+        meta: {
+          title: 'monitor_mor',
+          i18nKey: 'route.monitor_mor'
+        }
+      },
+      {
+        name: 'monitor_nsw',
+        path: '/monitor/nsw',
+        component: 'view.monitor_nsw',
+        meta: {
+          title: 'monitor_nsw',
+          i18nKey: 'route.monitor_nsw'
+        }
+      }
+    ]
+  },
+  {
     name: 'plugin',
     path: '/plugin',
     component: 'layout.base',

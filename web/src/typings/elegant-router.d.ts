@@ -44,6 +44,10 @@ declare module "@elegant-router/types" {
     "manage_role": "/manage/role";
     "manage_user": "/manage/user";
     "manage_user-detail": "/manage/user-detail/:id";
+    "monitor": "/monitor";
+    "monitor_aft": "/monitor/aft";
+    "monitor_mor": "/monitor/mor";
+    "monitor_nsw": "/monitor/nsw";
     "plugin": "/plugin";
     "plugin_barcode": "/plugin/barcode";
     "plugin_charts": "/plugin/charts";
@@ -121,6 +125,7 @@ declare module "@elegant-router/types" {
     | "iframe-page"
     | "login"
     | "manage"
+    | "monitor"
     | "plugin"
     | "user-center"
   >;
@@ -154,6 +159,9 @@ declare module "@elegant-router/types" {
     | "manage_role"
     | "manage_user-detail"
     | "manage_user"
+    | "monitor_aft"
+    | "monitor_mor"
+    | "monitor_nsw"
     | "plugin_barcode"
     | "plugin_charts_antv"
     | "plugin_charts_echarts"

@@ -347,3 +347,108 @@ export function fetchUpdateLicense(data?: Api.Business.LicenseUpdateParams) {
     data
   });
 }
+
+/** get license */
+export function fetchGetLicense(data?: Api.Business.LicencesListParams) {
+  return request<Api.Business.LicencesList>({
+    url: `/license/get/${data?.id}`,
+    method: 'get'
+  });
+}
+
+/** get aft affa list */
+export function fetchGetAftList(data?: Api.Business.AftOrAffaParamsList) {
+  return request<Api.Business.AftAffaList>({
+    url: '/aft-affa/list',
+    method: 'post',
+    params: data
+  });
+}
+
+/** delete aft affa */
+export function fetchDeleteAft(data?: Api.SystemManage.CommonDeleteParams) {
+  return request<Api.Business.AftAffaList>({
+    url: `/aft-affa/delete/${data?.id}`,
+    method: 'delete'
+  });
+}
+
+/** batch delete aft affa */
+
+export function fetchBatchDeleteAft(data?: Api.SystemManage.CommonBatchDeleteParams) {
+  return request<Api.Business.AftAffaList>({
+    url: '/aft-affa/batch',
+    method: 'delete',
+    params: {ids: data?.ids.join(',')}
+  });
+}
+
+/** add aft affa */
+export function fetchAddAft(data?: Api.Business.AftOrAffaAddParams) {
+  return request<Api.Business.AftAffaList, 'json'>({
+    url: '/aft-affa/add',
+    method: 'post',
+    data
+  });
+}
+
+/** update aft affa */
+export function fetchUpdateAft(data?: Api.Business.AftOrAffaUpdateParams) {
+  return request<Api.Business.AftAffaList, 'json'>({
+    url: `/aft-affa/update/${data?.id}`,
+    method: 'patch',
+    data
+  });
+}
+
+/** batch delete mor */
+export function fetchBatchDeleteMor(data?: Api.SystemManage.CommonBatchDeleteParams) {
+  return request<Api.Business.MorList>({
+    url: '/mor/batch',
+    method: 'delete',
+    params: {ids: data?.ids.join(',')}
+  });
+}
+
+/** get mor list */
+export function fetchGetMorList(data?: Api.Business.MorParamsList) {
+  return request<Api.Business.MorList>({
+    url: '/mor/list',
+    method: 'post',
+    params: data
+  });
+}
+
+/** delete mor */
+export function fetchDeleteMor(data?: Api.SystemManage.CommonDeleteParams) {
+  return request<Api.Business.MorList>({
+    url: `/mor/delete/${data?.id}`,
+    method: 'delete'
+  });
+}
+
+/** add mor */
+export function fetchAddMor(data?: Api.Business.MorAddParams) {
+  return request<Api.Business.MorList, 'json'>({
+    url: '/mor/add',
+    method: 'post',
+    data
+  });
+}
+
+/** update mor */
+export function fetchUpdateMor(data?: Api.Business.MorUpdateParams) {
+  return request<Api.Business.MorList, 'json'>({
+    url: `/mor/update/${data?.id}`,
+    method: 'patch',
+    data
+  });
+}
+
+/** get mor */
+export function fetchGetMor(data?: Api.Business.MorParamsList) {
+  return request<Api.Business.MorList>({
+    url: `/mor/get/${data?.id}`,
+    method: 'get'
+  });
+}

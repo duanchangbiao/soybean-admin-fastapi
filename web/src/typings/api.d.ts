@@ -521,7 +521,6 @@ declare namespace Api {
   namespace Business {
 
     type  License = Common.CommonRecord<{
-      title: string;
       companyName: string;
       companyAddress: string;
       factoryAddress: string;
@@ -562,7 +561,141 @@ declare namespace Api {
       | 'taxIdentificationNumber'
       | 'details'
     >;
-
+    /** 更新参数 */
     type LicenseUpdateParams = CommonType.RecordNullable<Pick<Api.Business.License, 'id'> & LicenseAddParams>;
+
+    type AftOrAffa = Common.CommonRecord<{
+      applyNumber: string;
+      tisCode: string;
+      standardName: string;
+      applyLicense: string;
+      applyStatus: string;
+      applyDate: string;
+      username: string;
+      nickname: string;
+      passTime: string;
+      applyType: string;
+      updateType: string;
+      remark: string;
+      sort: string;
+      ctime: string;
+      mtime: string;
+    }>;
+
+
+    /** 分页AFFA AFT查询参数 */
+    type AftOrAffaParamsList = CommonType.RecordNullable<Pick<Api.Business.AftOrAffa, 'id'>> & AftOrAffa;
+
+    /** aft or affa list */
+    type AftAffaList = Common.PaginatingQueryRecord<AftOrAffa>;
+
+    /** AFT AFFA 添加参数 */
+    type AftOrAffaAddParams = Pick<
+      Api.Business.AftOrAffa,
+      | 'applyNumber'
+      | 'tisCode'
+      | 'applyLicense'
+      | 'applyStatus'
+      | 'applyDate'
+      | 'username'
+      | 'nickname'
+      | 'passTime'
+      | 'applyType'
+      | 'updateType'
+      | 'remark'
+      | 'sort'
+    >;
+
+    /** 更新参数 */
+    type AftOrAffaUpdateParams = CommonType.RecordNullable<Pick<Api.Business.AftOrAffa, 'id'> & AftOrAffaAddParams>;
+
+    /** mor */
+    type Mor = Common.CommonRecord<{
+      id: string;
+      companyName: string;
+      applyNumber: string;
+      tisCode: string;
+      standardName: string;
+      applyLicense: string;
+      applyDate: string;
+      applyTaxNumber: string;
+      applyStatus: string;
+      updateType: string;
+      username: string;
+      applyType: string;
+      remark: string
+      ctime: string;
+      mtime: string;
+    }>;
+    /** mor list */
+    type MorList = Common.CommonRecord<Mor>;
+
+    /** mor 添加参数 */
+    type MorAddParams = Pick<
+      Api.Business.Mor,
+      | 'companyName'
+      | 'applyNumber'
+      | 'tisCode'
+      | 'standardName'
+      | 'applyLicense'
+      | 'applyDate'
+      | 'applyTaxNumber'
+      | 'applyStatus'
+      | 'updateType'
+      | 'username'
+      | 'applyType'
+      | 'remark'
+    >;
+
+    /** 更新参数 */
+    type MorUpdateParams = CommonType.RecordNullable<Pick<Api.Business.Mor, 'id'> & MorAddParams>;
+
+    /** mor 查询参数 */
+    type MorParamsList = CommonType.RecordNullable<Pick<Api.Business.Mor, 'id'>> & MorAddParams;
+
+
+    type Nsw = Common.CommonRecord<{
+      id: string;
+      operateName: string;
+      applyNumber: string;
+      invoice: string;
+      invoiceDate: string;
+      productNumber: string;
+      rpg_group: string;
+      applyStatus: string;
+      applyDate: string;
+      username: string;
+      nickname: string;
+      passDate: string;
+      sort: string;
+      remark: string;
+      ctime: string;
+      mtime: string;
+    }>
+    /** nsw 添加参数 */
+    type NswAddParams = Pick<
+      Api.Business.Nsw,
+      | 'operateName'
+      | 'applyNumber'
+      | 'invoice'
+      | 'invoiceDate'
+      | 'productNumber'
+      | 'rpg_group'
+      | 'applyStatus'
+      | 'applyDate'
+      | 'username'
+      | 'nickname'
+      | 'passDate'
+      | 'sort'
+      | 'remark'>
+
+    /** nsw list */
+    type NswList = Common.CommonRecord<Nsw>;
+
+    /** nsw 查询参数 */
+    type NswParamsList = CommonType.RecordNullable<Pick<Api.Business.Nsw, 'id'>> & NswAddParams;
+
+    /** 更新参数 */
+    type NswUpdateParams = CommonType.RecordNullable<Pick<Api.Business.Nsw, 'id'> & NswAddParams>;
   }
 }

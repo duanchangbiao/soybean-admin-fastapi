@@ -127,7 +127,7 @@ async def _(role_id: int):
     return Success(data=data)
 
 
-@router.patch("/roles/buttons", summary="更新角色按钮")
+@router.patch("/roles/{role_id}/buttons", summary="更新角色按钮")
 async def _(role_id: int, role_in: RoleUpdateAuthrization):
     role_obj = await role_controller.get(id=role_id)
     if role_in.by_role_button_ids is not None:

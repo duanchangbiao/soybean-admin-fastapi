@@ -778,6 +778,107 @@ declare namespace App {
             addLicense: string;
             editLicense: string;
           };
+          aft: {
+            title: string;
+            id: string;
+            applyNumber: string;
+            tisCode: string;
+            standardName: string;
+            applyLicense: string;
+            applyStatus: string;
+            applyDate: string;
+            username: string;
+            nickname: string;
+            passTime: string;
+            applyType: string;
+            updateType: string;
+            remark: string;
+            sort: string;
+            ctime: string;
+            mtime: string;
+            form: {
+              applyNumber: string;
+              tisCode: string;
+              standardName: string;
+              applyLicense: string;
+              applyStatus: string;
+              applyDate: string;
+              username: string;
+              nickname: string;
+              passTime: string;
+              applyType: string;
+              updateType: string;
+              remark: string;
+              sort: string;
+            };
+          };
+          mor: {
+            title: string
+            id: string;
+            companyName: string;
+            applyNumber: string;
+            tisCode: string;
+            standardName: string;
+            applyLicense: string;
+            applyDate: string;
+            applyTaxNumber: string;
+            applyStatus: string;
+            updateType: string;
+            username: string;
+            applyType: string;
+            ctime: string;
+            mtime: string;
+            sort: string;
+            status: {
+              mor5: string;
+              mor9: string;
+            },
+            remark: string;
+            nickname: string;
+            form: {
+              companyName: string;
+              applyNumber: string;
+              tisCode: string;
+              standardName: string;
+              applyLicense: string;
+              applyDate: string;
+              applyTaxNumber: string;
+              applyStatus: string;
+              applyType: string;
+              username: string;
+              remark: string;
+            };
+          };
+          nsw: {
+            title: string
+            id: string;
+            operateName: string;
+            applyNumber: string;
+            invoice: string;
+            invoiceDate: string;
+            productNumber: string;
+            rpg_group: string;
+            applyStatus: string;
+            applyDate: string;
+            username: string;
+            nickname: string;
+            passDate: string;
+            sort: string;
+            remark: string;
+            ctime: string;
+            mtime: string;
+            form: {
+              operateName: string;
+              applyNumber: string;
+              invoice: string;
+              productName: string;
+              invoiceDate: string;
+              applyDate: string;
+              rpg_group: string;
+              applyStatus: string;
+              username: string;
+            };
+          };
         };
       };
       form: {
