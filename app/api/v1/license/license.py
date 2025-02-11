@@ -34,8 +34,8 @@ async def _(
 
 
 @router.get("/{license_id}", summary="查看许可证id")
-async def get_user(user_id: int):
-    license_obj = await license_controller.get(id=user_id)
+async def get_license(license_id: int):
+    license_obj = await license_controller.get(id=license_id)
     await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.UserGetOne, by_user_id=0)
     return Success(data=await license_obj.to_dict())
 

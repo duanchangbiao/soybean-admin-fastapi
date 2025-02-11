@@ -34,15 +34,15 @@ const {
       width: 100
     },
     {
-      key: 'username',
-      title: $t('page.business.aft.username'),
+      key: 'accountNumber',
+      title: $t('page.business.aft.accountNumber'),
       dataIndex: 'username',
       align: 'center',
       width: 150
     },
     {
-      key: 'nickname',
-      title: $t('page.business.aft.nickname'),
+      key: 'nickName',
+      title: $t('page.business.aft.nickName'),
       dataIndex: 'nickname',
       align: 'center',
       width: 150
@@ -62,9 +62,9 @@ const {
       width: 100
     },
     {
-      key: 'updateType',
-      title: $t('page.business.aft.updateType'),
-      dataIndex: 'updateType',
+      key: 'updateStatus',
+      title: $t('page.business.aft.updateStatus'),
+      dataIndex: 'updateStatus',
       align: 'center',
       width: 150,
     },
@@ -90,7 +90,7 @@ const {
       width: 200
     },
     {
-      key: 'ctime',
+      key: 'fmtCtime',
       title: $t('page.business.aft.ctime'),
       dataIndex: 'ctime',
       align: 'center',

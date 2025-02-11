@@ -359,7 +359,7 @@ export function fetchGetLicense(data?: Api.Business.LicencesListParams) {
 /** get aft affa list */
 export function fetchGetAftList(data?: Api.Business.AftOrAffaParamsList) {
   return request<Api.Business.AftAffaList>({
-    url: '/aft-affa/list',
+    url: '/aft/list',
     method: 'post',
     params: data
   });
@@ -368,7 +368,7 @@ export function fetchGetAftList(data?: Api.Business.AftOrAffaParamsList) {
 /** delete aft affa */
 export function fetchDeleteAft(data?: Api.SystemManage.CommonDeleteParams) {
   return request<Api.Business.AftAffaList>({
-    url: `/aft-affa/delete/${data?.id}`,
+    url: `/aft/delete/${data?.id}`,
     method: 'delete'
   });
 }
@@ -377,7 +377,7 @@ export function fetchDeleteAft(data?: Api.SystemManage.CommonDeleteParams) {
 
 export function fetchBatchDeleteAft(data?: Api.SystemManage.CommonBatchDeleteParams) {
   return request<Api.Business.AftAffaList>({
-    url: '/aft-affa/batch',
+    url: '/aft/batch',
     method: 'delete',
     params: {ids: data?.ids.join(',')}
   });
@@ -386,7 +386,7 @@ export function fetchBatchDeleteAft(data?: Api.SystemManage.CommonBatchDeletePar
 /** add aft affa */
 export function fetchAddAft(data?: Api.Business.AftOrAffaAddParams) {
   return request<Api.Business.AftAffaList, 'json'>({
-    url: '/aft-affa/add',
+    url: '/aft/add',
     method: 'post',
     data
   });
@@ -395,7 +395,7 @@ export function fetchAddAft(data?: Api.Business.AftOrAffaAddParams) {
 /** update aft affa */
 export function fetchUpdateAft(data?: Api.Business.AftOrAffaUpdateParams) {
   return request<Api.Business.AftAffaList, 'json'>({
-    url: `/aft-affa/update/${data?.id}`,
+    url: `/aft/update/${data?.id}`,
     method: 'patch',
     data
   });
