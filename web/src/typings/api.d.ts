@@ -574,8 +574,8 @@ declare namespace Api {
       accountNumber: string;
       nickName: string;
       passTime: string;
-      applyType: string;
-      updateType: string;
+      aftType: string;
+      updateStatus: string;
       remark: string;
       sort: string;
       ctime: string;
@@ -600,8 +600,8 @@ declare namespace Api {
       | 'accountNumber'
       | 'nickName'
       | 'passTime'
-      | 'applyType'
-      | 'updateType'
+      | 'aftType'
+      | 'updateStatus'
       | 'remark'
       | 'sort'
     >;

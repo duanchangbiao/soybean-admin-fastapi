@@ -1,15 +1,7 @@
 <script setup lang="ts">
 import {computed, reactive, ref, watch} from "vue";
 import {$t} from "@/locales";
-import {statusTypeOptions, userGenderOptions} from "@/constants/business";
-import {
-  fetchAddLicense,
-  fetchAddRole,
-  fetchAddUser,
-  fetchUpdateLicense,
-  fetchUpdateRole,
-  fetchUpdateUser
-} from "@/service/api";
+import {fetchAddLicense, fetchUpdateLicense} from "@/service/api";
 import {useNaiveForm} from "@/hooks/common/form";
 
 defineOptions({
@@ -27,7 +19,7 @@ interface Props {
   /** the type of operation */
   operateType: NaiveUI.TableOperateType;
   /** the edit row data */
-  rowData?: Api.SystemManage.Role | null;
+  rowData?: Api.Business.License | null;
 }
 
 const emit = defineEmits<Emits>();

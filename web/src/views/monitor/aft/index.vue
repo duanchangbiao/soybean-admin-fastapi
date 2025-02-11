@@ -1,13 +1,15 @@
 <script setup lang="tsx">
-import {NButton, NPopconfirm, NTag} from 'naive-ui';
-import {$t} from "@/locales";
-import {useTable, useTableOperate} from "@/hooks/common/table";
-import {useAppStore} from "@/store/modules/app";
-import AftSearch from "@/views/monitor/aft/modules/aft-search.vue";
+import {NButton, NPopconfirm} from 'naive-ui';
+import {$t} from '@/locales';
+import {useAppStore} from '@/store/modules/app';
+import {useTable, useTableOperate} from '@/hooks/common/table';
 import {fetchBatchDeleteAft, fetchDeleteAft, fetchGetAftList} from "@/service/api";
-import {aftTypeRecord, statusTypeRecord, userGenderRecord} from "@/constants/business";
+import AftSearch from "@/views/monitor/aft/modules/aft-search.vue";
+import AftUpdateOperateModal from "@/views/monitor/aft/modules/aft-update-operate-modal.vue";
 
 const appStore = useAppStore();
+
+
 const {
   columns,
   columnChecks,
@@ -54,30 +56,11 @@ const {
       width: 150
     },
     {
-      key: 'aftType',
+      key: 'applyType',
       title: $t('page.business.aft.aftType'),
       dataIndex: 'aftType',
       align: 'center',
-      width: 64,
-      render: row => {
-        if (row.aftType === null) {
-          return null;
-        }
-
-        const tagMap: Record<Api.Business.aftTypeInfo, NaiveUI.ThemeColor> = {
-          'aft': 'primary',
-          'affa': 'info'
-        };
-        const label = $t(aftTypeRecord[row.aftType]);
-        return <NTag type={tagMap[row.aftType]}>{label}</NTag>;
-      }
-    },
-    {
-      key: 'applyDate',
-      title: $t('page.business.aft.applyDate'),
-      dataIndex: 'applyDate',
-      align: 'center',
-      width: 100
+      width: 64
     },
     {
       key: 'updateStatus',
@@ -140,38 +123,28 @@ const {
     }
   ],
   apiFn: fetchGetAftList,
-  apiParams
-:
-{
-  current: 1,
-    size
-:
-  10,
-    applyStatus
-:
-  null,
-    nickName
-:
-  null,
-    applyNumber
-:
-  null,
-    remark
-:
-  null,
-}
-,
-})
-;
+  apiParams: {
+    current: 1,
+    size: 10,
+    applyStatus: null,
+    nickName: null,
+    applyNumber: null,
+    remark: null,
+  },
+});
 
 const {
+  drawerVisible,
+  operateType,
   handleEdit,
   handleAdd,
   checkedRowKeys,
   onBatchDeleted,
-  onDeleted,
+  editingData,
+  onDeleted
   // closeDrawer
 } = useTableOperate(data, getData);
+
 
 async function handleBatchDelete() {
   // request
@@ -229,13 +202,12 @@ function edit(id: number) {
         class="sm:h-full"
       />
     </NCard>
-    <!--      <AftUpdateOperateModal-->
-    <!--        v-model:visible="visible"-->
-    <!--        :operate-type="operateType"-->
-    <!--        :row-data="editingData"-->
-    <!--        :all-pages="allPages"-->
-    <!--        @submitted="getDataByPage"-->
-    <!--      />-->
+    <AftUpdateOperateModal
+      v-model:visible="drawerVisible"
+      :operate-type="operateType"
+      :row-data="editingData"
+      @submitted="getDataByPage"
+    />
   </div>
 </template>
 

@@ -810,11 +810,13 @@ declare namespace App {
               accountNumber: string;
               nickName: string;
               passTime: string;
-              applyType: string;
+              aftType: string;
               updateStatus: string;
               remark: string;
               sort: string;
             };
+            addAft: string;
+            editAft: string;
           };
           mor: {
             title: string

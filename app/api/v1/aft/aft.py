@@ -68,7 +68,7 @@ async def _(aft_in: AftCreate):
 
 @router.patch("/update/{aft_id}", summary="更新aft")
 async def _(aft_id: int, aft_in: AftUpdate):
-    aft = await aft_controller.update(id=aft_id, obj_in=aft_in)
+    aft = await aft_controller.update(aft_id=aft_id, obj_in=aft_in)
     if not aft_in.by_aft_account:
         return Success(code="4090", msg="The user must have at least one role that exists.")
 
