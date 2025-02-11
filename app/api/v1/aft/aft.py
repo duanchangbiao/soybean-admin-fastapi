@@ -4,8 +4,8 @@ from tortoise.expressions import Q
 from app.api.v1.utils import insert_log
 from app.controllers.aft import aft_controller
 from app.models.system import LogType, LogDetailType, Account
-from app.schemas.aft import AftSearch
-from app.schemas.base import SuccessExtra, Success
+from app.schemas.aft import AftSearch, AftCreate, AftUpdate
+from app.schemas.base import SuccessExtra, Success, CommonIds
 
 router = APIRouter()
 
@@ -23,7 +23,7 @@ async def _(
     q = Q()
     if nickName:
         if _by_account := await Account.get_or_none(nickname=nickName) is not None:
-            q &= Q(by_account=_by_account)
+            q &= Q(by_aft_account=_by_account)
         else:
             return Success(msg="账号不存在", code=2000)
     if applyNumber:
@@ -40,10 +40,56 @@ async def _(
     records = []
     for aft_obj in aft_objs:
         record = await aft_obj.to_dict(exclude_fields=["password"])
-        await aft_obj.fetch_related("by_account")
-        record.update({"nickName": aft_obj.by_account.nickname})
-        record.update({"accountNumber": aft_obj.by_account.account_number})
+        await aft_obj.fetch_related("by_aft_account")
+        account = await aft_obj.by_aft_account
+        if len(account) != 0:
+            record.update({"nickName": account[0].nickname})
+            record.update({"accountNumber": account[0].account_number})
         records.append(record)
     data = {"records": records}
     await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.UserGetList, by_user_id=0)
     return SuccessExtra(data=data, total=total, current=current, size=size)
+
+
+@router.get("/get/{aft_id}", summary="查看aft")
+async def get_user(aft_id: int):
+    user_obj = await aft_controller.get(id=aft_id)
+    await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.UserGetOne, by_user_id=0)
+    return Success(data=await user_obj.to_dict(exclude_fields=["password"]))
+
+
+@router.post("/add", summary="创建aft")
+async def _(aft_in: AftCreate):
+    new_aft = await aft_controller.create(obj_in=aft_in)
+    await aft_controller.update_aft_account(new_aft, aft_in.by_aft_account)
+    await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.UserCreateOne, by_user_id=0)
+    return Success(msg="Created Successfully", data={"created_id": new_aft.id})
+
+
+@router.patch("/update/{aft_id}", summary="更新aft")
+async def _(aft_id: int, aft_in: AftUpdate):
+    aft = await aft_controller.update(id=aft_id, obj_in=aft_in)
+    if not aft_in.by_aft_account:
+        return Success(code="4090", msg="The user must have at least one role that exists.")
+
+    await aft_controller.update_aft_account(aft, aft_in.by_aft_account)
+    await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.UserUpdateOne, by_user_id=0)
+    return Success(msg="Updated Successfully", data={"updated_id": aft_id})
+
+
+@router.delete("/delete/{aft_id}", summary="删除aft")
+async def _(aft_id: int):
+    await aft_controller.remove(id=aft_id)
+    await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.UserDeleteOne, by_user_id=0)
+    return Success(msg="Deleted Successfully", data={"deleted_id": aft_id})
+
+
+@router.delete("/batch", summary="批量删除aft")
+async def _(ids: str = Query(..., description="删除aft列表, 用逗号隔开")):
+    license_ids = ids.split(",")
+    deleted_ids = []
+    for license_id in license_ids:
+        license_obj = await aft_controller.get(id=int(license_id))
+        await license_obj.delete()
+        deleted_ids.append(int(license_id))
+    return Success(msg="Deleted Successfully", data={"deleted_ids": deleted_ids})

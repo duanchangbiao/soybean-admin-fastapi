@@ -699,5 +699,8 @@ declare namespace Api {
 
     /** 更新参数 */
     type NswUpdateParams = CommonType.RecordNullable<Pick<Api.Business.Nsw, 'id'> & NswAddParams>;
+
+
+    type aftTypeInfo = 'aft' | 'affa';
   }
 }

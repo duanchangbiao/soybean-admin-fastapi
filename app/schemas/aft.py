@@ -13,6 +13,7 @@ class BaseAft(BaseModel):
     sort: Annotated[str | None, Field(alias="sort", description="排序")] = None
     create_by: Annotated[str | None, Field(alias="createBy", description="创建人")] = None
     update_by: Annotated[str | None, Field(alias="updateBy", description="修改人")] = None
+    by_aft_account: Annotated[str | None, Field(alias="by_aft_account", title="账号信息")] = None
 
     class Config:
         populate_by_name = True

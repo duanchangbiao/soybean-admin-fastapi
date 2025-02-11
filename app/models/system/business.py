@@ -24,8 +24,7 @@ class Aft(BaseModel):
     mtime = fields.DatetimeField(description='修改时间', auto_now_add=True)
     create_by = fields.CharField(max_length=500, null=True, description='创建人')
     update_by = fields.CharField(max_length=500, null=True, description='修改人')
-    by_account: fields.OneToOneRelation['Account'] = fields.OneToOneField("app_system.Account", related_name='aft',
-                                                                       on_delete=fields.CASCADE)
+    by_aft_account: fields.ManyToManyRelation['Account'] = fields.ManyToManyField("app_system.Account", related_name='by_aft_account')
 
     class Meta:
         table = "sys_aft"
@@ -51,6 +50,8 @@ class Account(BaseModel):
     remark = fields.CharField(max_length=500, null=True, description='备注')
     create_by = fields.CharField(max_length=500, null=True, description='创建人')
     update_by = fields.CharField(max_length=500, null=True, description='修改人')
+
+    by_account_aft: fields.ReverseRelation['Aft']
 
     class Meta:
         table = "sys_account"

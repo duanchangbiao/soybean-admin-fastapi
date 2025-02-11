@@ -601,7 +601,11 @@ const local: App.I18n.Schema = {
         applyStatus: '申请状态',
         accountNumber: '账号信息',
         nickName: '昵称',
-        applyType: '类型',
+        aftType: '类型',
+        aftTypeInfo: {
+          aft: 'AFT',
+          affa: 'AFFA'
+        },
         updateStatus: '更新状态',
         sort: '排序',
         remark: '备注',
@@ -636,7 +640,8 @@ const local: App.I18n.Schema = {
         applyTaxNumber: '税号',
         updateType: '更新状态',
         applyStatus: '申请状态',
-        username: '账号信息',
+        accountNumber: '账号信息',
+        nickName: '昵称',
         applyType: '类型',
         ctime: '创建时间',
         mtime: '更新时间',
@@ -657,7 +662,8 @@ const local: App.I18n.Schema = {
           applyTaxNumber: '请输入税号',
           applyStatus: '请输入申请状态',
           applyType: '请选择类型',
-          username: '请输入账号信息',
+          accountNumber: '请输入账号信息',
+          nickName: '请输入昵称',
           remark: '请输入备注信息'
         },
       },

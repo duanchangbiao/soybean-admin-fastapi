@@ -35,14 +35,14 @@ const {
     },
     {
       key: 'username',
-      title: $t('page.business.mor.username'),
+      title: $t('page.business.mor.accountNumber'),
       dataIndex: 'username',
       align: 'center',
       width: 150
     },
     {
       key: 'nickname',
-      title: $t('page.business.mor.nickname'),
+      title: $t('page.business.mor.nickName'),
       dataIndex: 'nickname',
       align: 'center',
       width: 150

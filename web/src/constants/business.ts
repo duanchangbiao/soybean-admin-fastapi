@@ -1,4 +1,4 @@
-import { transformRecordToOption } from '@/utils/common';
+import {transformRecordToOption} from '@/utils/common';
 
 export const statusTypeRecord: Record<Api.Common.EnableStatus, App.I18n.I18nKey> = {
   '1': 'page.manage.common.statusType.enable',
@@ -78,6 +78,11 @@ export const userGenderRecord: Record<Api.SystemManage.UserGender, App.I18n.I18n
   '1': 'page.manage.user.gender.male',
   '2': 'page.manage.user.gender.female',
   '3': 'page.manage.user.gender.unknow'
+};
+
+export const aftTypeRecord: Record<Api.Business.aftTypeInfo, App.I18n.I18nKey> = {
+  'aft': 'page.business.aft.aftTypeInfo.aft',
+  'affa': 'page.business.aft.aftTypeInfo.affa',
 };
 
 export const userGenderOptions = transformRecordToOption(userGenderRecord);

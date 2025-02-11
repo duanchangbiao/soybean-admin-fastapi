@@ -33,25 +33,25 @@ async function search() {
   <NCard :title="$t('common.search')" :bordered="false" size="small" class="card-wrapper">
     <NForm ref="formRef" :model="model" label-placement="left" :label-width="100">
       <NGrid responsive="screen" item-responsive>
-        <NFormItemGi span="24 s:8 m:4" :label="$t('page.business.aft.applyStatus')" path="applyStatus"
+        <NFormItemGi span="24 s:8 m:4" :label="$t('page.business.mor.applyStatus')" path="applyStatus"
                      class="pr-24px">
-          <NInput v-model:value="model.applyStatus" :placeholder="$t('page.business.aft.form.applyStatus')"/>
+          <NInput v-model:value="model.applyStatus" :placeholder="$t('page.business.mor.form.applyStatus')"/>
         </NFormItemGi>
 
-        <NFormItemGi span="24 s:8 m:4" :label="$t('page.business.aft.username')" path="username"
+        <NFormItemGi span="24 s:8 m:4" :label="$t('page.business.mor.nickName')" path="username"
                      class="pr-24px">
-          <NInput v-model:value="model.username" :placeholder="$t('page.business.aft.form.username')"/>
+          <NInput v-model:value="model.nickName" :placeholder="$t('page.business.mor.form.nickName')"/>
         </NFormItemGi>
 
-        <NFormItemGi span="24 s:8 m:4" :label="$t('page.business.aft.applyNumber')"
+        <NFormItemGi span="24 s:8 m:4" :label="$t('page.business.mor.applyNumber')"
                      path="applyNumber" class="pr-24px">
           <NInput v-model:value="model.applyNumber"
-                  :placeholder="$t('page.business.aft.form.applyNumber')"/>
+                  :placeholder="$t('page.business.mor.form.applyNumber')"/>
         </NFormItemGi>
-        <NFormItemGi span="24 s:8 m:4" :label="$t('page.business.aft.remark')"
+        <NFormItemGi span="24 s:8 m:4" :label="$t('page.business.mor.remark')"
                      path="applyNumber" class="pr-24px">
           <NInput v-model:value="model.remark"
-                  :placeholder="$t('page.business.aft.form.remark')"/>
+                  :placeholder="$t('page.business.mor.form.remark')"/>
         </NFormItemGi>
 
         <NFormItemGi span="24 m:8" class="pr-24px">

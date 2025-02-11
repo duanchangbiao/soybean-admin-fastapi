@@ -1,10 +1,11 @@
 <script setup lang="tsx">
-import {NButton, NPopconfirm} from 'naive-ui';
+import {NButton, NPopconfirm, NTag} from 'naive-ui';
 import {$t} from "@/locales";
 import {useTable, useTableOperate} from "@/hooks/common/table";
 import {useAppStore} from "@/store/modules/app";
 import AftSearch from "@/views/monitor/aft/modules/aft-search.vue";
 import {fetchBatchDeleteAft, fetchDeleteAft, fetchGetAftList} from "@/service/api";
+import {aftTypeRecord, statusTypeRecord, userGenderRecord} from "@/constants/business";
 
 const appStore = useAppStore();
 const {
@@ -19,6 +20,11 @@ const {
   searchParams
 } = useTable({
   columns: () => [
+    {
+      type: 'selection',
+      align: 'center',
+      width: 48
+    },
     {
       key: 'index',
       title: $t('common.index'),
@@ -48,11 +54,23 @@ const {
       width: 150
     },
     {
-      key: 'applyType',
-      title: $t('page.business.aft.applyType'),
-      dataIndex: 'applyType',
+      key: 'aftType',
+      title: $t('page.business.aft.aftType'),
+      dataIndex: 'aftType',
       align: 'center',
-      width: 64
+      width: 64,
+      render: row => {
+        if (row.aftType === null) {
+          return null;
+        }
+
+        const tagMap: Record<Api.Business.aftTypeInfo, NaiveUI.ThemeColor> = {
+          'aft': 'primary',
+          'affa': 'info'
+        };
+        const label = $t(aftTypeRecord[row.aftType]);
+        return <NTag type={tagMap[row.aftType]}>{label}</NTag>;
+      }
     },
     {
       key: 'applyDate',
@@ -122,15 +140,29 @@ const {
     }
   ],
   apiFn: fetchGetAftList,
-  apiParams: {
-    current: 1,
-    size: 10,
-    applyStatus: null,
-    nickName: null,
-    applyNumber: null,
-    remark: null,
-  },
-});
+  apiParams
+:
+{
+  current: 1,
+    size
+:
+  10,
+    applyStatus
+:
+  null,
+    nickName
+:
+  null,
+    applyNumber
+:
+  null,
+    remark
+:
+  null,
+}
+,
+})
+;
 
 const {
   handleEdit,

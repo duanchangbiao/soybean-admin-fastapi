@@ -790,7 +790,11 @@ declare namespace App {
             accountNumber: string;
             nickName: string;
             passTime: string;
-            applyType: string;
+            aftType: string;
+            aftTypeInfo: {
+              affa: string;
+              aft: string;
+            }
             updateStatus: string;
             remark: string;
             sort: string;
@@ -824,7 +828,8 @@ declare namespace App {
             applyTaxNumber: string;
             applyStatus: string;
             updateType: string;
-            username: string;
+            accountNumber: string;
+            nickName: string;
             applyType: string;
             ctime: string;
             mtime: string;
@@ -845,7 +850,8 @@ declare namespace App {
               applyTaxNumber: string;
               applyStatus: string;
               applyType: string;
-              username: string;
+              accountNumber: string;
+              nickName: string;
               remark: string;
             };
           };
