@@ -126,7 +126,7 @@ const {
     current: 1,
     size: 10,
     applyStatus: null,
-    username: null,
+    nickName: null,
     applyNumber: null,
     remark: null,
   },

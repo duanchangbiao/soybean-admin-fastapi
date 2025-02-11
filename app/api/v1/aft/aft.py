@@ -3,9 +3,9 @@ from tortoise.expressions import Q
 
 from app.api.v1.utils import insert_log
 from app.controllers.aft import aft_controller
-from app.models.system import LogType, LogDetailType
+from app.models.system import LogType, LogDetailType, Account
 from app.schemas.aft import AftSearch
-from app.schemas.base import SuccessExtra
+from app.schemas.base import SuccessExtra, Success
 
 router = APIRouter()
 
@@ -14,21 +14,24 @@ router = APIRouter()
 async def _(
         current: int = Query(1, description="页码"),
         size: int = Query(10, description="每页数量"),
-        apply_number: str = Query(None, description="申请id"),
-        aft_type: str = Query(None, description="aft类型"),
-        apply_status: str = Query(None, description="申请状态"),
+        applyNumber: str = Query(None, description="申请id"),
+        aftType: str = Query(None, description="aft类型"),
+        applyStatus: str = Query(None, description="申请状态"),
         remark: str = Query(None, description="备注"),
-        nick_name: str = Query(None, description="昵称"),
+        nickName: str = Query(None, description="昵称"),
 ):
     q = Q()
-    if nick_name:
-        q &= Q(nick_name__contains=nick_name)
-    if apply_number:
-        q &= Q(apply_number__contains=apply_number)
-    if apply_status:
-        q &= Q(apply_status__contains=apply_status)
-    if aft_type:
-        q &= Q(aft_type=aft_type)
+    if nickName:
+        if _by_account := await Account.get_or_none(nickname=nickName) is not None:
+            q &= Q(by_account=_by_account)
+        else:
+            return Success(msg="账号不存在", code=2000)
+    if applyNumber:
+        q &= Q(apply_number__contains=applyNumber)
+    if applyStatus:
+        q &= Q(apply_status__contains=applyStatus)
+    if aftType:
+        q &= Q(aft_type=aftType)
     if remark:
         q &= Q(remark__contains=remark)
 

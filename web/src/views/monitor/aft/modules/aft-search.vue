@@ -38,9 +38,9 @@ async function search() {
           <NInput v-model:value="model.applyStatus" :placeholder="$t('page.business.aft.form.applyStatus')"/>
         </NFormItemGi>
 
-        <NFormItemGi span="24 s:8 m:4" :label="$t('page.business.aft.accountNumber')" path="accountNumber"
+        <NFormItemGi span="24 s:8 m:4" :label="$t('page.business.aft.nickName')" path="nickName"
                      class="pr-24px">
-          <NInput v-model:value="model.username" :placeholder="$t('page.business.aft.form.accountNumber')"/>
+          <NInput v-model:value="model.nickName" :placeholder="$t('page.business.aft.form.nickName')"/>
         </NFormItemGi>
 
         <NFormItemGi span="24 s:8 m:4" :label="$t('page.business.aft.applyNumber')"

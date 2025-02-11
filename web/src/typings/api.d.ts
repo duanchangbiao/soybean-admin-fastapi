@@ -571,8 +571,8 @@ declare namespace Api {
       applyLicense: string;
       applyStatus: string;
       applyDate: string;
-      username: string;
-      nickname: string;
+      accountNumber: string;
+      nickName: string;
       passTime: string;
       applyType: string;
       updateType: string;
@@ -597,8 +597,8 @@ declare namespace Api {
       | 'applyLicense'
       | 'applyStatus'
       | 'applyDate'
-      | 'username'
-      | 'nickname'
+      | 'accountNumber'
+      | 'nickName'
       | 'passTime'
       | 'applyType'
       | 'updateType'
@@ -621,9 +621,10 @@ declare namespace Api {
       applyTaxNumber: string;
       applyStatus: string;
       updateType: string;
-      username: string;
+      accountNumber: string;
       applyType: string;
-      remark: string
+      remark: string;
+      nickName: string;
       ctime: string;
       mtime: string;
     }>;
@@ -642,7 +643,8 @@ declare namespace Api {
       | 'applyTaxNumber'
       | 'applyStatus'
       | 'updateType'
-      | 'username'
+      | 'nickName'
+      | 'accountNumber'
       | 'applyType'
       | 'remark'
     >;
