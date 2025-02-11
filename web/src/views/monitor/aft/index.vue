@@ -56,7 +56,7 @@ const {
       width: 150
     },
     {
-      key: 'applyType',
+      key: 'aftType',
       title: $t('page.business.aft.aftType'),
       dataIndex: 'aftType',
       align: 'center',
