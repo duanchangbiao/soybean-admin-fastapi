@@ -60,9 +60,9 @@ async def get_user(aft_id: int):
 
 @router.post("/add", summary="创建aft")
 async def _(aft_in: AftCreate):
-    new_aft = await aft_controller.create(obj_in=aft_in, exclude={"by_aft_account"})
     if not aft_in.by_aft_account:
-        return Success(code="4090", msg="The user must have at least one role that exists.")
+        return Success(code="4090", msg="The aft must have account number that exists.")
+    new_aft = await aft_controller.create(obj_in=aft_in, exclude={"by_aft_account"})
     await aft_controller.update_aft_account(new_aft, aft_in.by_aft_account)
     await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.UserCreateOne, by_user_id=0)
     return Success(msg="Created Successfully", data={"created_id": new_aft.id})
@@ -70,10 +70,9 @@ async def _(aft_in: AftCreate):
 
 @router.patch("/update/{aft_id}", summary="更新aft")
 async def _(aft_id: int, aft_in: AftUpdate):
-    aft = await aft_controller.update(id=aft_id, obj_in=aft_in, exclude={"by_aft_account"})
     if not aft_in.by_aft_account:
-        return Success(code="4090", msg="The user must have at least one role that exists.")
-
+        return Success(code="4090", msg="The aft must have account number that exists.")
+    aft = await aft_controller.update(id=aft_id, obj_in=aft_in, exclude={"by_aft_account"})
     await aft_controller.update_aft_account(aft, aft_in.by_aft_account)
     await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.UserUpdateOne, by_user_id=0)
     return Success(msg="Updated Successfully", data={"updated_id": aft_id})

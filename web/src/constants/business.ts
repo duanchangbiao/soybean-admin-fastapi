@@ -81,12 +81,22 @@ export const userGenderRecord: Record<Api.SystemManage.UserGender, App.I18n.I18n
 };
 
 export const aftTypeRecord: Record<Api.Business.aftTypeInfo, App.I18n.I18nKey> = {
-  'aft': 'page.business.aft.aftTypeInfo.aft',
-  'affa': 'page.business.aft.aftTypeInfo.affa',
+  "aft": 'page.business.aft.aftTypeInfo.aft',
+  "affa": 'page.business.aft.aftTypeInfo.affa',
+};
+
+export const  updateStatusRecord: Record<Api.Business.updateStatus, App.I18n.I18nKey> = {
+  '1': 'page.manage.common.businessStatus.update',
+  '2': 'page.manage.common.businessStatus.latest',
+  '3': 'page.manage.common.businessStatus.dispose',
 };
 
 export const userGenderOptions = transformRecordToOption(userGenderRecord);
 
+
+export const aftTypeOptions = transformRecordToOption(aftTypeRecord);
+
+export const updateStatusOptions = transformRecordToOption(updateStatusRecord);
 export const menuTypeRecord: Record<Api.SystemManage.MenuType, App.I18n.I18nKey> = {
   '1': 'page.manage.menu.type.directory',
   '2': 'page.manage.menu.type.menu'

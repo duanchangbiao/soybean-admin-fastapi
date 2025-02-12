@@ -4,6 +4,8 @@ import {$t} from "@/locales";
 import {computed, reactive, ref, watch} from "vue";
 import {useNaiveForm} from "@/hooks/common/form";
 import {fetchAddAft, fetchUpdateAft} from "@/service/api";
+import {translateOptions} from "@/utils/common";
+import {aftTypeOptions, updateStatusOptions} from "@/constants/business";
 
 
 defineOptions({
@@ -32,13 +34,9 @@ const props = defineProps<Props>();
 function createDefaultModel(): Api.Business.AftOrAffaAddParams {
   return {
     applyNumber: "",
-    tisCode: "",
-    standardName: "",
     applyLicense: "",
     applyStatus: "",
     accountNumber: "",
-    nickName: "",
-    passTime: "",
     aftType: "",
     updateStatus: "",
     remark: "",
@@ -76,15 +74,19 @@ async function handleSubmit() {
   // request
 
   if (props.operateType === 'add') {
-    const {error} = await fetchAddAft(model);
+    const {error, response} = await fetchAddAft(model);
+    console.log(response.data.code)
     if (!error) {
-      window.$message?.success($t('common.addSuccess'));
+      if (response?.data.code === "0000") {
+        window.$message?.success($t('common.addSuccess'));
+      }
     }
   } else if (props.operateType === 'edit') {
-    console.log(model);
-    const {error} = await fetchUpdateAft(model);
+    const {error, response} = await fetchUpdateAft(model);
     if (!error) {
-      window.$message?.success($t('common.updateSuccess'));
+      if (response?.data.code === "0000") {
+        window.$message?.success($t('common.addSuccess'));
+      }
     }
   }
 
@@ -122,14 +124,14 @@ watch(visible, () => {
           "
         />
       </NFormItem>
-      <NFormItem :label="$t('page.business.aft.tisCode')" path="tisCode">
-        <NInput v-model:value="model.tisCode" :placeholder="$t('page.business.aft.form.tisCode')"/>
-      </NFormItem>
-      <NFormItem :label="$t('page.business.aft.standardName')" path="aftType">
-        <NInput v-model:value="model.standardName" :placeholder="$t('page.business.aft.form.standardName')"/>
-      </NFormItem>
       <NFormItem :label="$t('page.business.aft.aftType')" path="aftType">
-        <NInput v-model:value="model.aftType" :placeholder="$t('page.business.aft.form.aftType')"/>
+        <NSelect
+          v-model:value="model.aftType"
+          :placeholder="$t('page.business.aft.form.aftType')"
+          :options="translateOptions(aftTypeOptions)"
+          filterable
+          clearable
+        />
       </NFormItem>
       <NFormItem :label="$t('page.business.aft.applyStatus')" path="applyStatus">
         <NInput v-model:value="model.applyStatus" :placeholder="$t('page.business.aft.form.applyStatus')"/>
@@ -138,14 +140,14 @@ watch(visible, () => {
         <NInput v-model:value="model.accountNumber"
                 :placeholder="$t('page.business.aft.form.accountNumber')"/>
       </NFormItem>
-      <NFormItem :label="$t('page.business.aft.nickName')" path="nickName">
-        <NInput v-model:value="model.nickName" :placeholder="$t('page.business.aft.form.nickName')"/>
-      </NFormItem>
-      <NFormItem :label="$t('page.business.aft.passTime')" path="passTime">
-        <NInput v-model:value="model.passTime" :placeholder="$t('page.business.aft.form.passTime')"/>
-      </NFormItem>
       <NFormItem :label="$t('page.business.aft.updateStatus')" path="updateStatus">
-        <NInput v-model:value="model.updateStatus" :placeholder="$t('page.business.aft.form.updateStatus')"/>
+        <NSelect
+          v-model:value="model.updateStatus"
+          :placeholder="$t('page.business.aft.form.updateStatus')"
+          :options="translateOptions(updateStatusOptions)"
+          filterable
+          clearable
+        />
       </NFormItem>
       <NFormItem :label="$t('page.business.aft.sort')" path="sort">
         <NInput v-model:value="model.sort" :placeholder="$t('page.business.aft.form.sort')"/>

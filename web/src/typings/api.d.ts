@@ -593,13 +593,9 @@ declare namespace Api {
     type AftOrAffaAddParams = Pick<
       Api.Business.AftOrAffa,
       | 'applyNumber'
-      | 'tisCode'
       | 'applyLicense'
       | 'applyStatus'
-      | 'applyDate'
       | 'accountNumber'
-      | 'nickName'
-      | 'passTime'
       | 'aftType'
       | 'updateStatus'
       | 'remark'
@@ -700,7 +696,10 @@ declare namespace Api {
     /** 更新参数 */
     type NswUpdateParams = CommonType.RecordNullable<Pick<Api.Business.Nsw, 'id'> & NswAddParams>;
 
-
+    /** aftTypeInfo */
     type aftTypeInfo = 'aft' | 'affa';
+
+    /** updateStatus */
+    type updateStatus = '1' | '2' | '3'
   }
 }

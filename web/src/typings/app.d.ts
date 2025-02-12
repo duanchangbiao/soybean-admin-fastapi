@@ -424,6 +424,7 @@ declare namespace App {
             validateSuccess: string;
             loginSuccess: string;
             welcomeBack: string;
+
           };
           pwdLogin: {
             title: string;
@@ -528,6 +529,11 @@ declare namespace App {
             statusType: {
               enable: string;
               disable: string;
+            };
+            businessStatus: {
+              update: string;
+              latest: string;
+              dispose: string;
             };
           };
           role: {

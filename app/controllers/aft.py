@@ -15,7 +15,7 @@ class AftController(CRUDBase[Aft, AftCreate, AftUpdate]):
             aft_account_id = int(aft_account_id)
 
         account = await Account.get(account_number=aft_account_id)
-        print("account info:", account)
+        print("account info:", account.to_dict())
         await aft.by_aft_account.clear()
         await aft.by_aft_account.add(account)
         return True

@@ -1,11 +1,12 @@
 <script setup lang="tsx">
-import {NButton, NPopconfirm} from 'naive-ui';
+import {NButton, NPopconfirm, NTag} from 'naive-ui';
 import {$t} from '@/locales';
 import {useAppStore} from '@/store/modules/app';
 import {useTable, useTableOperate} from '@/hooks/common/table';
 import {fetchBatchDeleteAft, fetchDeleteAft, fetchGetAftList} from "@/service/api";
 import AftSearch from "@/views/monitor/aft/modules/aft-search.vue";
 import AftUpdateOperateModal from "@/views/monitor/aft/modules/aft-update-operate-modal.vue";
+import {aftTypeRecord, updateStatusRecord,} from "@/constants/business";
 
 const appStore = useAppStore();
 
@@ -60,7 +61,19 @@ const {
       title: $t('page.business.aft.aftType'),
       dataIndex: 'aftType',
       align: 'center',
-      width: 64
+      width: 64,
+      render: row => {
+        if (row.aftType === null) {
+          return null;
+        }
+
+        const tagMap: Record<Api.Business.aftTypeInfo, NaiveUI.ThemeColor> = {
+          "aft": 'primary',
+          "affa": 'error',
+        };
+        const label = $t(aftTypeRecord[row.aftType]);
+        return <NTag type={tagMap[row.aftType]}>{label}</NTag>;
+      }
     },
     {
       key: 'updateStatus',
@@ -68,6 +81,19 @@ const {
       dataIndex: 'updateStatus',
       align: 'center',
       width: 150,
+      render: row => {
+        if (row.updateStatus === null) {
+          return null;
+        }
+
+        const tagMap: Record<Api.Business.updateStatus, NaiveUI.ThemeColor> = {
+          "1": 'primary',
+          "2": 'success',
+          "3": 'info',
+        };
+        const label = $t(updateStatusRecord[row.updateStatus]);
+        return <NTag type={tagMap[row.updateStatus]}>{label}</NTag>;
+      }
     },
     {
       key: 'applyStatus',
@@ -76,13 +102,13 @@ const {
       align: 'center',
       width: 200
     },
-    {
-      key: 'sort',
-      title: $t('page.business.aft.sort'),
-      dataIndex: 'sort',
-      align: 'center',
-      width: 50
-    },
+    // {
+    //   key: 'sort',
+    //   title: $t('page.business.aft.sort'),
+    //   dataIndex: 'sort',
+    //   align: 'center',
+    //   width: 50
+    // },
     {
       key: 'remark',
       title: $t('page.business.aft.remark'),

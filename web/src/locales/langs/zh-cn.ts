@@ -341,6 +341,11 @@ const local: App.I18n.Schema = {
         statusType: {
           enable: '启用',
           disable: '禁用'
+        },
+        businessStatus: {
+          update: '有更新',
+          latest: '已最新',
+          dispose: '已处理',
         }
       },
       role: {
