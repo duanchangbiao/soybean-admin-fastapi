@@ -720,7 +720,7 @@ const local: App.I18n.Schema = {
         accountNumber: '账号',
         nickName: '昵称',
         password: '密码',
-        activated: '状态',
+        activate: '状态',
         monitor: '模块',
         feedback: '反馈',
         remark: '备注',
@@ -730,11 +730,13 @@ const local: App.I18n.Schema = {
           accountNumber: '请输入账号信息',
           nickName: '请输入昵称',
           password: '请输入密码',
-          activated: "请选择状态",
+          activate: "请选择状态",
           monitor: '请输入模块',
           feedback: '请输入反馈',
           remark: '请输入备注',
-        }
+        },
+        addAccount: '添加账号',
+        editAccount: '编辑账号',
       }
     }
   },

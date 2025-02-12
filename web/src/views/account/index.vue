@@ -1,9 +1,12 @@
 <script setup lang="tsx">
-import {NButton, NPopconfirm} from 'naive-ui';
+import {NButton, NPopconfirm, NTag} from 'naive-ui';
 import {$t} from "@/locales";
 import {useTable, useTableOperate} from '@/hooks/common/table';
-import {fetchBatchDeleteAccount, fetchDeleteAccount, fetchGetAccountList} from "@/service/api";
+import {fetchBatchDeleteAccount, fetchDeleteAccount, fetchGetAccountList, fetchUpdateAccount} from "@/service/api";
 import {useAppStore} from "@/store/modules/app";
+import {statusTypeRecord} from "@/constants/business";
+import AccountOperateModal from "@/views/account/modules/account-operate-modal.vue";
+import UserOperateDrawer from "@/views/manage/user/modules/user-operate-drawer.vue";
 
 const appStore = useAppStore();
 
@@ -13,6 +16,7 @@ const {
   data,
   getData,
   loading,
+  getDataByPage,
   mobilePagination,
 } = useTable({
   columns: () => [
@@ -36,9 +40,9 @@ const {
       width: 100
     },
     {
-      key: 'nickName',
+      key: 'nickname',
       title: $t('page.business.account.nickName'),
-      dataIndex: 'nickName',
+      dataIndex: 'nickname',
       align: 'center',
       width: 150
     },
@@ -50,11 +54,25 @@ const {
       width: 150
     },
     {
-      key: 'activated',
-      title: $t('page.business.account.activated'),
-      dataIndex: 'activated',
+      key: 'activate',
+      title: $t('page.business.account.activate'),
+      dataIndex: 'activate',
       align: 'center',
-      width: 200
+      width: 200,
+      render: row => {
+        if (row.activate === null) {
+          return null;
+        }
+
+        const tagMap: Record<Api.Common.EnableStatus, NaiveUI.ThemeColor> = {
+          1: 'success',
+          2: 'warning'
+        };
+
+        const label = $t(statusTypeRecord[row.activate]);
+
+        return <NTag type={tagMap[row.activate]}>{label}</NTag>;
+      }
     },
     {
       key: 'monitor',
@@ -137,6 +155,14 @@ async function handleBatchDelete() {
 }
 
 
+async function handleActivateChange(id: number, value: boolean) {
+  // request
+  const {error} = await fetchUpdateAccount({id, activate: value});
+  if (!error) {
+    getData();
+  }
+}
+
 async function handleDelete(id: number) {
   // request
   const {error} = await fetchDeleteAccount({id});
@@ -177,13 +203,12 @@ function edit(id: number) {
         :pagination="mobilePagination"
         class="sm:h-full"
       />
-      <!--      <MenuOperateModal-->
-      <!--        v-model:visible="visible"-->
-      <!--        :operate-type="operateType"-->
-      <!--        :row-data="editingData"-->
-      <!--        :all-pages="allPages"-->
-      <!--        @submitted="getDataByPage"-->
-      <!--      />-->
+      <AccountOperateModal
+        v-model:visible="drawerVisible"
+        :operate-type="operateType"
+        :row-data="editingData"
+        @submitted="getDataByPage"
+      />
     </NCard>
   </div>
 </template>

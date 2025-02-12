@@ -908,7 +908,7 @@ declare namespace App {
             accountNumber: string;
             nickName: string;
             password: string;
-            activated: string;
+            activate: string;
             monitor: string;
             feedback: string;
             remark: string;
@@ -918,11 +918,13 @@ declare namespace App {
               accountNumber: string;
               nickName: string;
               password: string;
-              activated: string;
+              activate: string;
               monitor: string;
               feedback: string;
               remark: string;
             };
+            addAccount: string;
+            editAccount: string;
           };
         };
       };

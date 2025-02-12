@@ -559,3 +559,11 @@ export function fetchGetAccount(data?: Api.Business.AccountParamsList) {
     method: 'get'
   });
 }
+
+export function fetchGetDictList(data?: Api.Business.DictSearchParams) {
+  return request<Api.Business.DictList>({
+    url: '/account/role/list',
+    method: 'post',
+    params: data
+  });
+}

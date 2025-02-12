@@ -690,7 +690,7 @@ declare namespace Api {
       accountNumber: string;
       nickName: string;
       password: string;
-      activated: string;
+      activate: string;
       monitor: string;
       feedback: string;
       remark: string;
@@ -704,7 +704,7 @@ declare namespace Api {
       | 'accountNumber'
       | 'nickName'
       | 'password'
-      | 'activated'
+      | 'activate'
       | 'monitor'
       | 'feedback'
       | 'remark'
@@ -722,6 +722,39 @@ declare namespace Api {
     /** updateStatus */
     type updateStatus = '1' | '2' | '3'
 
+    /** morTypeInfo */
     type morTypeInfo = 'mor5' | 'mor9'
+
+
+    /** dict */
+    type Dict = Common.CommonRecord<{
+      id: string;
+      dictName: string;
+      dictValue: string;
+      dictType: string;
+      dictStatus: string;
+      remark: string;
+    }>;
+
+    type DictList = Common.PaginatingQueryRecord<Dict>;
+
+    type DictAddParams = Pick<
+      Api.Business.Dict,
+      | 'dictName'
+      | 'dictValue'
+      | 'dictType'
+      | 'dictStatus'
+      | 'remark'
+    >;
+    /** 更新参数 */
+    type DictUpdateParams = CommonType.RecordNullable<Pick<Api.Business.Dict, 'id'> & DictAddParams>;
+    /** dict 查询参数 */
+    type DictParamsList = CommonType.RecordNullable<Pick<Api.Business.Dict, 'id'>> & DictAddParams;
+
+    /** dict 查询参数 */
+    type DictSearchParams =
+      CommonType.RecordNullable<Pick<Api.Business.Dict, 'id' | 'dictType' | 'dictStatus' | 'dictValue'>>
+      & DictAddParams;
+
   }
 }
