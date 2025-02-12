@@ -800,7 +800,7 @@ declare namespace App {
             aftTypeInfo: {
               affa: string;
               aft: string;
-            }
+            };
             updateStatus: string;
             remark: string;
             sort: string;
@@ -845,7 +845,7 @@ declare namespace App {
             morTypeStatus: {
               mor5: string;
               mor9: string;
-            },
+            };
             remark: string;
             nickname: string;
             form: {
@@ -867,7 +867,7 @@ declare namespace App {
             editMor: string;
           };
           nsw: {
-            title: string
+            title: string;
             id: string;
             operateName: string;
             applyNumber: string;
@@ -898,6 +898,29 @@ declare namespace App {
               sort: string;
               applyStatus: string;
               nickName: string;
+              remark: string;
+            };
+            addNsw: string;
+            editNsw: string;
+          };
+          account: {
+            title: string;
+            accountNumber: string;
+            nickName: string;
+            password: string;
+            activated: string;
+            monitor: string;
+            feedback: string;
+            remark: string;
+            ctime: string;
+            mtime: string;
+            form: {
+              accountNumber: string;
+              nickName: string;
+              password: string;
+              activated: string;
+              monitor: string;
+              feedback: string;
               remark: string;
             };
           };

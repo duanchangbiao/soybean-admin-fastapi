@@ -504,3 +504,58 @@ export function fetchBatchDeleteNsw(data?: Api.SystemManage.CommonBatchDeletePar
     params: {ids: data?.ids.join(',')}
   });
 }
+
+/** get account list */
+export function fetchGetAccountList(data?: Api.Business.AccountParamsList) {
+  return request<Api.Business.AccountList>({
+    url: '/account/list',
+    method: 'post',
+    params: data
+  });
+}
+
+/** delete account */
+export function fetchDeleteAccount(data?: Api.SystemManage.CommonDeleteParams) {
+  return request<Api.Business.AccountList>({
+    url: `/account/delete/${data?.id}`,
+    method: 'delete'
+  });
+}
+
+/** batch delete account */
+export function fetchBatchDeleteAccount(data?: Api.SystemManage.CommonBatchDeleteParams) {
+  return request<Api.Business.AccountList>({
+    url: '/account/batch',
+    method: 'delete',
+    params: {
+      ids: data?.ids.join(',')
+    }
+  })
+}
+
+
+/** add account */
+export function fetchAddAccount(data?: Api.Business.AccountAddParams) {
+  return request<Api.Business.AccountList, 'json'>({
+    url: '/account/add',
+    method: 'post',
+    data
+  });
+}
+
+/** update account */
+export function fetchUpdateAccount(data?: Api.Business.AccountUpdateParams) {
+  return request<Api.Business.AccountList, 'json'>({
+    url: `/account/update/${data?.id}`,
+    method: 'patch',
+    data
+  });
+}
+
+/** get account */
+export function fetchGetAccount(data?: Api.Business.AccountParamsList) {
+  return request<Api.Business.AccountList>({
+    url: `/account/get/${data?.id}`,
+    method: 'get'
+  });
+}

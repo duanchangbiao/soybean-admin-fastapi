@@ -177,6 +177,7 @@ const local: App.I18n.Schema = {
     monitor_aft: 'AFFA/AFT监控中心',
     monitor_mor: 'MOR5/MOR9监控中心',
     monitor_nsw: 'NSW 监控中心',
+    account: '账号中心',
     'document_project-link': '项目文档(外链)',
     document_vue: 'Vue文档',
     document_vite: 'Vite文档',
@@ -711,7 +712,30 @@ const local: App.I18n.Schema = {
           nickName: '请输入账号信息',
           remark: '请输入备注信息',
         },
+        addNsw: '添加NSW',
+        editNsw: '编辑NSW',
       },
+      account: {
+        title: '账号管理',
+        accountNumber: '账号',
+        nickName: '昵称',
+        password: '密码',
+        activated: '状态',
+        monitor: '模块',
+        feedback: '反馈',
+        remark: '备注',
+        ctime: '创建时间',
+        mtime: '更新时间',
+        form: {
+          accountNumber: '请输入账号信息',
+          nickName: '请输入昵称',
+          password: '请输入密码',
+          activated: "请选择状态",
+          monitor: '请输入模块',
+          feedback: '请输入反馈',
+          remark: '请输入备注',
+        }
+      }
     }
   },
   form: {
