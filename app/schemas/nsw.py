@@ -18,6 +18,8 @@ class BaseNsw(BaseModel):
     nick_name: Annotated[str | None, Field(alias="nickName", description="昵称")] = None
     by_nsw_account: Annotated[str | None, Field(alias="accountNumber", title="账号信息")] = None
 
+    class Config:
+        populate_by_name = True
 
 class NswCreate(BaseNsw):
     ...

@@ -684,6 +684,38 @@ declare namespace Api {
     /** 更新参数 */
     type NswUpdateParams = CommonType.RecordNullable<Pick<Api.Business.Nsw, 'id'> & NswAddParams>;
 
+    /** account */
+    type Account = Common.CommonRecord<{
+      id: string;
+      accountNumber: string;
+      nickName: string;
+      password: string;
+      activated: string;
+      monitor: string;
+      feedback: string;
+      remark: string;
+    }>;
+    /** account 查询参数 */
+    type AccountParamsList = CommonType.RecordNullable<Pick<Api.Business.Account, 'id'>> & Account;
+
+    /** account 添加参数 */
+    type AccountAddParams = Pick<
+      Api.Business.Account,
+      | 'accountNumber'
+      | 'nickName'
+      | 'password'
+      | 'activated'
+      | 'monitor'
+      | 'feedback'
+      | 'remark'
+    >;
+
+    /** account 更新参数 */
+    type AccountUpdateParams = CommonType.RecordNullable<Pick<Api.Business.Account, 'id'> & AccountAddParams>;
+
+    /** account list */
+    type AccountList = Common.PaginatingQueryRecord<Account>;
+
     /** aftTypeInfo */
     type aftTypeInfo = 'aft' | 'affa';
 

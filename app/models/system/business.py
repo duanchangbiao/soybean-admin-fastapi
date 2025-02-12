@@ -1,3 +1,5 @@
+from tortoise.fields import ManyToManyRelation
+
 from app.models.system import BaseModel, Menu
 from tortoise import fields
 
@@ -26,6 +28,7 @@ class Aft(BaseModel):
     update_by = fields.CharField(max_length=500, null=True, description='修改人')
     by_aft_account: fields.ManyToManyRelation['Account'] = fields.ManyToManyField("app_system.Account",
                                                                                   related_name='by_aft_account')
+    by_account_aft: fields.ReverseRelation['Account']
 
     class Meta:
         table = "sys_aft"
@@ -59,6 +62,7 @@ class Mor(BaseModel):
 
     by_mor_account: fields.ManyToManyRelation['Account'] = fields.ManyToManyField("app_system.Account",
                                                                                   related_name='by_mor_account')
+    by_account_mor: fields.ReverseRelation['Account']
 
     class Meta:
         table = "sys_mor"
@@ -91,6 +95,7 @@ class Nsw(BaseModel):
 
     by_nsw_account: fields.ManyToManyRelation['Account'] = fields.ManyToManyField("app_system.Account",
                                                                                   related_name='by_nsw_account')
+    by_account_nsw: fields.ReverseRelation['Account']
 
     class Meta:
         table = "sys_nsw"
@@ -103,20 +108,24 @@ class Nsw(BaseModel):
 
 
 class Account(BaseModel):
-    id = fields.IntField(pk=True, unique=True, description='Aft 许可ID')
+    id = fields.IntField(pk=True, unique=True, description=' account ID')
     account_number = fields.CharField(max_length=500, unique=True, description='账号')
     password = fields.CharField(max_length=500, null=True, description='密码')
     nickname = fields.CharField(max_length=500, null=True, description='昵称')
     activate = fields.CharField(max_length=500, null=True, description='状态')
-    active_type = fields.CharField(max_length=500, null=True, description='监控类型')
-    ctime = fields.DatetimeField(description='创建时间', auto_now_add=True)
-    mtime = fields.DatetimeField(description='修改时间', auto_now_add=True)
     feedback = fields.CharField(max_length=500, null=True, description='反馈')
     remark = fields.CharField(max_length=500, null=True, description='备注')
+    ctime = fields.DatetimeField(description='创建时间', auto_now_add=True)
+    mtime = fields.DatetimeField(description='修改时间', auto_now_add=True)
     create_by = fields.CharField(max_length=500, null=True, description='创建人')
     update_by = fields.CharField(max_length=500, null=True, description='修改人')
 
     by_account_aft: fields.ReverseRelation['Aft']
+    by_account_nsw: fields.ReverseRelation['Nsw']
+    by_account_Mor: fields.ReverseRelation['Mor']
+
+    by_account_dict: ManyToManyRelation['Dict'] = fields.ManyToManyField("app_system.Dict",
+                                                                         related_name='by_account_dict')
 
     class Meta:
         table = "sys_account"
@@ -126,9 +135,33 @@ class Account(BaseModel):
         ]
 
 
+class Dict(BaseModel):
+    id = fields.IntField(pk=True, unique=True, description='字典ID')
+    dict_name = fields.CharField(max_length=500, null=True, description='字典名称')
+    dict_type = fields.CharField(max_length=500, null=True, description='字典类型')
+    dict_value = fields.CharField(max_length=500, null=True, description='字典值')
+    dict_sort = fields.CharField(max_length=500, null=True, description='字典排序')
+    dict_status = fields.CharField(max_length=500, null=True, description='字典状态')
+    remark = fields.CharField(max_length=500, null=True, description='备注')
+    ctime = fields.DatetimeField(description='创建时间', auto_now_add=True)
+    mtime = fields.DatetimeField(description='修改时间', auto_now_add=True)
+    create_by = fields.CharField(max_length=500, null=True, description='创建人')
+    update_by = fields.CharField(max_length=500, null=True, description='修改人')
+
+    class Meta:
+        table = "sys_dict"
+        table_description = "字典表"
+        indexes = [
+            ("dict_name",),
+            ("dict_type",),
+        ]
+        ordering = ["ctime", "dict_sort"]
+
+
 __all__ = [
     "Aft",
     "Account",
     'Mor',
-    'Nsw'
+    'Nsw',
+    'Dict'
 ]
