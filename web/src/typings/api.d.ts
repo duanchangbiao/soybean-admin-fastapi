@@ -634,6 +634,7 @@ declare namespace Api {
       | 'applyStatus'
       | 'updateStatus'
       | 'accountNumber'
+      | 'nickName'
       | 'morType'
       | 'remark'
       | 'sort'
@@ -654,10 +655,11 @@ declare namespace Api {
       invoiceDate: string;
       productNumber: string;
       rpg_group: string;
+      updateStatus: string;
       applyStatus: string;
       applyDate: string;
-      username: string;
-      nickname: string;
+      accountNumber: string;
+      nickName: string;
       passDate: string;
       sort: string;
       remark: string;
@@ -665,17 +667,11 @@ declare namespace Api {
     /** nsw 添加参数 */
     type NswAddParams = Pick<
       Api.Business.Nsw,
-      | 'operateName'
       | 'applyNumber'
-      | 'invoice'
-      | 'invoiceDate'
-      | 'productNumber'
-      | 'rpg_group'
+      | 'updateStatus'
       | 'applyStatus'
-      | 'applyDate'
-      | 'username'
-      | 'nickname'
-      | 'passDate'
+      | 'accountNumber'
+      | 'nickName'
       | 'sort'
       | 'remark'>
 

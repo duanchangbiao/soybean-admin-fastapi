@@ -1,10 +1,12 @@
 <script setup lang="tsx">
-import {NButton, NPopconfirm} from 'naive-ui';
+import {NButton, NPopconfirm, NTag} from 'naive-ui';
 import {$t} from "@/locales";
 import {useTable, useTableOperate} from "@/hooks/common/table";
 import {useAppStore} from "@/store/modules/app";
 import {fetchBatchDeleteNsw, fetchDeleteNsw, fetchGetNswList} from "@/service/api";
 import NswSearch from "@/views/monitor/nsw/modules/nsw-search.vue";
+import {updateStatusRecord} from "@/constants/business";
+import NswUpdateOperateModal from "@/views/monitor/nsw/modules/nsw-update-operate-modal.vue";
 
 const appStore = useAppStore();
 const {
@@ -13,6 +15,7 @@ const {
   data,
   getData,
   loading,
+  getDataByPage,
   mobilePagination,
   resetSearchParams,
   searchParams
@@ -47,6 +50,26 @@ const {
       width: 150
     },
     {
+      key: 'updateStatus',
+      title: $t('page.business.nsw.updateStatus'),
+      dataIndex: 'updateStatus',
+      align: 'center',
+      width: 150,
+      render: row => {
+        if (row.updateStatus === null) {
+          return null;
+        }
+
+        const tagMap: Record<Api.Business.updateStatus, NaiveUI.ThemeColor> = {
+          "1": 'primary',
+          "2": 'success',
+          "3": 'info',
+        };
+        const label = $t(updateStatusRecord[row.updateStatus]);
+        return <NTag type={tagMap[row.updateStatus]}>{label}</NTag>;
+      }
+    },
+    {
       key: 'applyStatus',
       title: $t('page.business.nsw.applyStatus'),
       dataIndex: 'applyStatus',
@@ -68,9 +91,9 @@ const {
       width: 200
     },
     {
-      key: 'ctime',
+      key: 'fmtCtime',
       title: $t('page.business.nsw.ctime'),
-      dataIndex: 'ctime',
+      dataIndex: 'fmtCtime',
       align: 'center',
       width: 150
     },
@@ -111,11 +134,14 @@ const {
 });
 
 const {
+  drawerVisible,
+  operateType,
   handleEdit,
   handleAdd,
   checkedRowKeys,
   onBatchDeleted,
-  onDeleted,
+  editingData,
+  onDeleted
   // closeDrawer
 } = useTableOperate(data, getData);
 
@@ -175,13 +201,12 @@ function edit(id: number) {
         class="sm:h-full"
       />
     </NCard>
-    <!--      <AftUpdateOperateModal-->
-    <!--        v-model:visible="visible"-->
-    <!--        :operate-type="operateType"-->
-    <!--        :row-data="editingData"-->
-    <!--        :all-pages="allPages"-->
-    <!--        @submitted="getDataByPage"-->
-    <!--      />-->
+    <NswUpdateOperateModal
+      v-model:visible="drawerVisible"
+      :operate-type="operateType"
+      :row-data="editingData"
+      @submitted="getDataByPage"
+    />
   </div>
 </template>
 

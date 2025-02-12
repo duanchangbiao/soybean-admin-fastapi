@@ -71,6 +71,37 @@ class Mor(BaseModel):
         ordering = ["ctime", "update_status", "sort"]
 
 
+class Nsw(BaseModel):
+    id = fields.IntField(pk=True, unique=True, description='Nsw 许可ID')
+    apply_number = fields.CharField(max_length=500, unique=True, description='申请编号')
+    invoice = fields.CharField(max_length=500, null=True, description='发票号')
+    invoice_date = fields.CharField(max_length=500, null=True, description='发票日期')
+    product_number = fields.CharField(max_length=500, null=True, description='产品数量')
+    update_status = fields.CharField(max_length=500, null=True, description='更新状态')
+    rpg_group = fields.CharField(max_length=500, null=True, description='责任小组')
+    apply_date = fields.CharField(max_length=500, null=True, description='申请日期')
+    apply_status = fields.CharField(max_length=500, null=True, description='申请状态')
+    pass_date = fields.CharField(max_length=500, null=True, description='通过日期')
+    sort = fields.CharField(max_length=50, null=True, description='排序字段')
+    remark = fields.CharField(max_length=500, null=True, description='备注')
+    ctime = fields.DatetimeField(description='创建时间', auto_now_add=True, null=True)
+    mtime = fields.DatetimeField(description='修改时间', auto_now=True, null=True)
+    create_by = fields.CharField(max_length=500, null=True, description='创建人')
+    update_by = fields.CharField(max_length=500, null=True, description='修改人')
+
+    by_nsw_account: fields.ManyToManyRelation['Account'] = fields.ManyToManyField("app_system.Account",
+                                                                                  related_name='by_nsw_account')
+
+    class Meta:
+        table = "sys_nsw"
+        table_description = "Nsw 监控表"
+        indexes = [
+            ("apply_number",),
+            ("sort",),
+        ]
+        ordering = ["ctime", "update_status", "sort"]
+
+
 class Account(BaseModel):
     id = fields.IntField(pk=True, unique=True, description='Aft 许可ID')
     account_number = fields.CharField(max_length=500, unique=True, description='账号')
@@ -98,5 +129,6 @@ class Account(BaseModel):
 __all__ = [
     "Aft",
     "Account",
-    'Mor'
+    'Mor',
+    'Nsw'
 ]

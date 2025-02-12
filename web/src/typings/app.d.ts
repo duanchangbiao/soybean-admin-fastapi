@@ -873,6 +873,7 @@ declare namespace App {
             applyNumber: string;
             invoice: string;
             invoiceDate: string;
+            updateStatus: string;
             productNumber: string;
             rpg_group: string;
             applyStatus: string;
@@ -890,11 +891,14 @@ declare namespace App {
               invoice: string;
               productName: string;
               updateStatus: string;
+              accountNumber: string;
               invoiceDate: string;
               applyDate: string;
               rpg_group: string;
+              sort: string;
               applyStatus: string;
-              username: string;
+              nickName: string;
+              remark: string;
             };
           };
         };

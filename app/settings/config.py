@@ -27,7 +27,10 @@ def tortoise_orm_factory() -> dict[str, Any]:
             "app_system": {"models": ["app.models.system", "aerich.models"], "default_connection": "conn_system"}
         },
         "use_tz": False,
-        "timezone": "Asia/Shanghai"
+        "timezone": "Asia/Shanghai",
+        "loggers": {
+            "tortoise": "DEBUG",  # 启用 Tortoise ORM 的日志记录
+        },
     }
 
 

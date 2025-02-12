@@ -71,7 +71,7 @@ async def _(mor_in: MorCreate):
     return Success(msg="Created Successfully", data={"created_id": new_aft.id})
 
 
-@router.patch("/update/{mor_id}", summary="更新aft")
+@router.patch("/update/{mor_id}", summary="更新mor")
 async def _(mor_id: int, mor_in: MorUpdate):
     if not mor_in.by_mor_account:
         return Success(code="4090", msg="The aft must have account number that exists.")
@@ -84,11 +84,11 @@ async def _(mor_id: int, mor_in: MorUpdate):
     return Success(msg="Updated Successfully", data={"updated_id": mor_id})
 
 
-@router.delete("/delete/{aft_id}", summary="删除mor")
-async def _(aft_id: int):
-    await mor_controller.remove(id=aft_id)
+@router.delete("/delete/{mor_id}", summary="删除mor")
+async def _(mor_id: int):
+    await mor_controller.remove(id=mor_id)
     await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.UserDeleteOne, by_user_id=0)
-    return Success(msg="Deleted Successfully", data={"deleted_id": aft_id})
+    return Success(msg="Deleted Successfully", data={"deleted_id": mor_id})
 
 
 @router.delete("/batch", summary="批量删除mor")
