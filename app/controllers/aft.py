@@ -7,6 +7,9 @@ class AftController(CRUDBase[Aft, AftCreate, AftUpdate]):
     def __init__(self):
         super().__init__(model=Aft)
 
+    async def get_by_account_number(self, account_number: str) -> Account | None:
+        return await Account.filter(account_number=account_number).first()
+
     @staticmethod
     async def update_aft_account(aft: Aft, aft_account_id: int) -> bool:
         if not aft_account_id:

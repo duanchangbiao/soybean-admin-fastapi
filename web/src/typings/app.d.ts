@@ -835,14 +835,14 @@ declare namespace App {
             applyDate: string;
             applyTaxNumber: string;
             applyStatus: string;
-            updateType: string;
+            updateStatus: string;
             accountNumber: string;
             nickName: string;
-            applyType: string;
+            morType: string;
             ctime: string;
             mtime: string;
             sort: string;
-            status: {
+            morTypeStatus: {
               mor5: string;
               mor9: string;
             },
@@ -857,11 +857,14 @@ declare namespace App {
               applyDate: string;
               applyTaxNumber: string;
               applyStatus: string;
-              applyType: string;
+              updateStatus: string;
+              morType: string;
               accountNumber: string;
               nickName: string;
               remark: string;
             };
+            addMor: string;
+            editMor: string;
           };
           nsw: {
             title: string
@@ -874,8 +877,8 @@ declare namespace App {
             rpg_group: string;
             applyStatus: string;
             applyDate: string;
-            username: string;
-            nickname: string;
+            accountNumber: string;
+            nickName: string;
             passDate: string;
             sort: string;
             remark: string;
@@ -886,6 +889,7 @@ declare namespace App {
               applyNumber: string;
               invoice: string;
               productName: string;
+              updateStatus: string;
               invoiceDate: string;
               applyDate: string;
               rpg_group: string;

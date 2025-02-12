@@ -33,25 +33,18 @@ const {
       width: 100
     },
     {
-      key: 'username',
-      title: $t('page.business.nsw.username'),
-      dataIndex: 'username',
+      key: 'accountNumber',
+      title: $t('page.business.nsw.accountNumber'),
+      dataIndex: 'accountNumber',
       align: 'center',
       width: 150
     },
     {
-      key: 'nickname',
-      title: $t('page.business.nsw.nickname'),
-      dataIndex: 'nickname',
+      key: 'nickName',
+      title: $t('page.business.nsw.nickName'),
+      dataIndex: 'nickName',
       align: 'center',
       width: 150
-    },
-    {
-      key: 'applyDate',
-      title: $t('page.business.nsw.applyDate'),
-      dataIndex: 'applyDate',
-      align: 'center',
-      width: 100
     },
     {
       key: 'applyStatus',

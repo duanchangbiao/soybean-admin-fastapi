@@ -85,14 +85,20 @@ export const aftTypeRecord: Record<Api.Business.aftTypeInfo, App.I18n.I18nKey> =
   "affa": 'page.business.aft.aftTypeInfo.affa',
 };
 
-export const  updateStatusRecord: Record<Api.Business.updateStatus, App.I18n.I18nKey> = {
+export const updateStatusRecord: Record<Api.Business.updateStatus, App.I18n.I18nKey> = {
   '1': 'page.manage.common.businessStatus.update',
   '2': 'page.manage.common.businessStatus.latest',
   '3': 'page.manage.common.businessStatus.dispose',
 };
 
-export const userGenderOptions = transformRecordToOption(userGenderRecord);
+export const morTypeRecord: Record<Api.Business.morTypeInfo, App.I18n.I18nKey> = {
+  "mor5": 'page.business.mor.morTypeStatus.mor5',
+  "mor9": 'page.business.mor.morTypeStatus.mor9',
+};
 
+export const morTypeOptions = transformRecordToOption(morTypeRecord);
+
+export const userGenderOptions = transformRecordToOption(userGenderRecord);
 
 export const aftTypeOptions = transformRecordToOption(aftTypeRecord);
 

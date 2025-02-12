@@ -48,8 +48,8 @@ const model: Api.Business.AftOrAffaParamsList = reactive(createDefaultModel());
 
 const title = computed(() => {
   const titles: Record<NaiveUI.TableOperateType, string> = {
-    add: $t('page.business.license.addLicense'),
-    edit: $t('page.business.license.editLicense')
+    add: $t('page.business.aft.addAft'),
+    edit: $t('page.business.aft.editAft')
   };
   return titles[props.operateType];
 });

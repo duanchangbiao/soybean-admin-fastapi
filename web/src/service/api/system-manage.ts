@@ -452,3 +452,55 @@ export function fetchGetMor(data?: Api.Business.MorParamsList) {
     method: 'get'
   });
 }
+
+/** get nsw list */
+export function fetchGetNswList(data?: Api.Business.NswParamsList) {
+  return request<Api.Business.NswList>({
+    url: '/nsw/list',
+    method: 'post',
+    params: data
+  });
+}
+
+/** add nsw */
+export function fetchAddNsw(data?: Api.Business.NswAddParams) {
+  return request<Api.Business.NswList, 'json'>({
+    url: '/nsw/add',
+    method: 'post',
+    data
+  });
+}
+
+/** get nsw */
+export function fetchGetNsw(data?: Api.Business.NswParamsList) {
+  return request<Api.Business.NswList>({
+    url: `/nsw/get/${data?.id}`,
+    method: 'get'
+  });
+}
+
+/** update nsw */
+export function fetchUpdateNsw(data?: Api.Business.NswUpdateParams) {
+  return request<Api.Business.NswList, 'json'>({
+    url: `/nsw/update/${data?.id}`,
+    method: 'patch',
+    data
+  });
+}
+
+/** delete nsw */
+export function fetchDeleteNsw(data?: Api.SystemManage.CommonDeleteParams) {
+  return request<Api.Business.NswList>({
+    url: `/nsw/delete/${data?.id}`,
+    method: 'delete'
+  });
+}
+
+/**  batch delete nsw */
+export function fetchBatchDeleteNsw(data?: Api.SystemManage.CommonBatchDeleteParams) {
+  return request<Api.Business.NswList>({
+    url: '/nsw/batch',
+    method: 'delete',
+    params: {ids: data?.ids.join(',')}
+  });
+}

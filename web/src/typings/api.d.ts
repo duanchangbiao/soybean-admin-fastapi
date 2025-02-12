@@ -616,13 +616,12 @@ declare namespace Api {
       applyDate: string;
       applyTaxNumber: string;
       applyStatus: string;
-      updateType: string;
+      updateStatus: string;
       accountNumber: string;
-      applyType: string;
       remark: string;
+      morType: string;
       nickName: string;
-      ctime: string;
-      mtime: string;
+      sort: string;
     }>;
     /** mor list */
     type MorList = Common.CommonRecord<Mor>;
@@ -630,19 +629,14 @@ declare namespace Api {
     /** mor 添加参数 */
     type MorAddParams = Pick<
       Api.Business.Mor,
-      | 'companyName'
       | 'applyNumber'
-      | 'tisCode'
-      | 'standardName'
       | 'applyLicense'
-      | 'applyDate'
-      | 'applyTaxNumber'
       | 'applyStatus'
-      | 'updateType'
-      | 'nickName'
+      | 'updateStatus'
       | 'accountNumber'
-      | 'applyType'
+      | 'morType'
       | 'remark'
+      | 'sort'
     >;
 
     /** 更新参数 */
@@ -667,8 +661,6 @@ declare namespace Api {
       passDate: string;
       sort: string;
       remark: string;
-      ctime: string;
-      mtime: string;
     }>
     /** nsw 添加参数 */
     type NswAddParams = Pick<
@@ -701,5 +693,7 @@ declare namespace Api {
 
     /** updateStatus */
     type updateStatus = '1' | '2' | '3'
+
+    type morTypeInfo = 'mor5' | 'mor9'
   }
 }

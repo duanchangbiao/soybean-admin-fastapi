@@ -24,7 +24,8 @@ class Aft(BaseModel):
     mtime = fields.DatetimeField(description='修改时间', auto_now_add=True)
     create_by = fields.CharField(max_length=500, null=True, description='创建人')
     update_by = fields.CharField(max_length=500, null=True, description='修改人')
-    by_aft_account: fields.ManyToManyRelation['Account'] = fields.ManyToManyField("app_system.Account", related_name='by_aft_account')
+    by_aft_account: fields.ManyToManyRelation['Account'] = fields.ManyToManyField("app_system.Account",
+                                                                                  related_name='by_aft_account')
 
     class Meta:
         table = "sys_aft"
@@ -33,6 +34,39 @@ class Aft(BaseModel):
             ("apply_number",),
             ("sort",),
             ("aft_type",),
+        ]
+        ordering = ["ctime", "update_status", "sort"]
+
+
+class Mor(BaseModel):
+    id = fields.IntField(pk=True, unique=True, description='Aft 许可ID')
+    apply_number = fields.CharField(max_length=500, unique=True, description='申请编号')
+    TIS_code = fields.CharField(max_length=500, null=True, description='TIS编码')
+    standard_name = fields.CharField(max_length=500, null=True, description='标准名称')
+    apply_license = fields.CharField(max_length=500, null=True, description='申请许可证')
+    apply_date = fields.CharField(max_length=500, null=True, description='申请日期')
+    update_status = fields.CharField(max_length=500, null=True, description='更新状态')
+    apply_tax = fields.CharField(max_length=500, null=True, description='申请税号')
+    apply_status = fields.CharField(max_length=500, null=True, description='申请状态')
+    mor_type = fields.CharField(max_length=500, null=True, description='mor类型')
+    sort = fields.CharField(max_length=500, null=True, description='排序')
+    remark = fields.CharField(max_length=500, null=True, description='备注')
+    operation_name = fields.CharField(max_length=500, null=True, description='操作人')
+    ctime = fields.DatetimeField(description='创建时间', auto_now_add=True)
+    mtime = fields.DatetimeField(description='修改时间', auto_now_add=True)
+    create_by = fields.CharField(max_length=500, null=True, description='创建人')
+    update_by = fields.CharField(max_length=500, null=True, description='修改人')
+
+    by_mor_account: fields.ManyToManyRelation['Account'] = fields.ManyToManyField("app_system.Account",
+                                                                                  related_name='by_mor_account')
+
+    class Meta:
+        table = "sys_mor"
+        table_description = "Mor5 Mor9 监控表"
+        indexes = [
+            ("apply_number",),
+            ("sort",),
+            ("mor_type",),
         ]
         ordering = ["ctime", "update_status", "sort"]
 
@@ -64,4 +98,5 @@ class Account(BaseModel):
 __all__ = [
     "Aft",
     "Account",
+    'Mor'
 ]

@@ -3,6 +3,7 @@ from tortoise.expressions import Q
 
 from app.api.v1.utils import insert_log
 from app.controllers.aft import aft_controller
+from app.core.ctx import CTX_USER_ID
 from app.models.system import LogType, LogDetailType, Account
 from app.schemas.aft import AftSearch, AftCreate, AftUpdate
 from app.schemas.base import SuccessExtra, Success, CommonIds
@@ -55,13 +56,16 @@ async def _(
 async def get_user(aft_id: int):
     user_obj = await aft_controller.get(id=aft_id)
     await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.UserGetOne, by_user_id=0)
-    return Success(data=await user_obj.to_dict(exclude_fields=["password"]))
+    return Success(data=await user_obj.to_dict(exclude_fields=["by_mor_account"]))
 
 
 @router.post("/add", summary="创建aft")
 async def _(aft_in: AftCreate):
     if not aft_in.by_aft_account:
         return Success(code="4090", msg="The aft must have account number that exists.")
+    account = await aft_controller.get_by_account_number(account_number=aft_in.by_aft_account)
+    if not account:
+        return Success(code="4090", msg="The account number is not exists.")
     new_aft = await aft_controller.create(obj_in=aft_in, exclude={"by_aft_account"})
     await aft_controller.update_aft_account(new_aft, aft_in.by_aft_account)
     await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.UserCreateOne, by_user_id=0)
@@ -72,6 +76,9 @@ async def _(aft_in: AftCreate):
 async def _(aft_id: int, aft_in: AftUpdate):
     if not aft_in.by_aft_account:
         return Success(code="4090", msg="The aft must have account number that exists.")
+    account = await aft_controller.get_by_account_number(account_number=aft_in.by_aft_account)
+    if not account:
+        return Success(code="4090", msg="The account number is not exists.")
     aft = await aft_controller.update(id=aft_id, obj_in=aft_in, exclude={"by_aft_account"})
     await aft_controller.update_aft_account(aft, aft_in.by_aft_account)
     await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.UserUpdateOne, by_user_id=0)
@@ -87,10 +94,10 @@ async def _(aft_id: int):
 
 @router.delete("/batch", summary="批量删除aft")
 async def _(ids: str = Query(..., description="删除aft列表, 用逗号隔开")):
-    license_ids = ids.split(",")
+    aft_ids = ids.split(",")
     deleted_ids = []
-    for license_id in license_ids:
-        license_obj = await aft_controller.get(id=int(license_id))
+    for aft_id in aft_ids:
+        license_obj = await aft_controller.get(id=int(aft_id))
         await license_obj.delete()
-        deleted_ids.append(int(license_id))
+        deleted_ids.append(int(aft_id))
     return Success(msg="Deleted Successfully", data={"deleted_ids": deleted_ids})
