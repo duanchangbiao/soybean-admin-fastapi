@@ -9,7 +9,7 @@ class AccountController(CRUDBase[Account, AccountCreate, AccountUpdate]):
         super().__init__(model=Account)
 
     @staticmethod
-    async def update_account_dict_by_value(account: Account, dict_value_list: list[str] | str):
+    async def update_dict_by_value(account: Account, dict_value_list: list[str] | str):
         if not dict_value_list:
             return False
         if isinstance(dict_value_list, str):

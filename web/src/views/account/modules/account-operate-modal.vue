@@ -46,12 +46,12 @@ function createDefaultModel(): Api.Business.AccountAddParams {
 const DictOptions = ref<CommonType.Option<string>[]>([]);
 
 async function getDictOptions() {
-  const {error, data} = await fetchGetDictList({dictType: 'monitor', dictStatus: '1'});
+  const {error, data} = await fetchGetDictList({size: 1000, dictType: 'monitor', dictStatus: '1'});
 
   if (!error) {
     const options = data.records.map(item => ({
-      label: item.roleName,
-      value: item.roleCode
+      label: item.dictName,
+      value: item.id
     }));
     DictOptions.value = options;
   }
@@ -155,7 +155,7 @@ watch(visible, () => {
           filterable
           clearable
           :options="DictOptions"
-          :placeholder="$t('page.manage.user.form.userRole')"
+          :placeholder="$t('page.business.account.form.monitor')"
         />
       </NFormItem>
       <NFormItem :label="$t('page.business.account.remark')" path="details">

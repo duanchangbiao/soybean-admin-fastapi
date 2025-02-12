@@ -562,7 +562,7 @@ export function fetchGetAccount(data?: Api.Business.AccountParamsList) {
 
 export function fetchGetDictList(data?: Api.Business.DictSearchParams) {
   return request<Api.Business.DictList>({
-    url: '/account/role/list',
+    url: '/dict/list',
     method: 'post',
     params: data
   });

@@ -69,7 +69,7 @@ async def _(account_in: AccountCreate):
 async def _(account_id: int, account_in: AccountCreate):
     account = await account_controller.update(id=account_id, obj_in=account_in, exclude={"by_account_modules"})
     if account_in.by_account_modules is not None:
-        await account_controller.update_account_dict(account, account_in.by_account_modules)
+        await account_controller.update_dict_by_value(account, account_in.by_account_modules)
     await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.UserUpdateOne, by_user_id=0)
     return Success(msg="Updated Successfully", data={"updated_id": account_id})
 
