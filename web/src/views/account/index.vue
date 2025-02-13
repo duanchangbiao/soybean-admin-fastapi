@@ -6,7 +6,7 @@ import {fetchBatchDeleteAccount, fetchDeleteAccount, fetchGetAccountList, fetchU
 import {useAppStore} from "@/store/modules/app";
 import {AccountDictTypeRecord, statusTypeRecord} from "@/constants/business";
 import AccountOperateModal from "@/views/account/modules/account-operate-modal.vue";
-import UserOperateDrawer from "@/views/manage/user/modules/user-operate-drawer.vue";
+import AccountSearch from "@/views/account/modules/account-search.vue"
 
 const appStore = useAppStore();
 
@@ -18,6 +18,8 @@ const {
   loading,
   getDataByPage,
   mobilePagination,
+  resetSearchParams,
+  searchParams
 } = useTable({
   columns: () => [
     {
@@ -146,6 +148,10 @@ const {
   apiParams: {
     current: 1,
     size: 10,
+    accountNumber: null,
+    nickname: null,
+    activate: null,
+    remark: null,
   },
 });
 const {
@@ -192,6 +198,7 @@ function edit(id: number) {
 
 <template>
   <div ref="wrapperRef" class="flex-col-stretch gap-16px overflow-hidden lt-sm:overflow-auto">
+    <AccountSearch v-model:model="searchParams" @reset="resetSearchParams" @search="getData"/>
     <NCard :title="$t('page.manage.menu.title')" :bordered="false" size="small" class="sm:flex-1-hidden card-wrapper">
       <template #header-extra>
         <TableHeaderOperation
