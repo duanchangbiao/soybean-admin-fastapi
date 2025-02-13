@@ -2,8 +2,10 @@ from fastapi import APIRouter, Query
 from tortoise.expressions import Q
 
 from app.api.v1.utils import insert_log
+from app.controllers import user_controller
 from app.controllers.nsw import nsw_controller
-from app.models.system import  LogType, LogDetailType
+from app.core.ctx import CTX_USER_ID
+from app.models.system import LogType, LogDetailType, Role
 from app.models.system.business import Account
 from app.schemas.base import Success, SuccessExtra
 from app.schemas.nsw import NswCreate, NswUpdate
@@ -32,6 +34,12 @@ async def _(
         q &= Q(apply_status__contains=applyStatus)
     if remark:
         q &= Q(remark__contains=remark)
+    user_id = CTX_USER_ID.get()  # 从请求的token获取用户id
+    user_obj = await user_controller.get(id=user_id)
+    user_role_objs: list[Role] = await user_obj.by_user_roles
+    user_role_codes = [role_obj.role_code for role_obj in user_role_objs]
+    if "R_SUPER" not in user_role_codes:  # 超级管理员具有所有权限
+        q &= Q(create_by=user_obj.nick_name)
 
     total, aft_objs = await nsw_controller.list(page=current, page_size=size, search=q,
                                                 order=["id", "-sort"])

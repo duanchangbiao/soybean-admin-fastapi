@@ -17,9 +17,12 @@ class BaseNsw(BaseModel):
     remark: Annotated[str | None, Field(alias="remark", description="备注")] = None
     nick_name: Annotated[str | None, Field(alias="nickName", description="昵称")] = None
     by_nsw_account: Annotated[str | None, Field(alias="accountNumber", title="账号信息")] = None
+    create_by: Annotated[str | None, Field(alias="createBy", description="创建人")]
+    update_by: Annotated[str | None, Field(aalias="updateBy", description="更新人")]
 
     class Config:
         populate_by_name = True
+
 
 class NswCreate(BaseNsw):
     ...
