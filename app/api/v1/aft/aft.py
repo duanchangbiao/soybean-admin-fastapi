@@ -4,7 +4,8 @@ from tortoise.expressions import Q
 from app.api.v1.utils import insert_log
 from app.controllers.aft import aft_controller
 from app.core.ctx import CTX_USER_ID
-from app.models.system import LogType, LogDetailType, Account
+from app.models.system import LogDetailType, LogType
+from app.models.system.business import Account
 from app.schemas.aft import AftSearch, AftCreate, AftUpdate
 from app.schemas.base import SuccessExtra, Success, CommonIds
 
@@ -36,8 +37,7 @@ async def _(
     if remark:
         q &= Q(remark__contains=remark)
 
-    total, aft_objs = await aft_controller.list(page=current, page_size=size, search=q,
-                                                order=["id", "-sort"])
+    total, aft_objs = await aft_controller.list(page=current, page_size=size, search=q,order=["id", "-sort"])
     records = []
     for aft_obj in aft_objs:
         record = await aft_obj.to_dict(exclude_fields=["password"])

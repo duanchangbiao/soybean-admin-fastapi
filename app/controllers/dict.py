@@ -1,5 +1,5 @@
 from app.core.crud import CRUDBase
-from app.models.system import Dict
+from app.models.system.business import Dict
 from app.schemas.dict import DictCreate, DictUpdate
 
 

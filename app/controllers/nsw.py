@@ -1,5 +1,5 @@
 from app.core.crud import CRUDBase
-from app.models.system import Nsw, Account
+from app.models.system.business import Nsw, Account
 from app.schemas.nsw import NswCreate, NswUpdate
 
 

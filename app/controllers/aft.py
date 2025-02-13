@@ -1,5 +1,5 @@
 from app.core.crud import CRUDBase
-from app.models.system import Aft, Account
+from app.models.system.business import Account, Aft
 from app.schemas.aft import AftCreate, AftUpdate
 
 

@@ -3,7 +3,8 @@ from tortoise.expressions import Q
 
 from app.api.v1.utils import insert_log
 from app.controllers.nsw import nsw_controller
-from app.models.system import Account, LogType, LogDetailType
+from app.models.system import  LogType, LogDetailType
+from app.models.system.business import Account
 from app.schemas.base import Success, SuccessExtra
 from app.schemas.nsw import NswCreate, NswUpdate
 

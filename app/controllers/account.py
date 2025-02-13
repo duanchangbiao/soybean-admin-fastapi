@@ -1,5 +1,5 @@
 from app.core.crud import CRUDBase
-from app.models.system import Account, Dict
+from app.models.system.business import Account, Dict
 from app.schemas.account import AccountCreate, AccountUpdate
 
 

@@ -1,7 +1,8 @@
-from tortoise.fields import ManyToManyRelation
 
-from app.models.system import BaseModel, Menu
+from tortoise.fields import ManyToManyRelation
 from tortoise import fields
+
+from .utils import BaseModel
 
 """
   @description: Aft 许可

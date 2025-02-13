@@ -5,7 +5,8 @@ from app.api.v1.utils import insert_log
 from app.controllers import user_controller
 from app.controllers.account import account_controller
 from app.core.ctx import CTX_USER_ID
-from app.models.system import LogType, Dict, LogDetailType, Role
+from app.models.system import LogType, LogDetailType, Role
+from app.models.system.business import Dict
 from app.schemas.account import AccountCreate
 from app.schemas.base import SuccessExtra, Success
 
