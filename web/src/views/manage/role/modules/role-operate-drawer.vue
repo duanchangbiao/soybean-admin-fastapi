@@ -131,7 +131,7 @@ watch(visible, () => {
       <NSpace v-if="isEdit">
         <NButton @click="openMenuAuthModal">{{ $t('page.manage.role.menuAuth') }}</NButton>
         <MenuAuthModal v-model:visible="menuAuthVisible" :role-id="roleId" :by-role-home-id="model.byRoleHomeId" />
-        <NButton @click="openButtonAuthModal">{{ $t('page.manage.role.buttonAuth') }}</NButton>
+<!--        <NButton @click="openButtonAuthModal">{{ $t('page.manage.role.buttonAuth') }}</NButton>-->
         <ButtonAuthModal v-model:visible="buttonAuthVisible" :role-id="roleId" />
         <NButton @click="openApiAuthModal">{{ $t('page.manage.role.apiAuth') }}</NButton>
         <ApiAuthModal v-model:visible="apiAuthVisible" :role-id="roleId" />

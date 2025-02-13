@@ -3,7 +3,7 @@ from tortoise.functions import Count
 
 from app.api.v1.utils import insert_log
 from app.controllers.menu import menu_controller
-from app.models.system import LogType, LogDetailType, IconType
+from app.models.system import LogType, LogDetailType, IconType, Button
 from app.models.system import Menu
 from app.schemas.base import Success, SuccessExtra
 from app.schemas.menus import MenuCreate, MenuUpdate
@@ -118,44 +118,23 @@ async def _():
     return Success(data=data)
 
 
-async def build_menu_button_tree(menus: list[Menu], parent_id: int = 0) -> list[dict]:
-    """
-    递归生成菜单按钮树
-    :param menus:
-    :param parent_id:
-    :return:
-    """
-    tree = []
-    for menu in menus:
-        if menu.parent_id == parent_id:
-            children = await build_menu_button_tree(menus, menu.id)
-            menu_dict = {"id": f"parent${menu.id}", "label": menu.menu_name, "pId": menu.parent_id}
-            if children:
-                menu_dict["children"] = children
-            else:
-                menu_dict["children"] = [{"id": button.id, "label": button.button_code, "pId": menu.id} for button in
-                                         await menu.by_menu_buttons]
-            tree.append(menu_dict)
-    return tree
-
-
-@router.get("/menus/buttons/tree/", summary="查看菜单按钮树")
-async def _():
-    menus_with_button = await Menu.filter(constant=False).annotate(button_count=Count('by_menu_buttons')).filter(
-        button_count__gt=0)
-    menu_objs = menus_with_button.copy()
-    # while len(menus_with_button) > 0:
-    #     menu = menus_with_button.pop()
-    #     if menu.parent_id != 0:
-    #         menu = await Menu.get(id=menu.parent_id)
-    #         menus_with_button.append(menu)
-    #     else:
-    #         menu_objs.append(menu)
-
-    menu_objs = list(set(menu_objs))
-    data = []
-    if menu_objs:
-        data = await build_menu_button_tree(menu_objs)
-
-    await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.MenuGetButtonsTree, by_user_id=0)
-    return Success(data=data)
+# @router.get("/menus/buttons/tree/", summary="查看菜单按钮树")
+# async def _():
+#     menus_with_button = await Menu.filter(constant=False).annotate(button_count=Count('by_menu_buttons')).filter(
+#         button_count__gt=0)
+#     menu_objs = menus_with_button.copy()
+#     # while len(menus_with_button) > 0:
+#     #     menu = menus_with_button.pop()
+#     #     if menu.parent_id != 0:
+#     #         menu = await Menu.get(id=menu.parent_id)
+#     #         menus_with_button.append(menu)
+#     #     else:
+#     #         menu_objs.append(menu)
+#
+#     menu_objs = list(set(menu_objs))
+#     data = []
+#     if menu_objs:
+#         data = await build_menu_button_tree(menu_objs)
+#
+#     await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.MenuGetButtonsTree, by_user_id=0)
+#     return Success(data=data)
