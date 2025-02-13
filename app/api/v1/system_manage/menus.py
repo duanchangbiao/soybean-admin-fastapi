@@ -144,13 +144,13 @@ async def _():
     menus_with_button = await Menu.filter(constant=False).annotate(button_count=Count('by_menu_buttons')).filter(
         button_count__gt=0)
     menu_objs = menus_with_button.copy()
-    while len(menus_with_button) > 0:
-        menu = menus_with_button.pop()
-        if menu.parent_id != 0:
-            menu = await Menu.get(id=menu.parent_id)
-            menus_with_button.append(menu)
-        else:
-            menu_objs.append(menu)
+    # while len(menus_with_button) > 0:
+    #     menu = menus_with_button.pop()
+    #     if menu.parent_id != 0:
+    #         menu = await Menu.get(id=menu.parent_id)
+    #         menus_with_button.append(menu)
+    #     else:
+    #         menu_objs.append(menu)
 
     menu_objs = list(set(menu_objs))
     data = []

@@ -4,7 +4,7 @@ from tortoise.expressions import Q
 from app.api.v1.utils import insert_log
 from app.controllers import role_controller
 from app.controllers.menu import menu_controller
-from app.models.system import Api, Button, Role
+from app.models.system import Api, Button, Role, Menu
 from app.models.system import LogType, LogDetailType
 from app.schemas.base import Success, SuccessExtra
 from app.schemas.roles import RoleCreate, RoleUpdate, RoleUpdateAuthrization
@@ -96,22 +96,15 @@ async def _(role_id: int):
 async def _(role_id: int, role_in: RoleUpdateAuthrization):
     if role_in.by_role_home_id:
         role_obj = await role_controller.update(id=role_id, obj_in=dict(by_role_home_id=role_in.by_role_home_id))
-        if role_in.by_role_menu_ids:
-            menu_objs = await menu_controller.get_by_id_list(id_list=role_in.by_role_menu_ids)
-            if not menu_objs:
-                return Success(msg="获取角色菜单对象失败", code=2000)
-
+        if role_in.by_role_menu_ids is not None:
             await role_obj.by_role_menus.clear()
-            while len(menu_objs) > 0:  # 递归添加子父菜单
-                menu_obj = menu_objs.pop()
+            for menu_id in role_in.by_role_menu_ids:
+                menu_obj = await Menu.get(id=menu_id)
                 await role_obj.by_role_menus.add(menu_obj)
-                if menu_obj.parent_id != 0:  # 是否为子菜单
-                    menu_objs.append(await menu_controller.get(id=menu_obj.parent_id))  # 添加子菜单的父菜单
-        else:
-            await role_obj.by_role_menus.clear()  # 去除所有角色菜单
 
     await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.RoleUpdateMenus, by_user_id=0)
-    return Success(msg="Updated Successfully", data={"by_role_menu_ids": role_in.by_role_menu_ids, "by_role_home_id": role_in.by_role_home_id})
+    return Success(msg="Updated Successfully",
+                   data={"by_role_menu_ids": role_in.by_role_menu_ids, "by_role_home_id": role_in.by_role_home_id})
 
 
 @router.get("/roles/{role_id}/buttons", summary="查看角色按钮")

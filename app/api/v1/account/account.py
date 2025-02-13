@@ -33,10 +33,7 @@ async def _(
     if remark:
         q &= Q(remark__contains=remark)
     if accountMonitorList:
-        if _by_dict := await Dict.get_or_none(id=accountMonitorList) is not None:
-            q &= Q(by_account_dict=_by_dict)
-        else:
-            return Success(msg="字典信息不正确", code=2000)
+        q &= Q(by_account_dict=accountMonitorList)
 
     user_id = CTX_USER_ID.get()  # 从请求的token获取用户id
     user_obj = await user_controller.get(id=user_id)

@@ -2,7 +2,7 @@
 import {$t} from '@/locales';
 import {useNaiveForm} from "@/hooks/common/form";
 import {translateOptions} from "@/utils/common";
-import {accountDictTypeOptions, aftTypeOptions, statusTypeOptions, userGenderOptions} from "@/constants/business";
+import {accountDictTypeOptions, statusTypeOptions} from "@/constants/business";
 
 const {formRef, validate, restoreValidation} = useNaiveForm();
 defineOptions({
@@ -67,7 +67,7 @@ async function search() {
           class="pr-24px"
         >
           <NSelect
-            v-model:value="model.accountDictTypeOptions"
+            v-model:value="model.accountMonitorList"
             :placeholder="$t('page.business.account.form.accountMonitorList')"
             :options="translateOptions(accountDictTypeOptions)"
             filterable
