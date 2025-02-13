@@ -18,22 +18,22 @@ async def _(
         current: int = Query(1, description="页码"),
         size: int = Query(10, description="每页数量"),
         accountNumber: str = Query(None, description="账号信息"),
-        nickName: str = Query(None, description="昵称"),
+        nickname: str = Query(None, description="昵称"),
         remark: str = Query(None, description="备注"),
-        activated: str = Query(None, description="状态"),
-        monitor: str = Query(None, description="监控模块")
+        activate: str = Query(None, description="状态"),
+        accountMonitorList: str = Query(None, description="account编码列表"),
 ):
     q = Q()
-    if nickName:
-        q &= Q(nick_name__contains=nickName)
+    if nickname:
+        q &= Q(nickname__contains=nickname)
     if accountNumber:
         q &= Q(account_number__contains=accountNumber)
-    if activated:
-        q &= Q(activate__contains=activated)
+    if activate:
+        q &= Q(activate__contains=activate)
     if remark:
         q &= Q(remark__contains=remark)
-    if monitor:
-        if _by_dict := await Dict.get_or_none(dict_value=monitor) is not None:
+    if accountMonitorList:
+        if _by_dict := await Dict.get_or_none(id=accountMonitorList) is not None:
             q &= Q(by_account_dict=_by_dict)
         else:
             return Success(msg="字典信息不正确", code=2000)

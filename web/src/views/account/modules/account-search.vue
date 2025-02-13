@@ -2,7 +2,7 @@
 import {$t} from '@/locales';
 import {useNaiveForm} from "@/hooks/common/form";
 import {translateOptions} from "@/utils/common";
-import {aftTypeOptions, statusTypeOptions, userGenderOptions} from "@/constants/business";
+import {accountDictTypeOptions, aftTypeOptions, statusTypeOptions, userGenderOptions} from "@/constants/business";
 
 const {formRef, validate, restoreValidation} = useNaiveForm();
 defineOptions({
@@ -36,16 +36,16 @@ async function search() {
     <NForm ref="formRef" :model="model" label-placement="left" :label-width="100">
       <NGrid responsive="screen" item-responsive>
         <NFormItemGi span="24 s:8 m:4" :label="$t('page.business.account.accountNumber')"
-                     path="applyNumber" class="pr-24px">
+                     path="accountNumber" class="pr-24px">
           <NInput v-model:value="model.accountNumber"
                   :placeholder="$t('page.business.account.form.accountNumber')"/>
         </NFormItemGi>
-        <NFormItemGi span="24 s:8 m:4" :label="$t('page.business.account.nickname')" path="nickName"
+        <NFormItemGi span="24 s:8 m:4" :label="$t('page.business.account.nickname')" path="nickname"
                      class="pr-24px">
           <NInput v-model:value="model.nickname" :placeholder="$t('page.business.account.form.nickname')"/>
         </NFormItemGi>
 
-        <NFormItemGi span="24 s:8 m:4" :label="$t('page.business.account.activate')" path="applyStatus"
+        <NFormItemGi span="24 s:8 m:4" :label="$t('page.business.account.activate')" path="activate"
                      class="pr-24px">
           <NSelect
             v-model:value="model.activate"
@@ -62,14 +62,14 @@ async function search() {
         </NFormItemGi>
         <NFormItemGi
           span="24 s:12 m:4"
-          :label="$t('page.business.aft.aftType')"
-          path="userGender"
+          :label="$t('page.business.account.accountMonitorList')"
+          path="accountMonitorList"
           class="pr-24px"
         >
           <NSelect
-            v-model:value="model.aftType"
-            :placeholder="$t('page.business.aft.form.aftType')"
-            :options="translateOptions(aftTypeOptions)"
+            v-model:value="model.accountDictTypeOptions"
+            :placeholder="$t('page.business.account.form.accountMonitorList')"
+            :options="translateOptions(accountDictTypeOptions)"
             filterable
             clearable
           />
