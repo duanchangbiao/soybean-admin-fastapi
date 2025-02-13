@@ -31,6 +31,8 @@ declare namespace Api {
      */
     type EnableStatus = '1' | '2';
 
+    type AccountDictStatus = '1' | '2' | '3' | 4 | '5'
+
     /** common record */
     type CommonRecord<T = any> = {
       /** record id */
@@ -688,10 +690,10 @@ declare namespace Api {
     type Account = Common.CommonRecord<{
       id: string;
       accountNumber: string;
-      nickName: string;
+      nickname: string;
       password: string;
       activate: string;
-      monitor: string;
+      accountMonitorList: string[];
       feedback: string;
       remark: string;
     }>;
@@ -702,10 +704,10 @@ declare namespace Api {
     type AccountAddParams = Pick<
       Api.Business.Account,
       | 'accountNumber'
-      | 'nickName'
+      | 'nickname'
       | 'password'
       | 'activate'
-      | 'monitor'
+      | 'accountMonitorList'
       | 'feedback'
       | 'remark'
     >;

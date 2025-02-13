@@ -2,8 +2,10 @@ from fastapi import APIRouter, Query
 from tortoise.expressions import Q
 
 from app.api.v1.utils import insert_log
+from app.controllers import user_controller
 from app.controllers.account import account_controller
-from app.models.system import LogType, Dict, LogDetailType
+from app.core.ctx import CTX_USER_ID
+from app.models.system import LogType, Dict, LogDetailType, Role
 from app.schemas.account import AccountCreate
 from app.schemas.base import SuccessExtra, Success
 
@@ -34,13 +36,20 @@ async def _(
             q &= Q(by_account_dict=_by_dict)
         else:
             return Success(msg="字典信息不正确", code=2000)
+
+    user_id = CTX_USER_ID.get()  # 从请求的token获取用户id
+    user_obj = await user_controller.get(id=user_id)
+    user_role_objs: list[Role] = await user_obj.by_user_roles
+    user_role_codes = [role_obj.role_code for role_obj in user_role_objs]
+    if "R_SUPER" not in user_role_codes:  # 超级管理员具有所有权限
+        q &= Q(create_by=user_obj.nick_name)
     total, account_objs = await account_controller.list(page=current, page_size=size, search=q,
                                                         order=['-ctime'])
     records = []
     for account_obj in account_objs:
         record = await account_obj.to_dict(exclude_fields=["by_account_dict"])
         await account_obj.fetch_related("by_account_dict")
-        account_monitor_list = [by_account_dict.dict_value for by_account_dict in account_obj.by_account_dict]
+        account_monitor_list = [by_account_dict.id for by_account_dict in account_obj.by_account_dict]
         record.update({"accountMonitorList": account_monitor_list})
         records.append(record)
     data = {"records": records}
@@ -59,14 +68,20 @@ async def get_user(account_id: int):
 async def _(account_in: AccountCreate):
     if not account_in.by_account_modules:
         return Success(code="4090", msg="The aft must have account number that exists.")
+    user_id = CTX_USER_ID.get()  # 从请求的token获取用户id
+    user_obj = await user_controller.get(id=user_id)
+    account_in.create_by = user_obj.nick_name
     new_account = await account_controller.create(obj_in=account_in, exclude={"by_account_modules"})
-    await account_controller.update_account_dict(new_account, account_in.by_account_modules)
+    await account_controller.update_dict_by_value(new_account, account_in.by_account_modules)
     await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.UserCreateOne, by_user_id=0)
     return Success(msg="Created Successfully", data={"created_id": new_account.id})
 
 
 @router.patch("/update/{account_id}", summary="更新account")
 async def _(account_id: int, account_in: AccountCreate):
+    user_id = CTX_USER_ID.get()  # 从请求的token获取用户id
+    user_obj = await user_controller.get(id=user_id)
+    account_in.update_by = user_obj.nick_name
     account = await account_controller.update(id=account_id, obj_in=account_in, exclude={"by_account_modules"})
     if account_in.by_account_modules is not None:
         await account_controller.update_dict_by_value(account, account_in.by_account_modules)

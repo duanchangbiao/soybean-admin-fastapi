@@ -535,6 +535,13 @@ declare namespace App {
               latest: string;
               dispose: string;
             };
+            account: {
+              mor5: string;
+              mor9: string;
+              aft: string;
+              affa: string;
+              nsw: string;
+            }
           };
           role: {
             title: string;
@@ -860,7 +867,7 @@ declare namespace App {
               updateStatus: string;
               morType: string;
               accountNumber: string;
-              nickName: string;
+              nickname: string;
               remark: string;
             };
             addMor: string;
@@ -906,20 +913,20 @@ declare namespace App {
           account: {
             title: string;
             accountNumber: string;
-            nickName: string;
+            nickname: string;
             password: string;
             activate: string;
-            monitor: string;
+            accountMonitorList: string;
             feedback: string;
             remark: string;
             ctime: string;
             mtime: string;
             form: {
               accountNumber: string;
-              nickName: string;
+              nickname: string;
               password: string;
               activate: string;
-              monitor: string;
+              accountMonitorList: string;
               feedback: string;
               remark: string;
             };

@@ -4,7 +4,7 @@ import {$t} from "@/locales";
 import {useTable, useTableOperate} from '@/hooks/common/table';
 import {fetchBatchDeleteAccount, fetchDeleteAccount, fetchGetAccountList, fetchUpdateAccount} from "@/service/api";
 import {useAppStore} from "@/store/modules/app";
-import {statusTypeRecord} from "@/constants/business";
+import {AccountDictTypeRecord, statusTypeRecord} from "@/constants/business";
 import AccountOperateModal from "@/views/account/modules/account-operate-modal.vue";
 import UserOperateDrawer from "@/views/manage/user/modules/user-operate-drawer.vue";
 
@@ -41,7 +41,7 @@ const {
     },
     {
       key: 'nickname',
-      title: $t('page.business.account.nickName'),
+      title: $t('page.business.account.nickname'),
       dataIndex: 'nickname',
       align: 'center',
       width: 150
@@ -58,7 +58,7 @@ const {
       title: $t('page.business.account.activate'),
       dataIndex: 'activate',
       align: 'center',
-      width: 200,
+      width: 100,
       render: row => {
         if (row.activate === null) {
           return null;
@@ -75,11 +75,25 @@ const {
       }
     },
     {
-      key: 'monitor',
-      title: $t('page.business.account.monitor'),
-      dataIndex: 'monitor',
+      key: 'accountMonitorList',
+      title: $t('page.business.account.accountMonitorList'),
+      dataIndex: 'accountMonitorList',
       align: 'center',
-      width: 200
+      width: 300,
+      render: row => {
+        if (row.accountMonitorList === null) {
+          return null;
+        }
+        const labels = row.accountMonitorList.map((accountMonitor, index) => {
+          const label = $t(AccountDictTypeRecord[accountMonitor])
+          return label
+        })
+        return labels.map((label, index) => (
+          <span>
+            <NTag type="info">{label}</NTag>
+          </span>
+        ));
+      }
     },
     {
       key: 'feedback',

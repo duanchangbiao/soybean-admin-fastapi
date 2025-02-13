@@ -15,7 +15,7 @@ class AccountController(CRUDBase[Account, AccountCreate, AccountUpdate]):
         if isinstance(dict_value_list, str):
             dict_value_list = dict_value_list.split(",")
 
-        account_dict_objs = await Dict.filter(dict_value__in=dict_value_list)
+        account_dict_objs = await Dict.filter(id__in=dict_value_list)
         await account.by_account_dict.clear()
         for dict_value in account_dict_objs:
             await account.by_account_dict.add(dict_value)

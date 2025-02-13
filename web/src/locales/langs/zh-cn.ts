@@ -347,6 +347,13 @@ const local: App.I18n.Schema = {
           update: '有更新',
           latest: '已最新',
           dispose: '已处理',
+        },
+        account: {
+          mor5: 'MOR5',
+          mor9: 'MOR9',
+          aft: 'AFT',
+          affa: 'AFFA',
+          nsw: 'NSW'
         }
       },
       role: {
@@ -672,7 +679,7 @@ const local: App.I18n.Schema = {
           morType: '请选择类型',
           updateStatus: '请选择更新情况',
           accountNumber: '请输入账号信息',
-          nickName: '请输入昵称',
+          nickname: '请输入昵称',
           remark: '请输入备注信息'
         },
         addMor: '添加MOR5/MOR9',
@@ -718,20 +725,20 @@ const local: App.I18n.Schema = {
       account: {
         title: '账号管理',
         accountNumber: '账号',
-        nickName: '昵称',
+        nickname: '昵称',
         password: '密码',
         activate: '状态',
-        monitor: '模块',
+        accountMonitorList: '模块',
         feedback: '反馈',
         remark: '备注',
         ctime: '创建时间',
         mtime: '更新时间',
         form: {
           accountNumber: '请输入账号信息',
-          nickName: '请输入昵称',
+          nickname: '请输入昵称',
           password: '请输入密码',
           activate: "请选择状态",
-          monitor: '请输入模块',
+          accountMonitorList: '请输入模块',
           feedback: '请输入反馈',
           remark: '请输入备注',
         },

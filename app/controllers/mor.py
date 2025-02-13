@@ -1,5 +1,5 @@
 from app.core.crud import CRUDBase
-from app.models.system.business import Mor, Account
+from app.models.system import Mor, Account
 from app.schemas.mor import MorCreate, MorUpdate
 
 

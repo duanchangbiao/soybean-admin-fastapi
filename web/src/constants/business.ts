@@ -5,6 +5,15 @@ export const statusTypeRecord: Record<Api.Common.EnableStatus, App.I18n.I18nKey>
   '2': 'page.manage.common.statusType.disable'
 };
 
+export const AccountDictTypeRecord: Record<Api.Common.AccountDictStatus, App.I18n.I18nKey> = {
+  '1': 'page.manage.common.account.mor5',
+  '2': 'page.manage.common.account.mor9',
+  '3': 'page.manage.common.account.aft',
+  '4': 'page.manage.common.account.affa',
+  '5': 'page.manage.common.account.nsw',
+};
+
+export const accountDictTypeOptions = transformRecordToOption(AccountDictTypeRecord);
 export const statusTypeOptions = transformRecordToOption(statusTypeRecord);
 
 export const logDetailTypeRecord: Record<Api.SystemManage.logDetailTypes, App.I18n.I18nKey> = {

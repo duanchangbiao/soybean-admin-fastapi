@@ -33,10 +33,10 @@ const model: Api.Business.AccountAddParams = reactive(createDefaultModel());
 function createDefaultModel(): Api.Business.AccountAddParams {
   return {
     accountNumber: '',
-    nickName: '',
+    nickname: '',
     password: '',
     activate: '',
-    monitor: '',
+    accountMonitorList: [],
     feedback: '',
     remark: ''
   };
@@ -133,29 +133,29 @@ watch(visible, () => {
           "
         />
       </NFormItem>
-      <NFormItem :label="$t('page.business.account.nickName')" path="nickName">
-        <NInput v-model:value="model.nickName" :placeholder="$t('page.business.account.form.nickName')"/>
+      <NFormItem :label="$t('page.business.account.nickname')" path="nickname">
+        <NInput v-model:value="model.nickname" :placeholder="$t('page.business.account.form.nickname')"/>
       </NFormItem>
       <NFormItem :label="$t('page.business.account.password')" path="password">
         <NInput v-model:value="model.password" :placeholder="$t('page.business.account.form.password')"/>
       </NFormItem>
       <NFormItem :label="$t('page.business.account.activate')" path="status">
         <NSelect
-          v-model:value="model.updateStatus"
+          v-model:value="model.activate"
           :placeholder="$t('page.business.account.form.activate')"
           :options="translateOptions(statusTypeOptions)"
           filterable
           clearable
         />
       </NFormItem>
-      <NFormItem :label="$t('page.business.account.monitor')" path="roles">
+      <NFormItem :label="$t('page.business.account.accountMonitorList')" path="roles">
         <NSelect
-          v-model:value="model.monitor"
+          v-model:value="model.accountMonitorList"
           multiple
           filterable
           clearable
           :options="DictOptions"
-          :placeholder="$t('page.business.account.form.monitor')"
+          :placeholder="$t('page.business.account.form.accountMonitorList')"
         />
       </NFormItem>
       <NFormItem :label="$t('page.business.account.remark')" path="details">

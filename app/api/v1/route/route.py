@@ -122,14 +122,14 @@ async def _():
                 if not user_role_route.constant or user_role_route.hide_in_menu:
                     role_routes.append(user_role_route)
 
-        menu_objs = role_routes.copy()
-        while len(menu_objs) > 0:
-            menu = menu_objs.pop()
-            if menu.parent_id != 0:
-                menu = await Menu.get(id=menu.parent_id)
-                menu_objs.append(menu)
-            else:
-                role_routes.append(menu)
+        # menu_objs = role_routes.copy()
+        # while len(menu_objs) > 0:
+        #     menu = menu_objs.pop()
+        #     if menu.parent_id != 0:
+        #         menu = await Menu.get(id=menu.parent_id)
+        #         menu_objs.append(menu)
+        #     else:
+        #         role_routes.append(menu)
 
     role_routes = list(set(role_routes))  # 去重
     # 递归生成菜单
