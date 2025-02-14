@@ -52,9 +52,8 @@ class ScraperUtils:
         }
         response = self.session.post(url=self.url, headers=self.headers, data=data, verify=False, timeout=6)
         if response.status_code != 200:
-            print(response.text)
             self.account.feedback = '用户登陆异常,请手动重试!'
-            account_controller.update(id=self.account.id, obj_in=self.account)
+            account_controller.update(id=self.account.id, obj_in=self.account, exclude={"by_account_modules"})
             return False, ""
         return True, response.text
 
@@ -76,6 +75,7 @@ class ScraperUtils:
         return True, response_license.text
 
     async def get_mor5(self, mor5_text):
+        print('mor5.html scraper start!')
         tree = etree.HTML(mor5_text)
         if len(tree.xpath("//*[@id='top']/div/nav/div[2]/ul/li[7]/ul/li[1]/a/@href")) == 0:
             self.account.feedback = '账号密码错误,请修改后重试！'
@@ -89,11 +89,75 @@ class ScraperUtils:
             account_controller.update(id=self.account.id, obj_in=self.account)
             account_controller.update(id=self.account.id, obj_in=self.account)
             return False, ""
-
-        with open('mor5.html', 'w', encoding='utf-8') as f:
+        # 解析页面mor5
+        tree = etree.HTML(response_mor5.text, etree.HTMLParser())
+        tr_list = tree.xpath("//*[@id='moao5List']/tbody/tr")
+        with open("mor5.html", "w", encoding="utf-8") as f:
             f.write(response_mor5.text)
             f.close()
-        print('mor5.html download success!')
+        for tr in tr_list:
+            item = {}
+            if tr.xpath("./td[2]/text()"):
+                item["MOR5_APPLY_CODE"] = tr.xpath("./td[2]/text()")[0].strip()
+            if tr.xpath("./td[3]/text()"):
+                item["MOR5_APPLY_NAME"] = tr.xpath("./td[3]/text()")[0].strip()
+            if tr.xpath("./td[7]//text()"):
+                item["MOR5_APPLY_DATE"] = "".join(tr.xpath("./td[7]//text()")).strip()
+            else:
+                item["MOR5_APPLY_DATE"] = ""
+            if tr.xpath("./td[8]//span[@class='show_status']"):
+                str_list = "".join(tr.xpath("./td[8]//span[@class='show_status']//text()"))
+                item["MOR5_STATUS"] = str_list.strip()
+            else:
+                item["MOR5_STATUS"] = ""
+            dict_obj: Dict = await dict_controller.get_by_dict_value("MOR9_STATUS", item["MOR9_STATUS"])
+            if dict_obj:
+                status = dict_obj.dict_name
+            else:
+                status = "其他"
+            mor_obj = Mor(
+                apply_number=item["MOR5_APPLY_CODE"],
+                apply_name=item["MOR5_APPLY_NAME"],
+                apply_date=item["MOR5_APPLY_DATE"],
+                mor_type="MOR5",
+                license_code=item["MOR5_LICENSE_CODE"],
+                create_by=self.account.create_by,
+                update_by=self.account.update_by,
+                ctime=datetime.now(),
+                mtime=datetime.now(),
+            )
+            mor: Mor = await mor_controller.get_mor_by_apply_number(apply_number=item["MOR5_APPLY_CODE"])
+            if mor:
+                await mor_controller.update(id=mor.id, obj_in={
+                    "apply_number": item["MOR5_APPLY_CODE"],
+                    "apply_date": item["MOR5_APPLY_DATE"],
+                    "apply_name": item["MOR5_APPLY_NAME"],
+                    "license_code": item["MOR5_LICENSE_CODE"],
+                    "mor_type": "mor5",
+                    "apply_status": status,
+                    "update_status": 2,
+                    "update_by": self.account.update_by,
+                    "mtime": datetime.now(),
+                    "ctime": datetime.now(),
+                })
+                if item["MOR5_STATUS"] != mor.apply_status:
+                    await self.sendEmail(user=self.account.nickname, result=mor_obj)
+            else:
+                new_mor = await mor_controller.create(obj_in={
+                    "apply_number": item["MOR9_APPLY_CODE"],
+                    "apply_date": item["MOR9_APPLY_DATE"],
+                    "apply_name": item["MOR9_APPLY_NAME"],
+                    "license_code": item["MOR9_LICENSE_CODE"],
+                    "mor_type": "mor5",
+                    "apply_status": status,
+                    "update_by": self.account.update_by,
+                    "update_status": 1,
+                    "mtime": datetime.now(),
+                    "ctime": datetime.now(),
+                })
+                await mor_controller.update_mor_account(mor=new_mor, mor_account_id=self.account.id)
+            await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.UserCreateOne, by_user_id=0)
+        return True, "Mor5 scraper success"
 
     async def get_mor9(self, mor9_text):
         print('mor9.html scraper start!')
@@ -142,7 +206,6 @@ class ScraperUtils:
                 ctime=datetime.now(),
                 mtime=datetime.now(),
             )
-            print(Mor.to_dict(mor_obj))
             mor: Mor = await mor_controller.get_mor_by_apply_number(apply_number=item["MOR9_APPLY_CODE"])
             if mor:
                 await mor_controller.update(id=mor.id, obj_in={

@@ -43,7 +43,7 @@ async def _(
     if "R_SUPER" not in user_role_codes:  # 超级管理员具有所有权限
         q &= Q(create_by=user_obj.nick_name)
     total, aft_objs = await mor_controller.list(page=current, page_size=size, search=q,
-                                                order=["id", "-sort"])
+                                                order=["-sort", 'ctime', '-remark'])
     records = []
     for aft_obj in aft_objs:
         record = await aft_obj.to_dict(exclude_fields=["by_mor_account"])
