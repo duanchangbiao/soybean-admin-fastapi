@@ -114,7 +114,7 @@ class ScraperUtils:
                 status = "其他"
             mor: Mor = await mor_controller.get_mor_by_apply_number(apply_number=item["MOR5_APPLY_CODE"])
             if mor:
-                await mor_controller.update(obj_in={
+                await mor_controller.update(id=mor.id, obj_in={
                     "apply_number": item["MOR5_APPLY_CODE"],
                     "apply_date": item["MOR5_APPLY_DATE"],
                     "apply_name": item["MOR5_APPLY_NAME"],
