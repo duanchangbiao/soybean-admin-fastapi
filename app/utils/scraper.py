@@ -63,7 +63,6 @@ class ScraperUtils:
         if len(url) == 0:
             self.account.feedback = '账号密码错误,请修改后重试！'
             await account_controller.update(id=self.account.id, obj_in=self.account)
-            await account_controller.update(id=self.account.id, obj_in=self.account)
             return False, ""
         response_license = self.session.get(url[0], headers=self.headers, verify=False)
         if response_license.status_code != 200:
@@ -79,7 +78,6 @@ class ScraperUtils:
         if len(tree.xpath("//*[@id='top']/div/nav/div[2]/ul/li[7]/ul/li[3]/a/@href")) == 0:
             self.account.feedback = '账号密码错误,请修改后重试！'
             await account_controller.update(id=self.account.id, obj_in=self.account)
-            await account_controller.update(id=self.account.id, obj_in=self.account)
             return False, ""
         url = tree.xpath("//*[@id='top']/div/nav/div[2]/ul/li[7]/ul/li[3]/a/@href")[0]
         response_mor5 = self.session.get("https://i.tisi.go.th" + url, headers=self.headers, verify=False)
@@ -88,7 +86,6 @@ class ScraperUtils:
             f.close()
         if response_mor5.status_code != 200:
             self.account.feedback = '账号密码错误,请修改后重试！'
-            await account_controller.update(id=self.account.id, obj_in=self.account)
             await account_controller.update(id=self.account.id, obj_in=self.account)
             return False, ""
         # 解析页面mor5
@@ -124,12 +121,14 @@ class ScraperUtils:
                     "mor_type": "mor5",
                     "apply_status": status,
                     "update_by": self.account.update_by,
-                    "update_status": 2,
-                    "feedback": '正常',
+                    "update_status": 1,
                     "mtime": datetime.now(),
                     "ctime": datetime.now(),
                 })
                 if status != mor.apply_status:
+                    await mor_controller.update(obj_in={
+                        "update_status": 2,
+                    })
                     mor.apply_status = status
                     await self.sendEmail(user=self.account.nickname, result=mor)
             else:
@@ -139,14 +138,15 @@ class ScraperUtils:
                     "apply_name": item["MOR5_APPLY_NAME"],
                     "mor_type": "mor5",
                     "apply_status": status,
-                    "feedback": '正常',
                     "update_by": self.account.update_by,
-                    "update_status": 1,
+                    "update_status": 2,
                     "mtime": datetime.now(),
                     "ctime": datetime.now(),
                 })
                 await mor_controller.update_mor_account(mor=new_mor, mor_account_id=self.account.id)
-            await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.UserCreateOne, by_user_id=0)
+        self.account.feedback = '正常'
+        await account_controller.update(id=self.account.id, obj_in=self.account)
+        await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.UserCreateOne, by_user_id=0)
         return True, "Mor5 scraper success"
 
     async def get_mor9(self, mor9_text):
@@ -154,7 +154,6 @@ class ScraperUtils:
         tree = etree.HTML(mor9_text)
         if len(tree.xpath("//*[@id='top']/div/nav/div[2]/ul/li[7]/ul/li[1]/a/@href")) == 0:
             self.account.feedback = '账号密码错误,请修改后重试！'
-            await account_controller.update(id=self.account.id, obj_in=self.account)
             await account_controller.update(id=self.account.id, obj_in=self.account)
             return False, ""
         url = tree.xpath("//*[@id='top']/div/nav/div[2]/ul/li[7]/ul/li[8]/a/@href")[0]
@@ -195,13 +194,15 @@ class ScraperUtils:
                     "license_code": item["MOR9_LICENSE_CODE"],
                     "mor_type": "mor9",
                     "apply_status": status,
-                    "feedback": '正常',
-                    "update_status": 2,
+                    "update_status": 1,
                     "update_by": self.account.update_by,
                     "mtime": datetime.now(),
                     "ctime": datetime.now(),
                 })
                 if status != mor.apply_status:
+                    await mor_controller.update(id=mor.id, obj_in={
+                        "update_status": 1,
+                    })
                     mor.apply_status = status
                     await self.sendEmail(user=self.account.nickname, result=mor)
             else:
@@ -212,60 +213,64 @@ class ScraperUtils:
                     "license_code": item["MOR9_LICENSE_CODE"],
                     "mor_type": "mor9",
                     "apply_status": status,
-                    "feedback": '正常',
                     "update_by": self.account.update_by,
-                    "update_status": 1,
+                    "update_status": 2,
                     "mtime": datetime.now(),
                     "ctime": datetime.now(),
                 })
                 await mor_controller.update_mor_account(mor=new_mor, mor_account_id=self.account.id)
-            await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.UserCreateOne, by_user_id=0)
+        self.account.feedback = '正常'
+        await account_controller.update(id=self.account.id, obj_in=self.account)
+        await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.UserCreateOne, by_user_id=0)
         return True, "Mor9 scraper success"
 
     @staticmethod
     async def sendEmail(user, result):
-        if result.__class__ == Aft:
-            title = f'TISI Alert:{result.aft_type}/{user} Adaptor have update!'
-            body = (f'----------------------------\n'
-                    f'Remark : {result.remark} \n'
-                    f'Client :{user}\n '
-                    f'{result.aft_type} No : {result.apply_number} \n'
-                    f'Current Status : {result.apply_status} \n'
-                    f'Current Date : {datetime.now()} \n'
-                    f'Quickly Check : https://sso.tisi.go.th/login \n'
-                    f'Account Number: {user}, \n')
-        elif result.__class__ == Mor:
-            title = f'TISI Alert:{result.mor_type}/{user} Mor have update!'
-            body = (f'----------------------------\n'
-                    f'Remark : {result.remark} \n'
-                    f'Client :{user}\n '
-                    f'{result.mor_type} No : {result.apply_number} \n'
-                    f'----------------------------\n'
-                    f'Current Status : {result.apply_status} \n'
-                    f'Current Date : {datetime.now()} \n'
-                    f'Quickly Check : https://sso.tisi.go.th/login \n'
-                    f'Account Number: {user}, \n'
-                    )
-        else:
-            title = f'TISI Alert:NSW/{user} have update!'
-            body = (f'----------------------------\n'
-                    f'Remark : {result.remark} \n'
-                    f'Client :{user}\n '
-                    f'NSW No : {result.apply_number} \n'
-                    f'----------------------------\n'
-                    f'Current Status : {result.apply_status} \n'
-                    f'Current Date : {datetime.now()} \n'
-                    f'Quickly Check : https://sso.tisi.go.th/login \n'
-                    f'Account Number: {user}, \n'
-                    )
-        fm = FastMail(fastapi_mail_config)
-        message = MessageSchema(
-            subject=title,
-            recipients=["duanchangbiao@zhangkongapp.com"],
-            body=body,
-            subtype=MessageType.plain
-        )
-        await fm.send_message(message)
+        try:
+            if result.__class__ == Aft:
+                title = f'TISI Alert:{result.aft_type}/{user} Adaptor have update!'
+                body = (f'----------------------------\n'
+                        f'Remark : {result.remark} \n'
+                        f'Client :{user}\n '
+                        f'{result.aft_type} No : {result.apply_number} \n'
+                        f'Current Status : {result.apply_status} \n'
+                        f'Current Date : {datetime.now()} \n'
+                        f'Quickly Check : https://sso.tisi.go.th/login \n'
+                        f'Account Number: {user}, \n')
+            elif result.__class__ == Mor:
+                title = f'TISI Alert:{result.mor_type}/{user} Mor have update!'
+                body = (f'----------------------------\n'
+                        f'Remark : {result.remark} \n'
+                        f'Client :{user}\n '
+                        f'{result.mor_type} No : {result.apply_number} \n'
+                        f'----------------------------\n'
+                        f'Current Status : {result.apply_status} \n'
+                        f'Current Date : {datetime.now()} \n'
+                        f'Quickly Check : https://sso.tisi.go.th/login \n'
+                        f'Account Number: {user}, \n'
+                        )
+            else:
+                title = f'TISI Alert:NSW/{user} have update!'
+                body = (f'----------------------------\n'
+                        f'Remark : {result.remark} \n'
+                        f'Client :{user}\n '
+                        f'NSW No : {result.apply_number} \n'
+                        f'----------------------------\n'
+                        f'Current Status : {result.apply_status} \n'
+                        f'Current Date : {datetime.now()} \n'
+                        f'Quickly Check : https://sso.tisi.go.th/login \n'
+                        f'Account Number: {user}, \n'
+                        )
+            fm = FastMail(fastapi_mail_config)
+            message = MessageSchema(
+                subject=title,
+                recipients=["duanchangbiao@zhangkongapp.com"],
+                body=body,
+                subtype=MessageType.plain
+            )
+            await fm.send_message(message)
+        except Exception as e:
+            ...
 
 
 scraper_utils = ScraperUtils()
