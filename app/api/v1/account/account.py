@@ -8,7 +8,7 @@ from app.core.ctx import CTX_USER_ID
 from app.models.system import LogType, LogDetailType, Role
 from app.models.system.business import Dict
 from app.schemas.account import AccountCreate, AccountUpdate
-from app.schemas.base import SuccessExtra, Success
+from app.schemas.base import SuccessExtra, Success, Fail
 from app.utils.scraper import scraper_utils
 
 router = APIRouter()
@@ -113,15 +113,15 @@ async def _(account_id: int, account_in: AccountUpdate):
         print(dict_obj.dict_name, account_in)
         retry, response = await scraper_utils.login(account=account_in)
         if not retry:
-            return Success(msg="Scraper Failed", data={'Scraper_id': account_id})
+            return Fail(msg="Scraper Failed", data={'Scraper_id': account_id})
         if dict_obj.dict_name != 'NSW':
             retry_l, response_l = await scraper_utils.get_license(response)
             if not retry_l:
-                return Success(msg="Scraper Failed", data={'Scraper_id': account_id})
+                return Fail(msg="Scraper Failed", data={'Scraper_id': account_id})
             if dict_obj.dict_name == 'MOR9':
                 retry_m, response_m = await scraper_utils.get_mor9(response_l)
                 if not retry_m:
-                    return Success(msg="Scraper Failed", data={'Scraper_id': account_id})
+                    return Fail(msg="Scraper Failed", data={'Scraper_id': account_id})
 
 
     return Success(msg="Scraper Successfully", data={'Scraper_id': account_id})

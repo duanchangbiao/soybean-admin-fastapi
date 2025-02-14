@@ -9,7 +9,7 @@ class DictController(CRUDBase[Dict, DictCreate, DictUpdate]):
         super().__init__(model=Dict)
 
     async def get_by_dict_value(self, dict_type: str, dict_value: str):
-        return await self.model.filter(data=dict_value, dict_type=dict_type).first()
+        return await self.model.filter(dict_value=dict_value, dict_type=dict_type).first()
 
 
 dict_controller = DictController()

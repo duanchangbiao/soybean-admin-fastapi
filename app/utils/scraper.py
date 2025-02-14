@@ -4,10 +4,11 @@ from datetime import datetime
 import requests
 from fastapi_mail import FastMail, MessageSchema, MessageType
 
+from app.api.v1.utils import insert_log
 from app.controllers.account import account_controller
 from app.controllers.dict import dict_controller
 from app.controllers.mor import mor_controller
-from app.models.system import Account, Mor, Dict, Aft
+from app.models.system import Account, Mor, Dict, Aft, LogType, LogDetailType
 from lxml import etree
 
 from app.schemas.account import AccountUpdate
@@ -22,20 +23,26 @@ class ScraperUtils:
         self.headers = {
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
             'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6',
-            'Cache-Control': 'no-cache',
-            'Connection': 'keep-alive',
-            'Pragma': 'no-cache',
             'Referer': 'https://sso.tisi.go.th/login',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36',
+
         }
 
     async def login(self, account: AccountUpdate):
+        print('login scraper start!')
         self.account = account
-        response_login = self.session.get(url=self.url, headers=self.headers, verify=False)
+        response_login = self.session.get(url=self.url, headers=self.headers, verify=False, timeout=6)
         if response_login.status_code != 200:
             self.account.feedback = '用户登陆异常,请手动重试!'
             account_controller.update(id=self.account.id, obj_in=self.account)
             return False, ""
         tree = etree.HTML(response_login.text)
+        if not tree.xpath('//*[@name="_token"]/@value'):
+            print(response_login.text)
+            self.account.feedback = '网络异常,请重启网络！'
+            account_controller.update(id=self.account.id, obj_in=self.account)
+            return False, ""
+
         _token = tree.xpath('//*[@name="_token"]/@value')[0]
         data = {
             'username': self.account.account_number,
@@ -43,7 +50,7 @@ class ScraperUtils:
             'redirect_uri': '',
             '_token': _token
         }
-        response = self.session.post(url=self.url, headers=self.headers, data=data, verify=False)
+        response = self.session.post(url=self.url, headers=self.headers, data=data, verify=False, timeout=6)
         if response.status_code != 200:
             print(response.text)
             self.account.feedback = '用户登陆异常,请手动重试!'
@@ -52,6 +59,7 @@ class ScraperUtils:
         return True, response.text
 
     async def get_license(self, index_text):
+        print('index.html scraper start!')
         tree = etree.HTML(index_text)
         url = tree.xpath("//div[@class='row colorbox-group-widget']/div[1]/a/@href")
         if len(url) == 0:
@@ -87,15 +95,16 @@ class ScraperUtils:
             f.close()
         print('mor5.html download success!')
 
-    async def get_mor9(self, mor5_text):
-        tree = etree.HTML(mor5_text)
+    async def get_mor9(self, mor9_text):
+        print('mor9.html scraper start!')
+        tree = etree.HTML(mor9_text)
         if len(tree.xpath("//*[@id='top']/div/nav/div[2]/ul/li[7]/ul/li[1]/a/@href")) == 0:
             self.account.feedback = '账号密码错误,请修改后重试！'
             account_controller.update(id=self.account.id, obj_in=self.account)
             account_controller.update(id=self.account.id, obj_in=self.account)
             return False, ""
         url = tree.xpath("//*[@id='top']/div/nav/div[2]/ul/li[7]/ul/li[8]/a/@href")[0]
-        response_mor9 = self.session.get("https://i.tisi.go.th" + url, headers=self.headers, verify=False)
+        response_mor9 = self.session.get("https://i.tisi.go.th" + url, headers=self.headers, verify=False, timeout=6)
         tree = etree.HTML(response_mor9.text, etree.HTMLParser())
         tr_list = tree.xpath("//*[@id='moao9List']/tbody/tr")
         for tr in tr_list:
@@ -127,20 +136,44 @@ class ScraperUtils:
                 apply_name=item["MOR9_APPLY_NAME"],
                 apply_date=item["MOR9_APPLY_DATE"],
                 mor_type="MOR9",
-                mor_status=status,
                 license_code=item["MOR9_LICENSE_CODE"],
                 create_by=self.account.create_by,
                 update_by=self.account.update_by,
                 ctime=datetime.now(),
                 mtime=datetime.now(),
             )
-            mor: Mor = await mor_controller.get_apply_number(item["MOR9_APPLY_CODE"])
+            print(Mor.to_dict(mor_obj))
+            mor: Mor = await mor_controller.get_mor_by_apply_number(apply_number=item["MOR9_APPLY_CODE"])
             if mor:
-                await mor_controller.update(id=mor.id, obj_in=mor_obj.to_dict())
+                await mor_controller.update(id=mor.id, obj_in={
+                    "apply_number": item["MOR9_APPLY_CODE"],
+                    "apply_date": item["MOR9_APPLY_DATE"],
+                    "apply_name": item["MOR9_APPLY_NAME"],
+                    "license_code": item["MOR9_LICENSE_CODE"],
+                    "mor_type": "mor9",
+                    "apply_status": status,
+                    "update_status": 2,
+                    "update_by": self.account.update_by,
+                    "mtime": datetime.now(),
+                    "ctime": datetime.now(),
+                })
                 if item["MOR9_STATUS"] != mor.apply_status:
                     await self.sendEmail(user=self.account.nickname, result=mor_obj)
             else:
-                await mor_controller.create(mor_obj)
+                new_mor = await mor_controller.create(obj_in={
+                    "apply_number": item["MOR9_APPLY_CODE"],
+                    "apply_date": item["MOR9_APPLY_DATE"],
+                    "apply_name": item["MOR9_APPLY_NAME"],
+                    "license_code": item["MOR9_LICENSE_CODE"],
+                    "mor_type": "mor9",
+                    "apply_status": status,
+                    "update_by": self.account.update_by,
+                    "update_status": 1,
+                    "mtime": datetime.now(),
+                    "ctime": datetime.now(),
+                })
+                await mor_controller.update_mor_account(mor=new_mor, mor_account_id=self.account.id)
+            await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.UserCreateOne, by_user_id=0)
         return True, "Mor9 scraper success"
 
     @staticmethod
@@ -190,8 +223,3 @@ class ScraperUtils:
 
 
 scraper_utils = ScraperUtils()
-# if __name__ == '__main__':
-#     # scraper = ScraperUtils(username='0105548160264', password='12345')
-#     flag, response = asyncio.run(scraper_utils.login(username='0105548160264', password='K@ming0101'))
-#     retry, response_l = asyncio.run(scraper_utils.get_license(response))
-#     asyncio.run(scraper_utils.get_mor9(response_l, "admin"))
