@@ -2,6 +2,7 @@ from aerich import Command
 from fastapi import FastAPI
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi_mail import ConnectionConfig
 from tortoise.contrib.fastapi import register_tortoise
 from tortoise.exceptions import MultipleObjectsReturned
 

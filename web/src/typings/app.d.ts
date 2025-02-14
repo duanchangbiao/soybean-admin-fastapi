@@ -305,6 +305,7 @@ declare namespace App {
         config: string;
         confirm: string;
         delete: string;
+        execute: string;
         deleteSuccess: string;
         confirmDelete: string;
         approve: string;
@@ -541,7 +542,8 @@ declare namespace App {
               aft: string;
               affa: string;
               nsw: string;
-            }
+            };
+            executeSuccess:string;
           };
           role: {
             title: string;

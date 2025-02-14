@@ -8,6 +8,12 @@ class AccountController(CRUDBase[Account, AccountCreate, AccountUpdate]):
     def __init__(self):
         super().__init__(model=Account)
 
+    async def get_account_by_account_number(account_number: str) -> Account | None:
+        return await Account.filter(account_number=account_number).first()
+
+    async def get_dict_by_id(self, dict_id: list[str]):
+        return await Dict.filter(id__in=dict_id).all()
+
     @staticmethod
     async def update_dict_by_value(account: Account, dict_value_list: list[str] | str):
         if not dict_value_list:

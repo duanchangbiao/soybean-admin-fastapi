@@ -533,6 +533,15 @@ export function fetchBatchDeleteAccount(data?: Api.SystemManage.CommonBatchDelet
   })
 }
 
+/** execute account */
+export function fetchExecuteAccount(data?: { account_id: number; accountMonitorList: string[] }) {
+  return request<Api.Business.AccountList,'json'>({
+    url: `/account/execute/${data?.account_id}`,
+    method: 'patch',
+    data
+  });
+}
+
 
 /** add account */
 export function fetchAddAccount(data?: Api.Business.AccountAddParams) {

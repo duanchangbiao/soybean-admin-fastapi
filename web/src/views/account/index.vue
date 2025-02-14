@@ -2,11 +2,18 @@
 import {NButton, NPopconfirm, NTag} from 'naive-ui';
 import {$t} from "@/locales";
 import {useTable, useTableOperate} from '@/hooks/common/table';
-import {fetchBatchDeleteAccount, fetchDeleteAccount, fetchGetAccountList, fetchUpdateAccount} from "@/service/api";
+import {
+  fetchBatchDeleteAccount,
+  fetchDeleteAccount,
+  fetchExecuteAccount,
+  fetchGetAccountList,
+  fetchUpdateAccount
+} from "@/service/api";
 import {useAppStore} from "@/store/modules/app";
 import {AccountDictTypeRecord, statusTypeRecord} from "@/constants/business";
 import AccountOperateModal from "@/views/account/modules/account-operate-modal.vue";
 import AccountSearch from "@/views/account/modules/account-search.vue"
+import {reactive} from "vue";
 
 const appStore = useAppStore();
 
@@ -117,18 +124,21 @@ const {
       title: $t('page.business.account.ctime'),
       dataIndex: 'ctime',
       align: 'center',
-      width: 150
+      width: 120
     },
 
     {
       key: 'operate',
       title: $t('common.operate'),
       align: 'center',
-      width: 150,
+      width: 180,
       render: row => (
         <div class="flex-center gap-8px">
           <NButton type="primary" ghost size="small" onClick={() => edit(row.id)}>
             {$t('common.edit')}
+          </NButton>
+          <NButton type="primary" ghost size="small" onClick={() => execute(row.id, row.accountMonitorList)}>
+            {$t('common.execute')}
           </NButton>
           <NPopconfirm onPositiveClick={() => handleDelete(row.id)}>
             {{
@@ -174,15 +184,6 @@ async function handleBatchDelete() {
   }
 }
 
-
-async function handleActivateChange(id: number, value: boolean) {
-  // request
-  const {error} = await fetchUpdateAccount({id, activate: value});
-  if (!error) {
-    getData();
-  }
-}
-
 async function handleDelete(id: number) {
   // request
   const {error} = await fetchDeleteAccount({id});
@@ -193,6 +194,13 @@ async function handleDelete(id: number) {
 
 function edit(id: number) {
   handleEdit(id);
+}
+
+async function execute(account_id: number, accountMonitorList: string[]) {
+  const {error} = await fetchExecuteAccount({account_id, accountMonitorList})
+  if (!error) {
+    window.$message.success($t('page.manage.common.executeSuccess'))
+  }
 }
 </script>
 

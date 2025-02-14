@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Any
 
+from fastapi_mail import ConnectionConfig
 from pydantic_settings import BaseSettings
 from pydantic import Field
 
@@ -34,6 +35,19 @@ def tortoise_orm_factory() -> dict[str, Any]:
     }
 
 
+fastapi_mail_config = ConnectionConfig(
+    MAIL_USERNAME="maegalage@qq.com",
+    MAIL_PASSWORD="xmbgwjaswzfyeaaf",
+    MAIL_FROM="maegalage@qq.com",
+    MAIL_PORT=465,
+    MAIL_SERVER="smtp.qq.com",
+    MAIL_STARTTLS=False,
+    MAIL_SSL_TLS=True,
+    USE_CREDENTIALS=True,
+    VALIDATE_CERTS=True
+)
+
+
 class Settings(BaseSettings):
     VERSION: str = "0.1.0"
     APP_TITLE: str = "FastSoyAdmin"
@@ -41,11 +55,12 @@ class Settings(BaseSettings):
 
     CORS_ORIGINS: list[str] = Field(default_factory=lambda: ["*"])
     CORS_ALLOW_CREDENTIALS: bool = True
-    CORS_ALLOW_METHODS: list[str] = Field(default_factory=lambda: ["*"])
+    CORS_ALLOW_METHODS: list[str] = Field(default_factory=lambda: ["POST", "GET", "PATCH", "DELETE"])
     CORS_ALLOW_HEADERS: list[str] = Field(default_factory=lambda: ["*"])
 
     ADD_LOG_ORIGINS_INCLUDE: list[str] = Field(default_factory=lambda: ["*"])
-    ADD_LOG_ORIGINS_DECLUDE: list[str] = Field(default_factory=lambda: ["/system-manage", "/redoc", "/doc", "/openapi.json"])
+    ADD_LOG_ORIGINS_DECLUDE: list[str] = Field(
+        default_factory=lambda: ["/system-manage", "/redoc", "/doc", "/openapi.json"])
 
     DEBUG: bool = False
 

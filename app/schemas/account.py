@@ -9,7 +9,7 @@ class BaseAccount(BaseModel):
     remark: Annotated[str | None, Field(alias="remark", description="备注")] = None
     activate: Annotated[str | None, Field(alias="activate", description="状态")] = None
     feedback: Annotated[str | None, Field(alias="feedback", description="反馈")] = None
-    password: Annotated[str | None, Field(alias="password", description="密码")]
+    password: Annotated[str | None, Field(alias="password", description="密码")] = None
     by_account_modules: Annotated[list[int] | None, Field(alias="accountMonitorList", title="account编码列表")] = None
     create_by: Annotated[str | None, Field(alias="createBy", description="创建人")] = None
     update_by: Annotated[str | None, Field(alias="updateBy", description="更新人")] = None

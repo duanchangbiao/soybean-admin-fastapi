@@ -22,6 +22,7 @@ const local: App.I18n.Schema = {
     config: '配置',
     confirm: '确认',
     delete: '删除',
+    execute: '执行',
     deleteSuccess: '删除成功',
     confirmDelete: '确认删除吗？',
     approve: '通过',
@@ -354,7 +355,8 @@ const local: App.I18n.Schema = {
           aft: 'AFT',
           affa: 'AFFA',
           nsw: 'NSW'
-        }
+        },
+        executeSuccess: '执行成功!'
       },
       role: {
         title: '角色列表',

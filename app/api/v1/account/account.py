@@ -7,7 +7,7 @@ from app.controllers.account import account_controller
 from app.core.ctx import CTX_USER_ID
 from app.models.system import LogType, LogDetailType, Role
 from app.models.system.business import Dict
-from app.schemas.account import AccountCreate
+from app.schemas.account import AccountCreate, AccountUpdate
 from app.schemas.base import SuccessExtra, Success
 
 router = APIRouter()
@@ -76,7 +76,7 @@ async def _(account_in: AccountCreate):
 
 
 @router.patch("/update/{account_id}", summary="更新account")
-async def _(account_id: int, account_in: AccountCreate):
+async def _(account_id: int, account_in: AccountUpdate):
     user_id = CTX_USER_ID.get()  # 从请求的token获取用户id
     user_obj = await user_controller.get(id=user_id)
     account_in.update_by = user_obj.nick_name
@@ -103,3 +103,13 @@ async def _(ids: str = Query(..., description="删除account列表, 用逗号隔
         deleted_ids.append(int(account_id))
     await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.UserDeleteOne, by_user_id=0)
     return Success(msg="Deleted Successfully", data={"deleted_id": ids})
+
+
+@router.patch("/execute/{account_id}", summary="立即执行账户监控信息")
+async def _(account_id: int, account_in: AccountUpdate):
+    user_id = CTX_USER_ID.get()  # 从请求的token获取用户id
+    user_obj = await user_controller.get(id=user_id)
+    dict_objs: list[Dict] = await account_controller.get_dict_by_id(account_in.by_account_modules)
+    for dict_obj in dict_objs:
+        print(dict_obj.to_dict())
+    return Success(msg="Scraper Successfully", data={'Scraper_id': account_id})

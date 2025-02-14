@@ -1,7 +1,6 @@
+
 import datetime
 import re
-
-# from bson import ObjectId
 import orjson
 
 LAYOUT_PREFIX = 'layout.'
@@ -9,7 +8,8 @@ VIEW_PREFIX = 'view.'
 FIRST_LEVEL_ROUTE_COMPONENT_SPLIT = '$'
 
 
-def check_url(url: str = "/api/v1/system-manage/roles/{role_id}/buttons", url2: str = "/api/v1/system-manage/roles/1/buttons") -> bool:
+def check_url(url: str = "/api/v1/system-manage/roles/{role_id}/buttons",
+              url2: str = "/api/v1/system-manage/roles/1/buttons") -> bool:
     pattern = re.sub(r'\{.*?}', '[^/]+', url)
     if re.match(pattern, url2):
         return True
