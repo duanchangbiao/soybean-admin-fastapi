@@ -8,7 +8,7 @@ from app.api.v1.utils import insert_log
 from app.controllers.account import account_controller
 from app.controllers.dict import dict_controller
 from app.controllers.mor import mor_controller
-from app.models.system import Account, Mor, Dict, Aft, LogType, LogDetailType
+from app.models.system import Mor, Dict, Aft, LogType, LogDetailType
 from lxml import etree
 
 from app.schemas.account import AccountUpdate
@@ -34,13 +34,12 @@ class ScraperUtils:
         response_login = self.session.get(url=self.url, headers=self.headers, verify=False, timeout=6)
         if response_login.status_code != 200:
             self.account.feedback = '用户登陆异常,请手动重试!'
-            account_controller.update(id=self.account.id, obj_in=self.account)
+            await account_controller.update(id=self.account.id, obj_in=self.account)
             return False, ""
         tree = etree.HTML(response_login.text)
         if not tree.xpath('//*[@name="_token"]/@value'):
-            print(response_login.text)
             self.account.feedback = '网络异常,请重启网络！'
-            account_controller.update(id=self.account.id, obj_in=self.account)
+            await account_controller.update(id=self.account.id, obj_in=self.account)
             return False, ""
 
         _token = tree.xpath('//*[@name="_token"]/@value')[0]
@@ -53,7 +52,7 @@ class ScraperUtils:
         response = self.session.post(url=self.url, headers=self.headers, data=data, verify=False, timeout=6)
         if response.status_code != 200:
             self.account.feedback = '用户登陆异常,请手动重试!'
-            account_controller.update(id=self.account.id, obj_in=self.account, exclude={"by_account_modules"})
+            await account_controller.update(id=self.account.id, obj_in=self.account, exclude={"by_account_modules"})
             return False, ""
         return True, response.text
 
@@ -63,34 +62,34 @@ class ScraperUtils:
         url = tree.xpath("//div[@class='row colorbox-group-widget']/div[1]/a/@href")
         if len(url) == 0:
             self.account.feedback = '账号密码错误,请修改后重试！'
-            account_controller.update(id=self.account.id, obj_in=self.account)
-            account_controller.update(id=self.account.id, obj_in=self.account)
+            await account_controller.update(id=self.account.id, obj_in=self.account)
+            await account_controller.update(id=self.account.id, obj_in=self.account)
             return False, ""
         response_license = self.session.get(url[0], headers=self.headers, verify=False)
         if response_license.status_code != 200:
             self.account.feedback = '账号密码错误,请修改后重试！'
-            account_controller.update(id=self.account.id, obj_in=self.account)
-            account_controller.update(id=self.account.id, obj_in=self.account)
+            await account_controller.update(id=self.account.id, obj_in=self.account)
+            await account_controller.update(id=self.account.id, obj_in=self.account)
             return False, ""
         return True, response_license.text
 
     async def get_mor5(self, mor5_text):
         print('mor5.html scraper start!')
         tree = etree.HTML(mor5_text)
-        if len(tree.xpath("//*[@id='top']/div/nav/div[2]/ul/li[7]/ul/li[4]/a/@href")) == 0:
+        if len(tree.xpath("//*[@id='top']/div/nav/div[2]/ul/li[7]/ul/li[3]/a/@href")) == 0:
             self.account.feedback = '账号密码错误,请修改后重试！'
-            account_controller.update(id=self.account.id, obj_in=self.account)
-            account_controller.update(id=self.account.id, obj_in=self.account)
+            await account_controller.update(id=self.account.id, obj_in=self.account)
+            await account_controller.update(id=self.account.id, obj_in=self.account)
             return False, ""
-        url = tree.xpath("//*[@id='top']/div/nav/div[2]/ul/li[7]/ul/li[4]/a/@href")[0]
+        url = tree.xpath("//*[@id='top']/div/nav/div[2]/ul/li[7]/ul/li[3]/a/@href")[0]
         response_mor5 = self.session.get("https://i.tisi.go.th" + url, headers=self.headers, verify=False)
         with open("./mor5.html", "w", encoding="utf-8") as f:
             f.write(response_mor5.text)
             f.close()
         if response_mor5.status_code != 200:
             self.account.feedback = '账号密码错误,请修改后重试！'
-            account_controller.update(id=self.account.id, obj_in=self.account)
-            account_controller.update(id=self.account.id, obj_in=self.account)
+            await account_controller.update(id=self.account.id, obj_in=self.account)
+            await account_controller.update(id=self.account.id, obj_in=self.account)
             return False, ""
         # 解析页面mor5
         tree = etree.HTML(response_mor5.text, etree.HTMLParser())
@@ -110,23 +109,37 @@ class ScraperUtils:
                 item["MOR5_STATUS"] = str_list.strip()
             else:
                 item["MOR5_STATUS"] = ""
-            dict_obj: Dict = await dict_controller.get_by_dict_value("MOR5_STATUS", item["MOR5_STATUS"])
+            dict_obj: Dict = await dict_controller.get_by_dict_value(dict_value=item["MOR5_STATUS"],
+                                                                     dict_type="mor5_status")
             if dict_obj:
                 status = dict_obj.dict_name
             else:
                 status = "其他"
             mor: Mor = await mor_controller.get_mor_by_apply_number(apply_number=item["MOR5_APPLY_CODE"])
-            if status != mor.apply_status:
-                mor.apply_status = status
-                await self.sendEmail(user=self.account.nickname, result=mor)
-            else:
-                new_mor = await mor_controller.create(obj_in={
-                    "apply_number": item["MOR9_APPLY_CODE"],
-                    "apply_date": item["MOR9_APPLY_DATE"],
-                    "apply_name": item["MOR9_APPLY_NAME"],
-                    "license_code": item["MOR9_LICENSE_CODE"],
+            if mor:
+                await mor_controller.update(obj_in={
+                    "apply_number": item["MOR5_APPLY_CODE"],
+                    "apply_date": item["MOR5_APPLY_DATE"],
+                    "apply_name": item["MOR5_APPLY_NAME"],
                     "mor_type": "mor5",
                     "apply_status": status,
+                    "update_by": self.account.update_by,
+                    "update_status": 2,
+                    "feedback": '正常',
+                    "mtime": datetime.now(),
+                    "ctime": datetime.now(),
+                })
+                if status != mor.apply_status:
+                    mor.apply_status = status
+                    await self.sendEmail(user=self.account.nickname, result=mor)
+            else:
+                new_mor = await mor_controller.create(obj_in={
+                    "apply_number": item["MOR5_APPLY_CODE"],
+                    "apply_date": item["MOR5_APPLY_DATE"],
+                    "apply_name": item["MOR5_APPLY_NAME"],
+                    "mor_type": "mor5",
+                    "apply_status": status,
+                    "feedback": '正常',
                     "update_by": self.account.update_by,
                     "update_status": 1,
                     "mtime": datetime.now(),
@@ -141,8 +154,8 @@ class ScraperUtils:
         tree = etree.HTML(mor9_text)
         if len(tree.xpath("//*[@id='top']/div/nav/div[2]/ul/li[7]/ul/li[1]/a/@href")) == 0:
             self.account.feedback = '账号密码错误,请修改后重试！'
-            account_controller.update(id=self.account.id, obj_in=self.account)
-            account_controller.update(id=self.account.id, obj_in=self.account)
+            await account_controller.update(id=self.account.id, obj_in=self.account)
+            await account_controller.update(id=self.account.id, obj_in=self.account)
             return False, ""
         url = tree.xpath("//*[@id='top']/div/nav/div[2]/ul/li[7]/ul/li[8]/a/@href")[0]
         response_mor9 = self.session.get("https://i.tisi.go.th" + url, headers=self.headers, verify=False, timeout=6)
@@ -167,7 +180,8 @@ class ScraperUtils:
             else:
                 item["MOR9_STATUS"] = ""
 
-            dict_obj: Dict = await dict_controller.get_by_dict_value("MOR9_STATUS", item["MOR9_STATUS"])
+            dict_obj: Dict = await dict_controller.get_by_dict_value(dict_value=item["MOR9_STATUS"],
+                                                                     dict_type="mor9_status")
             if dict_obj:
                 status = dict_obj.dict_name
             else:
@@ -181,6 +195,7 @@ class ScraperUtils:
                     "license_code": item["MOR9_LICENSE_CODE"],
                     "mor_type": "mor9",
                     "apply_status": status,
+                    "feedback": '正常',
                     "update_status": 2,
                     "update_by": self.account.update_by,
                     "mtime": datetime.now(),
@@ -197,6 +212,7 @@ class ScraperUtils:
                     "license_code": item["MOR9_LICENSE_CODE"],
                     "mor_type": "mor9",
                     "apply_status": status,
+                    "feedback": '正常',
                     "update_by": self.account.update_by,
                     "update_status": 1,
                     "mtime": datetime.now(),
