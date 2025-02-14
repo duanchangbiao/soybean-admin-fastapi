@@ -118,10 +118,12 @@ async def _(account_id: int, account_in: AccountUpdate):
             retry_l, response_l = await scraper_utils.get_license(response)
             if not retry_l:
                 return Success(msg="Scraper Failed", data={'Scraper_id': account_id}, code=4090)
+
             if dict_obj.dict_name == 'MOR9':
                 retry_m, response_m = await scraper_utils.get_mor9(response_l)
                 if not retry_m:
                     return Success(msg="Scraper Failed", data={'Scraper_id': account_id}, code=4090)
+
             if dict_obj.dict_name == 'MOR5':
                 retry_m, response_m = await scraper_utils.get_mor5(response_l)
                 if not retry_m:
