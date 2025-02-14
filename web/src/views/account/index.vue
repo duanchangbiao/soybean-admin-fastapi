@@ -137,7 +137,8 @@ const {
           <NButton type="primary" ghost size="small" onClick={() => edit(row.id)}>
             {$t('common.edit')}
           </NButton>
-          <NButton type="primary" ghost size="small" onClick={() => execute(row.id, row.accountMonitorList)}>
+          <NButton type="primary" ghost size="small" onClick={() => execute(row.id,
+            row.accountMonitorList, row.accountNumber, row.password, row.createBy, row.updateBy)}>
             {$t('common.execute')}
           </NButton>
           <NPopconfirm onPositiveClick={() => handleDelete(row.id)}>
@@ -196,8 +197,9 @@ function edit(id: number) {
   handleEdit(id);
 }
 
-async function execute(account_id: number, accountMonitorList: string[]) {
-  const {error} = await fetchExecuteAccount({account_id, accountMonitorList})
+async function execute(id: number, accountMonitorList: string[],accountNumber: string, password: string, createBy: string, updateBy: string) {
+  const mode = {id, accountMonitorList, accountNumber, password, createBy, updateBy}
+  const {error} = await fetchExecuteAccount(mode)
   if (!error) {
     window.$message.success($t('page.manage.common.executeSuccess'))
   }

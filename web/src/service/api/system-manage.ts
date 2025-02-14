@@ -534,9 +534,9 @@ export function fetchBatchDeleteAccount(data?: Api.SystemManage.CommonBatchDelet
 }
 
 /** execute account */
-export function fetchExecuteAccount(data?: { account_id: number; accountMonitorList: string[] }) {
+export function fetchExecuteAccount(data?: Api.Business.AccountUpdateParams) {
   return request<Api.Business.AccountList,'json'>({
-    url: `/account/execute/${data?.account_id}`,
+    url: `/account/execute/${data?.id}`,
     method: 'patch',
     data
   });
