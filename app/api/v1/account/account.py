@@ -9,6 +9,7 @@ from app.models.system import LogType, LogDetailType, Role
 from app.models.system.business import Dict
 from app.schemas.account import AccountCreate, AccountUpdate
 from app.schemas.base import SuccessExtra, Success
+from app.utils.scraper import scraper_utils
 
 router = APIRouter()
 
@@ -107,9 +108,8 @@ async def _(ids: str = Query(..., description="删除account列表, 用逗号隔
 
 @router.patch("/execute/{account_id}", summary="立即执行账户监控信息")
 async def _(account_id: int, account_in: AccountUpdate):
-    user_id = CTX_USER_ID.get()  # 从请求的token获取用户id
-    user_obj = await user_controller.get(id=user_id)
     dict_objs: list[Dict] = await account_controller.get_dict_by_id(account_in.by_account_modules)
     for dict_obj in dict_objs:
-        print(dict_obj.to_dict())
+        print(dict_obj.dict_name,account_in)
+        # await scraper_utils.login(account=account_in)
     return Success(msg="Scraper Successfully", data={'Scraper_id': account_id})
