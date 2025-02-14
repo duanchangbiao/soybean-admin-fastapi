@@ -15,15 +15,33 @@ services:
       "
     networks:
       - internal
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_DATABASE: soybean_admin
+      MYSQL_USER: root
+      MYSQL_PASSWORD: admin@123!
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+      - ./my.cnf:/etc/mysql/conf.d/my.cnf
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 512M  # 限制容器内存使用
+          cpus: '0.5'   # 限制 CPU 使用
 
   nginx:
     image: nginx:alpine
     ports:
-      - "1880:80"
+      - "18200:80"
     environment:
       - LANG=zh_CN.UTF-8
     volumes:
-      - ./web/dist:/var/www/html/fast-soy-admin
+      - ./web/dist:/var/www/html/
       - ./deploy/web.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - web
