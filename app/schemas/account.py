@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 
 
 class BaseAccount(BaseModel):
+    id: Annotated[int | None, Field(int | None, description=" account ID")] = None
     account_number: Annotated[str | None, Field(alias="accountNumber", title="账号信息")] = None
     nickname: Annotated[str | None, Field(alias="nickname", description="昵称")] = None
     remark: Annotated[str | None, Field(alias="remark", description="备注")] = None

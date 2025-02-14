@@ -110,6 +110,18 @@ async def _(ids: str = Query(..., description="删除account列表, 用逗号隔
 async def _(account_id: int, account_in: AccountUpdate):
     dict_objs: list[Dict] = await account_controller.get_dict_by_id(account_in.by_account_modules)
     for dict_obj in dict_objs:
-        print(dict_obj.dict_name,account_in)
-        # await scraper_utils.login(account=account_in)
+        print(dict_obj.dict_name, account_in)
+        retry, response = await scraper_utils.login(account=account_in)
+        if not retry:
+            return Success(msg="Scraper Failed", data={'Scraper_id': account_id})
+        if dict_obj.dict_name != 'NSW':
+            retry_l, response_l = await scraper_utils.get_license(response)
+            if not retry_l:
+                return Success(msg="Scraper Failed", data={'Scraper_id': account_id})
+            if dict_obj.dict_name == 'MOR9':
+                retry_m, response_m = await scraper_utils.get_mor9(response_l)
+                if not retry_m:
+                    return Success(msg="Scraper Failed", data={'Scraper_id': account_id})
+
+
     return Success(msg="Scraper Successfully", data={'Scraper_id': account_id})
