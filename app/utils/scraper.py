@@ -61,10 +61,13 @@ class ScraperUtils:
             return False, ""
         return True, response.text
 
-    async def get_license(self, index_text):
+    async def get_license(self, index_text, type: int):
         print('index.html scraper start!')
         tree = etree.HTML(index_text)
-        url = tree.xpath("//div[@class='row colorbox-group-widget']/div[1]/a/@href")
+        if type == 1:
+            url = tree.xpath("//div[@class='row colorbox-group-widget']/div[1]/a/@href")
+        else:
+            url = tree.xpath("//div[@class='row colorbox-group-widget']/div[2]/a/@href")
         if len(url) == 0:
             self.account.feedback = '账号密码错误,请修改后重试！'
             await account_controller.update(id=self.account.id, obj_in=self.account)
@@ -304,9 +307,8 @@ class ScraperUtils:
         await insert_log(log_type=LogType.ApiLog, log_detail_type=LogDetailType.UserCreateOne, by_user_id=0)
         return True, "Affa scraper success"
 
-
     async def get_aft(self, aft_text):
-        print('affa.html scraper start!')
+        print('aft.html scraper start!')
         tree = etree.HTML(aft_text)
         if len(tree.xpath("//*[@id='top']/div//ul[@class='nav menu nav-pills']/li[6]/ul/li[3]/a/@href")) == 0:
             self.account.feedback = '账号密码错误,请修改后重试！'
@@ -380,6 +382,34 @@ class ScraperUtils:
         await account_controller.update(id=self.account.id, obj_in=self.account)
         await insert_log(log_type=LogType.ApiLog, log_detail_type=LogDetailType.UserCreateOne, by_user_id=0)
         return True, "Aft scraper success"
+
+    async def get_nsw(self, aft_text):
+        print('Nsw.html scraper start!')
+        tree = etree.HTML(aft_text)
+        if len(tree.xpath("//body/div[@class='container-fluid']/div[@class='col-md-6']/div/a/@href")) == 0:
+            self.account.feedback = '账号密码错误,请修改后重试！'
+            await account_controller.update(id=self.account.id, obj_in=self.account)
+            return False, ""
+        url = tree.xpath("//body/div[@class='container-fluid']/div[@class='col-md-6']/div/a/@href")[0]
+        response_aft = self.session.get("https://appdb.tisi.go.th/TISINSW/" + url, headers=self.headers, verify=False, timeout=30)
+        tree = etree.HTML(response_aft.text, etree.HTMLParser())
+        tr_list = tree.xpath("//*[@id='table6']/tbody/tr")
+        for tr in tr_list:
+            item = {}
+            if tr.xpath("./td[1]/font/text()"):
+                item["NSW_CODE"] = tr.xpath("./td[1]/font/text()")[0].strip()
+            if tr.xpath("./td[6]/font/text()"):
+                item["NSW_APPLY_DATE"] = tr.xpath("./td[6]/font/text()")[0].strip()
+            else:
+                item["NSW_INVOICE_DATE"] = ""
+            if tr.xpath("./td[8]/font/text()"):
+                item["NSW_APPLY_PASS_DATE"] = tr.xpath("./td[8]/font/text()")[0].strip()
+            else:
+                item["NSW_APPLY_PASS_DATE"] = ""
+            if tr.xpath("./td[9]/font/text()"):
+                item["NSW_APPLY_STATUS"] = tr.xpath("./td[9]/font/text()")[0].strip()
+            else:
+                item["NSW_APPLY_STATUS"] = ""
 
     async def logout(self):
         self.session.get(url="https://sso.tisi.go.th/logout", headers=self.headers, verify=False, timeout=6)

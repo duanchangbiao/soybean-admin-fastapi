@@ -117,7 +117,7 @@ async def _(account_id: int, account_in: AccountUpdate):
         if not retry:
             return Success(msg="Scraper Failed", data={'Scraper_id': account_id}, code=4090)
         if dict_obj.dict_name != 'NSW':
-            retry_l, response_l = await scraper_utils.get_license(response)
+            retry_l, response_l = await scraper_utils.get_license(index_text=response, type=1)
             if not retry_l:
                 return Success(msg="Scraper Failed", data={'Scraper_id': account_id}, code=4090)
 
@@ -139,7 +139,7 @@ async def _(account_id: int, account_in: AccountUpdate):
                 if not retry_a:
                     return Success(msg="Scraper Failed", data={'Scraper_id': account_id}, code=4090)
         if dict_obj.dict_name == 'NSW':
-            retry_n, response_n = await scraper_utils.get_nsw_index(response)
+            retry_n, response_n = await scraper_utils.get_license(index_text=response, type=2)
             if not retry_n:
                 return Success(msg="Scraper Failed", data={'Scraper_id': account_id}, code=4090)
             await scraper_utils.get_nsw(response_n)
