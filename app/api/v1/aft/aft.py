@@ -21,14 +21,12 @@ async def _(
         aftType: str = Query(None, description="aft类型"),
         applyStatus: str = Query(None, description="申请状态"),
         remark: str = Query(None, description="备注"),
-        nickName: str = Query(None, description="昵称"),
+        accountNumber: str = Query(None, description="昵称"),
 ):
     q = Q()
-    if nickName:
-        if _by_account := await Account.get_or_none(nickname=nickName) is not None:
-            q &= Q(by_aft_account=_by_account)
-        else:
-            return Success(msg="账号不存在", code=2000)
+    if accountNumber:
+        _by_account: Account = await Account.get_or_none(account_number=accountNumber)
+        q &= Q(by_aft_account=_by_account)
     if applyNumber:
         q &= Q(apply_number__contains=applyNumber)
     if applyStatus:
@@ -43,7 +41,7 @@ async def _(
     user_role_codes = [role_obj.role_code for role_obj in user_role_objs]
     if "R_SUPER" not in user_role_codes:  # 超级管理员具有所有权限
         q &= Q(create_by=user_obj.nick_name)
-    total, aft_objs = await aft_controller.list(page=current, page_size=size, search=q,order=["id", "-sort"])
+    total, aft_objs = await aft_controller.list(page=current, page_size=size, search=q, order=["id", "-sort"])
     records = []
     for aft_obj in aft_objs:
         record = await aft_obj.to_dict(exclude_fields=["password"])

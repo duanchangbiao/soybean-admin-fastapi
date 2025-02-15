@@ -16,12 +16,12 @@ def tortoise_orm_factory() -> dict[str, Any]:
             "conn_system": {
                 "engine": "tortoise.backends.mysql",
                 "credentials": {
-                    # "host": "8.138.198.117",  # 替换为你的MySQL主机地址
-                    "host": "119.28.1.136",  # 替换为你的MySQL主机地址
+                    "host": "8.138.198.117",  # 替换为你的MySQL主机地址
+                    # "host": "119.28.1.136",  # 替换为你的MySQL主机地址
                     "port": 3306,  # 替换为你的MySQL端口号
                     "user": "root",  # 替换为你的MySQL用户名
-                    # "password": "admin@123!",  # 替换为你的MySQL密码
-                    "password": "zkkj@123!",  # 替换为你的MySQL密码
+                    "password": "admin@123!",  # 替换为你的MySQL密码
+                    # "password": "zkkj@123!",  # 替换为你的MySQL密码
                     "database": "soybean_admin"  # 替换为你的MySQL数据库名
                 }
             }

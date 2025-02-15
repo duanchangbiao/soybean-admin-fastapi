@@ -20,14 +20,12 @@ async def _(
         morType: str = Query(None, description="aft类型"),
         applyStatus: str = Query(None, description="申请状态"),
         remark: str = Query(None, description="备注"),
-        nickName: str = Query(None, description="昵称"),
+        accountNumber: str = Query(None, description="昵称"),
 ):
     q = Q()
-    if nickName:
-        if _by_account := await Account.get_or_none(nickname=nickName) is not None:
-            q &= Q(by_mor_account=_by_account)
-        else:
-            return Success(msg="账号不存在", code=2000)
+    if accountNumber:
+        _by_account: Account = await Account.get_or_none(account_number=accountNumber)
+        q &= Q(by_mor_account=_by_account)
     if applyNumber:
         q &= Q(apply_number__contains=applyNumber)
     if applyStatus:
