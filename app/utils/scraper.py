@@ -10,7 +10,8 @@ from app.controllers.account import account_controller
 from app.controllers.aft import aft_controller
 from app.controllers.dict import dict_controller
 from app.controllers.mor import mor_controller
-from app.models.system import Mor, Dict, Aft, LogType, LogDetailType
+from app.controllers.nsw import nsw_controller
+from app.models.system import Mor, Dict, Aft, LogType, LogDetailType, Nsw
 from lxml import etree
 
 from app.schemas.account import AccountUpdate
@@ -402,14 +403,47 @@ class ScraperUtils:
                 item["NSW_APPLY_DATE"] = tr.xpath("./td[6]/font/text()")[0].strip()
             else:
                 item["NSW_INVOICE_DATE"] = ""
-            if tr.xpath("./td[8]/font/text()"):
-                item["NSW_APPLY_PASS_DATE"] = tr.xpath("./td[8]/font/text()")[0].strip()
-            else:
-                item["NSW_APPLY_PASS_DATE"] = ""
             if tr.xpath("./td[9]/font/text()"):
                 item["NSW_APPLY_STATUS"] = tr.xpath("./td[9]/font/text()")[0].strip()
             else:
                 item["NSW_APPLY_STATUS"] = ""
+            dict_obj: Dict = await dict_controller.get_by_dict_value(dict_value=item["NSW_APPLY_STATUS"],
+                                                                     dict_type="nsw_status")
+            if dict_obj:
+                status = dict_obj.dict_name
+            else:
+                status = "其他"
+            nsw: Nsw = await nsw_controller.get_nsw_by_apply_number(apply_number=item["AFT_APPLY_CODE"])
+            if nsw:
+                await nsw_controller.update(id=nsw.id, obj_in={
+                    "apply_number": item["NSW_CODE"],
+                    "apply_date": item["NSW_APPLY_DATE"],
+                    "apply_status": status,
+                    "update_status": 2,
+                    "update_by": self.account.update_by,
+                    "mtime": datetime.now(),
+                    "ctime": datetime.now(),
+                })
+                if status != nsw.apply_status:
+                    await nsw_controller.update(id=nsw.id, obj_in={
+                        "update_status": 1,
+                    })
+                    nsw.apply_status = status
+                    await self.sendEmail(user=self.account.nickname, result=nsw)
+            else:
+                new_nsw = await nsw_controller.create(obj_in={
+                    "apply_number": item["NSW_CODE"],
+                    "apply_date": item["NSW_APPLY_DATE"],
+                    "apply_status": status,
+                    "update_status": 2,
+                    "update_by": self.account.update_by,
+                    "mtime": datetime.now(),
+                    "ctime": datetime.now(),
+                })
+                await nsw_controller.update_nsw_account(aft=new_nsw, aft_account_id=self.account.account_number)
+        self.account.feedback = '正常'
+        await account_controller.update(id=self.account.id, obj_in=self.account)
+        await insert_log(log_type=LogType.ApiLog, log_detail_type=LogDetailType.UserCreateOne, by_user_id=0)
 
     async def logout(self):
         self.session.get(url="https://sso.tisi.go.th/logout", headers=self.headers, verify=False, timeout=6)

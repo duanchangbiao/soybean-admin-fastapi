@@ -10,6 +10,9 @@ class NswController(CRUDBase[Nsw, NswCreate, NswUpdate]):
     async def get_by_account_number(self, account_number: str) -> Account | None:
         return await Account.filter(account_number=account_number).first()
 
+    async def get_nsw_by_apply_number(self, apply_number: str):
+        return await self.model.filter(apply_number=apply_number).first()
+
     @staticmethod
     async def update_nsw_account(nsw: Nsw, nsw_account_id: int) -> bool:
         if not nsw_account_id:
