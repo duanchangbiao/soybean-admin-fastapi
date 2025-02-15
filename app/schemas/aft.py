@@ -15,8 +15,8 @@ class BaseAft(BaseModel):
     apply_license: Annotated[str | None, Field(alias="applyLicense", description="申请许可证")] = None
     sort: Annotated[str | None, Field(alias="sort", description="排序")] = None
     by_aft_account: Annotated[str | None, Field(alias="accountNumber", title="账号信息")] = None
-    create_by: Annotated[str | None, Field(alias="createBy", description="创建人")]
-    update_by: Annotated[str | None, Field(aalias="updateBy", description="更新人")]
+    create_by: Annotated[str | None, Field(alias="createBy", description="创建人")] = None
+    update_by: Annotated[str | None, Field(aalias="updateBy", description="更新人")] = None
 
     class Config:
         populate_by_name = True

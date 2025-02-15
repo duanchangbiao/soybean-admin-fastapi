@@ -10,6 +10,9 @@ class AftController(CRUDBase[Aft, AftCreate, AftUpdate]):
     async def get_by_account_number(self, account_number: str) -> Account | None:
         return await Account.filter(account_number=account_number).first()
 
+    async def get_aft_by_apply_number(self, apply_number: str):
+        return await self.model.filter(apply_number=apply_number).first()
+
     @staticmethod
     async def update_aft_account(aft: Aft, aft_account_id: int) -> bool:
         if not aft_account_id:
@@ -18,7 +21,6 @@ class AftController(CRUDBase[Aft, AftCreate, AftUpdate]):
             aft_account_id = int(aft_account_id)
 
         account = await Account.get(account_number=aft_account_id)
-        print("account info:", account.to_dict())
         await aft.by_aft_account.clear()
         await aft.by_aft_account.add(account)
         return True

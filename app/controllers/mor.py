@@ -22,7 +22,6 @@ class MorController(CRUDBase[Mor, MorCreate, MorUpdate]):
             mor_account_id = int(mor_account_id)
 
         account = await Account.get(account_number=mor_account_id)
-        print("account info:", account.to_dict())
         await mor.by_mor_account.clear()
         await mor.by_mor_account.add(account)
         return True

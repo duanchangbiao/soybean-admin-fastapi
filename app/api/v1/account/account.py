@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import APIRouter, Query
 from tortoise.expressions import Q
 
@@ -128,5 +130,20 @@ async def _(account_id: int, account_in: AccountUpdate):
                 retry_m, response_m = await scraper_utils.get_mor5(response_l)
                 if not retry_m:
                     return Success(msg="Scraper Failed", data={'Scraper_id': account_id}, code=4090)
-
+            if dict_obj.dict_name == 'AFFA':
+                retry_a, response_a = await scraper_utils.get_affa(response_l)
+                if not retry_a:
+                    return Success(msg="Scraper Failed", data={'Scraper_id': account_id}, code=4090)
+            if dict_obj.dict_name == 'AFT':
+                retry_a, response_a = await scraper_utils.get_aft(response_l)
+                if not retry_a:
+                    return Success(msg="Scraper Failed", data={'Scraper_id': account_id}, code=4090)
+        if dict_obj.dict_name == 'NSW':
+            retry_n, response_n = await scraper_utils.get_nsw_index(response)
+            if not retry_n:
+                return Success(msg="Scraper Failed", data={'Scraper_id': account_id}, code=4090)
+            await scraper_utils.get_nsw(response_n)
+        await scraper_utils.logout()
+    await account_controller.update(id=account_id, obj_in={"mtime": datetime.now()})
+    await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.UserDeleteOne, by_user_id=0)
     return Success(msg="Scraper Successfully", data={'Scraper_id': account_id})

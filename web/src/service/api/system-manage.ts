@@ -535,7 +535,8 @@ export function fetchBatchDeleteAccount(data?: Api.SystemManage.CommonBatchDelet
 
 /** execute account */
 export function fetchExecuteAccount(data?: Api.Business.AccountUpdateParams) {
-  return request<Api.Business.AccountList,'json'>({
+  return request<Api.Business.AccountList, 'json'>({
+    timeout: 1000 * 30 * 60,
     url: `/account/execute/${data?.id}`,
     method: 'patch',
     data

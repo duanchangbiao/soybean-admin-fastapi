@@ -203,6 +203,7 @@ async function execute(id: number, accountMonitorList: string[], accountNumber: 
   if (!error) {
     if (response.data.code === "0000") {
       window.$message.success($t('page.manage.common.executeSuccess'))
+      resetSearchParams()
     }
   }
 }
