@@ -20,6 +20,7 @@ declare namespace Api {
       records: T[];
     }
 
+    type monitorStatus = '进行中' | '完成' | '取消' | '系统自动取消'|'异常'
     /** common search params of table */
     type CommonSearchParams = Pick<Common.PaginatingCommonParams, 'current' | 'size'>;
 
@@ -31,7 +32,7 @@ declare namespace Api {
      */
     type EnableStatus = '1' | '2';
 
-    type AccountDictStatus = '1' | '2' | '3' | 4 | '5'
+    type AccountDictStatus = '1' | '2' | '3' | '4' | '5'
 
     /** common record */
     type CommonRecord<T = any> = {

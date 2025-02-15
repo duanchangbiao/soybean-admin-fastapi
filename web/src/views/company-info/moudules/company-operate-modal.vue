@@ -160,12 +160,12 @@ watch(visible, () => {
                 :placeholder="$t('page.business.license.form.details')"/>
       </NFormItem>
     </NForm>
-    <template #action>
-      <NSpace :size="16">
-        <NButton @click="closeDrawer">{{ $t('common.cancel') }}</NButton>
-        <NButton type="primary" @click="handleSubmit">{{ $t('common.confirm') }}</NButton>
-      </NSpace>
-    </template>
+    <!--    <template #action>-->
+    <!--      <NSpace :size="16">-->
+    <!--        <NButton @click="closeDrawer">{{ $t('common.cancel') }}</NButton>-->
+    <!--        <NButton type="primary" @click="handleSubmit">{{ $t('common.confirm') }}</NButton>-->
+    <!--      </NSpace>-->
+    <!--    </template>-->
   </NModal>
 </template>
 

@@ -118,7 +118,7 @@ class ScraperUtils:
             if dict_obj:
                 status = dict_obj.dict_name
             else:
-                status = "其他"
+                status = "异常"
             mor: Mor = await mor_controller.get_mor_by_apply_number(apply_number=item["MOR5_APPLY_CODE"])
             if mor:
                 new_mor: Mor = await mor_controller.update(id=mor.id, obj_in={
@@ -133,7 +133,7 @@ class ScraperUtils:
                     "ctime": datetime.now(),
                 })
                 if status != mor.apply_status:
-                    await mor_controller.update(obj_in={
+                    await mor_controller.update(id=mor.id, obj_in={
                         "update_status": 1,
                     })
                     mor.apply_status = status
@@ -192,7 +192,7 @@ class ScraperUtils:
             if dict_obj:
                 status = dict_obj.dict_name
             else:
-                status = "其他"
+                status = "异常"
             mor: Mor = await mor_controller.get_mor_by_apply_number(apply_number=item["MOR9_APPLY_CODE"])
             if mor:
                 await mor_controller.update(id=mor.id, obj_in={
@@ -270,7 +270,7 @@ class ScraperUtils:
             if dict_obj:
                 status = dict_obj.dict_name
             else:
-                status = "其他"
+                status = "异常"
             affa: Aft = await aft_controller.get_aft_by_apply_number(apply_number=item["AFFA_APPLY_CODE"])
             if affa:
                 await aft_controller.update(id=affa.id, obj_in={
@@ -342,11 +342,11 @@ class ScraperUtils:
                 item["AFT_STATUS"] = ""
 
             dict_obj: Dict = await dict_controller.get_by_dict_value(dict_value=item["AFT_STATUS"],
-                                                                     dict_type="affa_status")
+                                                                     dict_type="aft_status")
             if dict_obj:
                 status = dict_obj.dict_name
             else:
-                status = "其他"
+                status = "异常"
             aft: Aft = await aft_controller.get_aft_by_apply_number(apply_number=item["AFT_APPLY_CODE"])
             if aft:
                 await aft_controller.update(id=aft.id, obj_in={
@@ -392,7 +392,8 @@ class ScraperUtils:
             await account_controller.update(id=self.account.id, obj_in=self.account)
             return False, ""
         url = tree.xpath("//body/div[@class='container-fluid']/div[@class='col-md-6']/div/a/@href")[0]
-        response_aft = self.session.get("https://appdb.tisi.go.th/TISINSW/" + url, headers=self.headers, verify=False, timeout=30)
+        response_aft = self.session.get("https://appdb.tisi.go.th/TISINSW/" + url, headers=self.headers, verify=False,
+                                        timeout=30)
         tree = etree.HTML(response_aft.text, etree.HTMLParser())
         tr_list = tree.xpath("//*[@id='table6']/tbody/tr")
         for tr in tr_list:
@@ -402,7 +403,7 @@ class ScraperUtils:
             if tr.xpath("./td[6]/font/text()"):
                 item["NSW_APPLY_DATE"] = tr.xpath("./td[6]/font/text()")[0].strip()
             else:
-                item["NSW_INVOICE_DATE"] = ""
+                item["NSW_APPLY_DATE"] = ""
             if tr.xpath("./td[9]/font/text()"):
                 item["NSW_APPLY_STATUS"] = tr.xpath("./td[9]/font/text()")[0].strip()
             else:
@@ -412,8 +413,8 @@ class ScraperUtils:
             if dict_obj:
                 status = dict_obj.dict_name
             else:
-                status = "其他"
-            nsw: Nsw = await nsw_controller.get_nsw_by_apply_number(apply_number=item["AFT_APPLY_CODE"])
+                status = "异常"
+            nsw: Nsw = await nsw_controller.get_nsw_by_apply_number(apply_number=item["NSW_CODE"])
             if nsw:
                 await nsw_controller.update(id=nsw.id, obj_in={
                     "apply_number": item["NSW_CODE"],
@@ -440,7 +441,7 @@ class ScraperUtils:
                     "mtime": datetime.now(),
                     "ctime": datetime.now(),
                 })
-                await nsw_controller.update_nsw_account(aft=new_nsw, aft_account_id=self.account.account_number)
+                await nsw_controller.update_nsw_account(nsw=new_nsw, nsw_account_id=self.account.account_number)
         self.account.feedback = '正常'
         await account_controller.update(id=self.account.id, obj_in=self.account)
         await insert_log(log_type=LogType.ApiLog, log_detail_type=LogDetailType.UserCreateOne, by_user_id=0)
@@ -489,7 +490,7 @@ class ScraperUtils:
             fm = FastMail(fastapi_mail_config)
             message = MessageSchema(
                 subject=title,
-                recipients=["duanchangbiao@zhangkongapp.com"],
+                recipients=["duanchangbiao@zhangkongapp.com", " tisi_alert@agileservices.co"],
                 body=body,
                 subtype=MessageType.plain
             )

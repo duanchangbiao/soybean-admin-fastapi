@@ -42,7 +42,7 @@ async function search() {
         </NFormItemGi>
         <NFormItemGi span="24 s:8 m:4" :label="$t('page.business.aft.accountNumber')" path="nickName"
                      class="pr-24px">
-          <NInput v-model:value="model.nickName" :placeholder="$t('page.business.aft.form.accountNumber')"/>
+          <NInput v-model:value="model.accountNumber" :placeholder="$t('page.business.aft.form.accountNumber')"/>
         </NFormItemGi>
 
         <NFormItemGi span="24 s:8 m:4" :label="$t('page.business.aft.applyStatus')" path="applyStatus"

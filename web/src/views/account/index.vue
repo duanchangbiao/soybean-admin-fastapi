@@ -126,7 +126,13 @@ const {
       align: 'center',
       width: 120
     },
-
+    {
+      key: 'fmtMtime',
+      title: $t('page.business.account.mtime'),
+      dataIndex: 'mtime',
+      align: 'center',
+      width: 120
+    },
     {
       key: 'operate',
       title: $t('common.operate'),
@@ -156,6 +162,7 @@ const {
     }
   ],
   apiFn: fetchGetAccountList,
+  showTotal: true,
   apiParams: {
     current: 1,
     size: 10,
@@ -199,7 +206,7 @@ function edit(id: number) {
 
 async function execute(id: number, accountMonitorList: string[], accountNumber: string, password: string, createBy: string, updateBy: string, nickname: string) {
   const mode = {id, accountMonitorList, accountNumber, password, createBy, updateBy, nickname}
-  const {error,response} = await fetchExecuteAccount(mode)
+  const {error, response} = await fetchExecuteAccount(mode)
   if (!error) {
     if (response.data.code === "0000") {
       window.$message.success($t('page.manage.common.executeSuccess'))
