@@ -199,9 +199,11 @@ function edit(id: number) {
 
 async function execute(id: number, accountMonitorList: string[], accountNumber: string, password: string, createBy: string, updateBy: string, nickname: string) {
   const mode = {id, accountMonitorList, accountNumber, password, createBy, updateBy, nickname}
-  const {error} = await fetchExecuteAccount(mode)
+  const {error,response} = await fetchExecuteAccount(mode)
   if (!error) {
-    window.$message.success($t('page.manage.common.executeSuccess'))
+    if (response.data.code === "0000") {
+      window.$message.success($t('page.manage.common.executeSuccess'))
+    }
   }
 }
 </script>

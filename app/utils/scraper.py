@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from datetime import datetime
 
 import requests
@@ -37,12 +38,12 @@ class ScraperUtils:
             await account_controller.update(id=self.account.id, obj_in=self.account)
             return False, ""
         tree = etree.HTML(response_login.text)
-        if not tree.xpath('//*[@name="_token"]/@value'):
+        if len(tree.xpath('//*[@name="_token"]/@value')):
+            logging.info("解析login index error!")
             self.account.feedback = '网络异常,请重启网络！'
             await account_controller.update(id=self.account.id, obj_in=self.account)
-            return False, ""
-
-        _token = tree.xpath('//*[@name="_token"]/@value')[0]
+            _token = tree.xpath('//*[@name="_token"]/@value')[0]
+        _token = "MZHyYhKRs44VRDnRJHB7xpUexWxtkDPRCgddLiu8"
         data = {
             'username': self.account.account_number,
             'password': self.account.password,
@@ -81,9 +82,6 @@ class ScraperUtils:
             return False, ""
         url = tree.xpath("//*[@id='top']/div/nav/div[2]/ul/li[7]/ul/li[3]/a/@href")[0]
         response_mor5 = self.session.get("https://i.tisi.go.th" + url, headers=self.headers, verify=False)
-        with open("./mor5.html", "w", encoding="utf-8") as f:
-            f.write(response_mor5.text)
-            f.close()
         if response_mor5.status_code != 200:
             self.account.feedback = '账号密码错误,请修改后重试！'
             await account_controller.update(id=self.account.id, obj_in=self.account)
@@ -106,6 +104,7 @@ class ScraperUtils:
                 item["MOR5_STATUS"] = str_list.strip()
             else:
                 item["MOR5_STATUS"] = ""
+            # 获取状态
             dict_obj: Dict = await dict_controller.get_by_dict_value(dict_value=item["MOR5_STATUS"],
                                                                      dict_type="mor5_status")
             if dict_obj:
@@ -114,23 +113,24 @@ class ScraperUtils:
                 status = "其他"
             mor: Mor = await mor_controller.get_mor_by_apply_number(apply_number=item["MOR5_APPLY_CODE"])
             if mor:
-                await mor_controller.update(id=mor.id, obj_in={
+                new_mor: Mor = await mor_controller.update(id=mor.id, obj_in={
                     "apply_number": item["MOR5_APPLY_CODE"],
                     "apply_date": item["MOR5_APPLY_DATE"],
                     "apply_name": item["MOR5_APPLY_NAME"],
                     "mor_type": "mor5",
                     "apply_status": status,
                     "update_by": self.account.update_by,
-                    "update_status": 1,
+                    "update_status": 2,
                     "mtime": datetime.now(),
                     "ctime": datetime.now(),
                 })
                 if status != mor.apply_status:
                     await mor_controller.update(obj_in={
-                        "update_status": 2,
+                        "update_status": 1,
                     })
                     mor.apply_status = status
                     await self.sendEmail(user=self.account.nickname, result=mor)
+                await mor_controller.update_mor_account(mor=new_mor, mor_account_id=self.account.account_number)
             else:
                 new_mor = await mor_controller.create(obj_in={
                     "apply_number": item["MOR5_APPLY_CODE"],
@@ -143,7 +143,7 @@ class ScraperUtils:
                     "mtime": datetime.now(),
                     "ctime": datetime.now(),
                 })
-                await mor_controller.update_mor_account(mor=new_mor, mor_account_id=self.account.id)
+                await mor_controller.update_mor_account(mor=new_mor, mor_account_id=self.account.account_number)
         self.account.feedback = '正常'
         await account_controller.update(id=self.account.id, obj_in=self.account)
         await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.UserCreateOne, by_user_id=0)
@@ -194,7 +194,7 @@ class ScraperUtils:
                     "license_code": item["MOR9_LICENSE_CODE"],
                     "mor_type": "mor9",
                     "apply_status": status,
-                    "update_status": 1,
+                    "update_status": 2,
                     "update_by": self.account.update_by,
                     "mtime": datetime.now(),
                     "ctime": datetime.now(),
