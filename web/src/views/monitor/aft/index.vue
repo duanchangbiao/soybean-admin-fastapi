@@ -153,7 +153,7 @@ const {
     current: 1,
     size: 10,
     applyStatus: null,
-    nickName: null,
+    accountNumber: null,
     applyNumber: null,
     remark: null,
   },

@@ -870,6 +870,7 @@ declare namespace App {
               morType: string;
               accountNumber: string;
               nickname: string;
+              sort:string;
               remark: string;
             };
             addMor: string;

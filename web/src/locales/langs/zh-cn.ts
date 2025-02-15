@@ -682,6 +682,7 @@ const local: App.I18n.Schema = {
           updateStatus: '请选择更新情况',
           accountNumber: '请输入账号信息',
           nickname: '请输入昵称',
+          sort: '请输入排序数字',
           remark: '请输入备注信息'
         },
         addMor: '添加MOR5/MOR9',
