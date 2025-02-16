@@ -106,7 +106,9 @@ const {
 
         const tagMap: Record<Api.Common.monitorStatus, NaiveUI.ThemeColor> = {
           "进行中": 'info',
-          "完成": 'success',
+          "待付款": 'default',
+          "待上传证书": 'primary',
+          "交付证书": 'success',
           "系统自动取消": 'warning',
           "异常": 'error'
         };

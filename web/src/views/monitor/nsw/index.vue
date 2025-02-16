@@ -75,19 +75,6 @@ const {
       dataIndex: 'applyStatus',
       align: 'center',
       width: 200,
-      render: row => {
-        if (row.aftType === null) {
-          return null;
-        }
-
-        const tagMap: Record<Api.Common.monitorStatus, NaiveUI.ThemeColor> = {
-          "进行中": 'info',
-          "完成": 'success',
-          "系统自动取消": 'warning',
-          "异常": 'error'
-        };
-        return <NTag type={tagMap[row.applyStatus]}>{row.applyStatus}</NTag>;
-      }
     },
     {
       key: 'sort',

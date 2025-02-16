@@ -30,6 +30,9 @@ declare namespace Api {
       | '测试许可'
       | '进行中'
       | '正在编写审厂报告'
+      | '待付款'
+      | '待上传证书'
+      | '交付证书'
     /** common search params of table */
     type CommonSearchParams = Pick<Common.PaginatingCommonParams, 'current' | 'size'>;
 

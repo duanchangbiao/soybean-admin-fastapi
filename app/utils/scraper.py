@@ -408,34 +408,34 @@ class ScraperUtils:
                 item["NSW_APPLY_STATUS"] = tr.xpath("./td[9]/font/text()")[0].strip()
             else:
                 item["NSW_APPLY_STATUS"] = ""
-            dict_obj: Dict = await dict_controller.get_by_dict_value(dict_value=item["NSW_APPLY_STATUS"],
-                                                                     dict_type="nsw_status")
-            if dict_obj:
-                status = dict_obj.dict_name
-            else:
-                status = "异常"
+            # dict_obj: Dict = await dict_controller.get_by_dict_value(dict_value=item["NSW_APPLY_STATUS"],
+            #                                                          dict_type="nsw_status")
+            # if dict_obj:
+            #     status = dict_obj.dict_name
+            # else:
+            #     status = "异常"
             nsw: Nsw = await nsw_controller.get_nsw_by_apply_number(apply_number=item["NSW_CODE"])
             if nsw:
                 await nsw_controller.update(id=nsw.id, obj_in={
                     "apply_number": item["NSW_CODE"],
                     "apply_date": item["NSW_APPLY_DATE"],
-                    "apply_status": status,
+                    "apply_status": item["NSW_APPLY_STATUS"],
                     "update_status": 2,
                     "update_by": self.account.create_by,
                     "mtime": datetime.now(),
                     "ctime": datetime.now(),
                 })
-                if status != nsw.apply_status:
+                if item["NSW_APPLY_STATUS"] != nsw.apply_status:
                     await nsw_controller.update(id=nsw.id, obj_in={
                         "update_status": 1,
                     })
-                    nsw.apply_status = status
+                    nsw.apply_status = item["NSW_APPLY_STATUS"]
                     await self.sendEmail(user=self.account.nickname, result=nsw)
             else:
                 new_nsw = await nsw_controller.create(obj_in={
                     "apply_number": item["NSW_CODE"],
                     "apply_date": item["NSW_APPLY_DATE"],
-                    "apply_status": status,
+                    "apply_status": item["NSW_APPLY_STATUS"],
                     "update_status": 2,
                     "update_by": self.account.create_by,
                     "mtime": datetime.now(),
