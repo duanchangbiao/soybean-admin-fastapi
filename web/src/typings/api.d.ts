@@ -20,7 +20,16 @@ declare namespace Api {
       records: T[];
     }
 
-    type monitorStatus = '进行中' | '完成' | '取消' | '系统自动取消'|'异常'
+    type monitorStatus =
+      | 'AFFA完成'
+      | 'AFT完成'
+      | '取消'
+      | '系统自动取消'
+      | '异常'
+      | '审批通过'
+      | '测试许可'
+      | '进行中'
+      | '正在编写审厂报告'
     /** common search params of table */
     type CommonSearchParams = Pick<Common.PaginatingCommonParams, 'current' | 'size'>;
 

@@ -52,7 +52,7 @@ async def _(
 
 @router.get("/menus/tree/", summary="查看菜单树")
 async def _():
-    menus = await Menu.filter(constant=False)
+    menus = await Menu.filter(constant=False, status_type="1")
     # 递归生成菜单
     menu_tree = await build_menu_tree(menus, simple=True)
     await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.MenuGetTree, by_user_id=0)
@@ -116,7 +116,6 @@ async def _():
 
     await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.MenuGetPages, by_user_id=0)
     return Success(data=data)
-
 
 # @router.get("/menus/buttons/tree/", summary="查看菜单按钮树")
 # async def _():

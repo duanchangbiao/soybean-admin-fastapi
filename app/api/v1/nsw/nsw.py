@@ -40,7 +40,7 @@ async def _(
         q &= Q(create_by=user_obj.nick_name)
 
     total, aft_objs = await nsw_controller.list(page=current, page_size=size, search=q,
-                                                order=["id", "-sort"])
+                                                order=["-sort", "-remark", "-ctime", "-mtime", "id"])
     records = []
     for aft_obj in aft_objs:
         record = await aft_obj.to_dict(exclude_fields=["by_nsw_account"])

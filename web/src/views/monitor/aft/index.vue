@@ -107,8 +107,12 @@ const {
         }
 
         const tagMap: Record<Api.Common.monitorStatus, NaiveUI.ThemeColor> = {
-          "进行中": 'info',
-          "完成": 'success',
+          "AFT完成": 'success',
+          "AFFA完成": 'success',
+          "审批通过": 'primary',
+          "测试许可": 'primary',
+          "进行中": "info",
+          "正在编写审厂报告":'info',
           "系统自动取消": 'warning',
           "异常": 'error'
         };
@@ -136,7 +140,7 @@ const {
       align: 'center',
       width: 150
     },
-     {
+    {
       key: 'fmtMtime',
       title: $t('page.business.aft.mtime'),
       dataIndex: 'mtime',

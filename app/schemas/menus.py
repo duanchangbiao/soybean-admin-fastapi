@@ -38,7 +38,7 @@ class MenuBase(BaseModel):
     hide_in_menu: Annotated[bool | None, Field(alias="hideInMenu", description="是否在菜单隐藏")] = None
     active_menu: Annotated[str | None, Field(alias="activeMenu", description="隐藏的路由需要激活的菜单")] = None
     fixed_index_in_tab: Annotated[int | None, Field(alias="fixedIndexInTab", description="固定在页签的序号")] = None
-    status: Annotated[str | None, Field(description="状态")] = None
+    status_type: Annotated[str | None, Field(alias="statusType", description="状态")] = None
 
     redirect: Annotated[str | None, Field(description="重定向路径")] = None
     props: Annotated[bool | None, Field(description="是否为首路由")] = None
