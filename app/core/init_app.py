@@ -1,8 +1,9 @@
+from datetime import datetime
+
 from aerich import Command
 from fastapi import FastAPI
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi_mail import ConnectionConfig
 from tortoise.contrib.fastapi import register_tortoise
 from tortoise.exceptions import MultipleObjectsReturned
 
@@ -45,6 +46,7 @@ def make_middlewares():
 
 
 def register_db(app: FastAPI):
+    print("注册数据库............")
     register_tortoise(
         app,
         config=APP_SETTINGS.TORTOISE_ORM,
@@ -58,7 +60,6 @@ def register_exceptions(app: FastAPI):
     app.add_exception_handler(IntegrityError, IntegrityHandle)
     app.add_exception_handler(RequestValidationError, RequestValidationHandle)
     app.add_exception_handler(ResponseValidationError, ResponseValidationHandle)
-
 
 def register_routers(app: FastAPI, prefix: str = "/api"):
     app.include_router(api_router, prefix=prefix)
@@ -988,7 +989,8 @@ async def init_menus():
     await Menu.bulk_create(children_menu)
 
 
-async def insert_role(children_role: list[Role], role_apis: list[tuple[str, str]] = None, role_menus: list[str] = None, role_buttons: list[str] = None):
+async def insert_role(children_role: list[Role], role_apis: list[tuple[str, str]] = None, role_menus: list[str] = None,
+                      role_buttons: list[str] = None):
     if role_apis is None:
         role_apis = []
     if role_menus is None:
@@ -1032,7 +1034,8 @@ async def init_users():
     if not role_exist:
         role_home_menu = await Menu.get(route_name="home")
         # 超级管理员拥有所有菜单 所有按钮
-        super_role_obj = await Role.create(role_name="超级管理员", role_code="R_SUPER", role_desc="超级管理员", by_role_home=role_home_menu)
+        super_role_obj = await Role.create(role_name="超级管理员", role_code="R_SUPER", role_desc="超级管理员",
+                                           by_role_home=role_home_menu)
         role_super_menu_objs = await Menu.filter(constant=False)  # 过滤常量路由(公共路由)
         for menu_obj in role_super_menu_objs:
             await super_role_obj.by_role_menus.add(menu_obj)
@@ -1040,7 +1043,8 @@ async def init_users():
             await super_role_obj.by_role_buttons.add(button_obj)
 
         # 管理员拥有 首页 关于 系统管理-API管理 系统管理-用户管理
-        role_admin = await Role.create(role_name="管理员", role_code="R_ADMIN", role_desc="管理员", by_role_home=role_home_menu)
+        role_admin = await Role.create(role_name="管理员", role_code="R_ADMIN", role_desc="管理员",
+                                       by_role_home=role_home_menu)
 
         role_admin_apis = [
             ("post", "/api/v1/system-manage/logs/all/"),
@@ -1057,7 +1061,8 @@ async def init_users():
         await insert_role([role_admin], role_admin_apis, role_admin_menus, role_admin_buttons)
 
         # 普通用户拥有 首页 关于 系统管理-API管理
-        role_user = await Role.create(role_name="普通用户", role_code="R_USER", role_desc="普通用户", by_role_home=role_home_menu)
+        role_user = await Role.create(role_name="普通用户", role_code="R_USER", role_desc="普通用户",
+                                      by_role_home=role_home_menu)
         role_user_apis = [("post", "/api/v1/system-manage/logs/all/"), ("post", "/api/v1/system-manage/apis/all/")]
         role_user_menus = ["home", "about", "function_toggle-auth", "manage_log", "manage_api"]
         role_user_buttons = ["B_CODE3"]
