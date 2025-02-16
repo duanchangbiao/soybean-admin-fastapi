@@ -9,6 +9,7 @@ from tortoise.exceptions import MultipleObjectsReturned
 
 from app.api import api_router
 from app.controllers import role_controller
+from app.controllers.account import account_controller
 from app.controllers.user import UserCreate, user_controller
 from app.core.exceptions import (
     DoesNotExist,
@@ -24,9 +25,12 @@ from app.core.exceptions import (
 )
 
 from app.core.middlewares import BackGroundTaskMiddleware, APILoggerMiddleware, APILoggerAddResponseMiddleware
-from app.models.system import Menu, Role, User, Button, Api
+from app.models.system import Menu, Role, User, Button, Api, Dict
 from app.models.system import StatusType, IconType, MenuType
+from app.schemas.account import AccountUpdate
+from app.schemas.base import Success
 from app.settings import APP_SETTINGS
+from app.utils.scraper import scraper_utils
 
 
 def make_middlewares():
@@ -61,8 +65,76 @@ def register_exceptions(app: FastAPI):
     app.add_exception_handler(RequestValidationError, RequestValidationHandle)
     app.add_exception_handler(ResponseValidationError, ResponseValidationHandle)
 
+
 def register_routers(app: FastAPI, prefix: str = "/api"):
     app.include_router(api_router, prefix=prefix)
+
+
+def register_scheduler():
+    from apscheduler.schedulers.asyncio import AsyncIOScheduler
+    scheduler = AsyncIOScheduler()
+
+    async def cron_job():
+        account_objs = await account_controller.get_account_by_status(activate=1)
+        for account_obj in account_objs:
+            print(account_obj.account_number,account_obj.by_account_dict)
+            # record = await account_obj.to_dict(exclude_fields=["by_account_dict"])
+            # await account_obj.fetch_related("by_account_dict")
+            # account_monitor_list = [by_account_dict.id for by_account_dict in account_obj.by_account_dict]
+            # record.update({"accountMonitorList": account_monitor_list})
+            # AccountUpdate()
+        # await scraper_job(account_id=account_obj.id, account_in=account_obj)
+
+    # scheduler.add_job(cron_job, trigger="cron", hour="19", minute="04")
+    # scheduler.start()
+
+
+async def scraper_job(account_id: int, account_in: AccountUpdate):
+    pass
+    # if not account_in.by_account_dict:
+    #     await account_controller.update(id=account_id,obj_in={"mtime": datetime.now(), "feedback": "请先添加监控模块!"})
+    #     return
+    # dict_objs: list[Dict] = await account_controller.get_dict_by_id(account_in.by_account_dict)
+    # for dict_obj in dict_objs:
+    #     print(dict_obj.dict_name, account_in)
+    #     retry, response = await scraper_utils.login(account=account_in)
+    #     try:
+    #         if not retry:
+    #             return Success(msg="Scraper Failed", data={'Scraper_id': account_id}, code=4090)
+    #         if dict_obj.dict_name != 'NSW':
+    #             retry_l, response_l = await scraper_utils.get_license(index_text=response, type=1)
+    #             if not retry_l:
+    #                 return Success(msg="Scraper Failed", data={'Scraper_id': account_id}, code=4090)
+    #
+    #             if dict_obj.dict_name == 'MOR9':
+    #                 retry_m, response_m = await scraper_utils.get_mor9(response_l)
+    #                 if not retry_m:
+    #                     return Success(msg="Scraper Failed", data={'Scraper_id': account_id}, code=4090)
+    #
+    #             if dict_obj.dict_name == 'MOR5':
+    #                 retry_m, response_m = await scraper_utils.get_mor5(response_l)
+    #                 if not retry_m:
+    #                     return Success(msg="Scraper Failed", data={'Scraper_id': account_id}, code=4090)
+    #             if dict_obj.dict_name == 'AFFA':
+    #                 retry_a, response_a = await scraper_utils.get_affa(response_l)
+    #                 if not retry_a:
+    #                     return Success(msg="Scraper Failed", data={'Scraper_id': account_id}, code=4090)
+    #             if dict_obj.dict_name == 'AFT':
+    #                 retry_a, response_a = await scraper_utils.get_aft(response_l)
+    #                 if not retry_a:
+    #                     return Success(msg="Scraper Failed", data={'Scraper_id': account_id}, code=4090)
+    #         if dict_obj.dict_name == 'NSW':
+    #             retry_n, response_n = await scraper_utils.get_license(index_text=response, type=2)
+    #             if not retry_n:
+    #                 return Success(msg="Scraper Failed", data={'Scraper_id': account_id}, code=4090)
+    #             await scraper_utils.get_nsw(response_n)
+    #         await scraper_utils.logout()
+    #         await account_controller.update(id=account_id, obj_in={"mtime": datetime.now()})
+    #     except Exception as e:
+    #         await account_controller.update(id=account_id,
+    #                                         obj_in={"mtime": datetime.now(), "feedback": "该账号出现异常，请手动重试！"})
+    #         await scraper_utils.logout()
+    #     ...
 
 
 async def modify_db():

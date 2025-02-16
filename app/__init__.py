@@ -16,7 +16,7 @@ from app.core.init_app import (
     modify_db,
     register_db,
     register_exceptions,
-    register_routers,
+    register_routers, register_scheduler,
 )
 from app.log import log
 from app.models.system import Log
@@ -50,6 +50,8 @@ def create_app() -> FastAPI:
     register_db(_app)
     register_exceptions(_app)
     register_routers(_app, prefix="/api")
+
+    register_scheduler()
 
     redis = aioredis.from_url(url=APP_SETTINGS.REDIS_URL)
     FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")

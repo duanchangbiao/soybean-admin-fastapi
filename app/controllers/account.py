@@ -11,6 +11,9 @@ class AccountController(CRUDBase[Account, AccountCreate, AccountUpdate]):
     async def get_account_by_account_number(account_number: str) -> Account | None:
         return await Account.filter(account_number=account_number).first()
 
+    async def get_account_by_status(self, activate: int):
+        return await Account.filter(activate=activate).all()
+
     async def get_dict_by_id(self, dict_id: list[str]):
         return await Dict.filter(id__in=dict_id).all()
 
