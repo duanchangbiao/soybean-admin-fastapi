@@ -31,6 +31,36 @@ async function search() {
   await validate();
   emit('search');
 }
+
+const DictOptions = ref<CommonType.Option<string>[]>([]);
+
+async function getDictOptions() {
+  const [affaRes, aftRes] = await Promise.all([
+    fetchGetDictList({size: 1000, dictType: 'affa_status', dictStatus: '1'}),
+    fetchGetDictList({size: 1000, dictType: 'aft_status', dictStatus: '1'})
+  ]);
+
+  // 合并字典数据
+  const mergedData = [...(affaRes.data?.records || []), ...(aftRes.data?.records || [])];
+
+  // 去重（根据dictName去重）
+  const uniqueData = mergedData.reduce((acc, cur) => {
+    if (!acc.some(item => item.dictName === cur.dictName)) {
+      acc.push(cur);
+    }
+    return acc;
+  }, []);
+
+  // 转换为选择框需要的格式
+  DictOptions.value = uniqueData.map(item => ({
+    label: item.dictName,
+    value: item.dictName
+  }));
+}
+
+onMounted(() => {
+  getDictOptions();
+});
 </script>
 
 <template>
@@ -49,7 +79,14 @@ async function search() {
 
         <NFormItemGi span="24 s:8 m:4" :label="$t('page.business.aft.applyStatus')" path="applyStatus"
                      class="pr-24px">
-          <NInput v-model:value="model.applyStatus" :placeholder="$t('page.business.aft.form.applyStatus')"/>
+          <!--          <NInput v-model:value="model.applyStatus" :placeholder="$t('page.business.aft.form.applyStatus')"/>-->
+          <NSelect
+            v-model:value="model.applyStatus"
+            :placeholder="$t('page.business.aft.form.applyStatus')"
+            :options="DictOptions"
+            filterable
+            clearable
+          />
         </NFormItemGi>
         <NFormItemGi span="24 s:8 m:4" :label="$t('page.business.aft.remark')"
                      path="applyNumber" class="pr-24px">

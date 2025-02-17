@@ -3,6 +3,8 @@ import {$t} from '@/locales';
 import {useNaiveForm} from "@/hooks/common/form";
 import {translateOptions} from "@/utils/common";
 import {accountDictTypeOptions, statusTypeOptions} from "@/constants/business";
+import {onMounted, ref} from "vue";
+import {fetchGetDictList} from "@/service/api";
 
 const {formRef, validate, restoreValidation} = useNaiveForm();
 defineOptions({
@@ -29,6 +31,23 @@ async function search() {
   await validate();
   emit('search');
 }
+
+const DictOptions = ref<CommonType.Option<string>[]>([]);
+
+async function getDictOptions() {
+  const {error, data} = await fetchGetDictList({size: 1000, dictType: 'monitor', dictStatus: '1'});
+
+  if (!error) {
+    const options = data.records.map(item => ({
+      label: item.dictName,
+      value: item.id
+    }));
+    DictOptions.value = options;
+  }
+}
+onMounted(() => {
+  getDictOptions();
+});
 </script>
 
 <template>
@@ -69,7 +88,7 @@ async function search() {
           <NSelect
             v-model:value="model.accountMonitorList"
             :placeholder="$t('page.business.account.form.accountMonitorList')"
-            :options="translateOptions(accountDictTypeOptions)"
+            :options="DictOptions"
             filterable
             clearable
           />
