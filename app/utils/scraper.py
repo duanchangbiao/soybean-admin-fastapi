@@ -100,7 +100,10 @@ class ScraperUtils:
         for tr in tr_list:
             item = {}
             if tr.xpath("./td[2]/text()"):
-                item["MOR5_APPLY_CODE"] = tr.xpath("./td[2]/text()")[0].strip()
+                if tr.xpath("./td[2]/text()")[0].strip() == "":
+                    item["MOR5_APPLY_CODE"] = tr.xpath("./td[2]/text()")[1].strip()
+                else:
+                    item["MOR5_APPLY_CODE"] = tr.xpath("./td[2]/text()")[0].strip()
             if tr.xpath("./td[3]/text()"):
                 item["MOR5_APPLY_NAME"] = tr.xpath("./td[3]/text()")[0].strip()
             if tr.xpath("./td[7]//text()"):
