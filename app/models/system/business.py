@@ -1,4 +1,3 @@
-
 from tortoise.fields import ManyToManyRelation
 from tortoise import fields
 
@@ -159,10 +158,29 @@ class Dict(BaseModel):
         ordering = ["ctime", "dict_sort"]
 
 
-__all__ = [
-    "Aft",
-    "Account",
-    'Mor',
-    'Nsw',
-    'Dict'
-]
+class Job(BaseModel):
+    id = fields.IntField(pk=True, unique=True, description='任务ID')
+    job_name = fields.CharField(max_length=500, null=True, description='任务名称')
+    job_group = fields.CharField(max_length=500, null=True, description='任务组')
+    job_status = fields.CharField(max_length=500, null=True, description='任务状态')
+    job_executor = fields.CharField(max_length=500, null=True, description='任务执行器')
+    invoke_target = fields.CharField(max_length=500, null=True, description='调用目标')
+    job_args = fields.CharField(max_length=500, null=True, description='位置参数')
+    job_kwargs = fields.CharField(max_length=500, null=True, description='关键字位置参数')
+    cron_expression = fields.CharField(max_length=500, null=True, description='cron表达式')
+    misfire_policy = fields.CharField(max_length=500, null=True, default=3,
+                                      description='计划执行错误策略（1立即执行 2执行一次 3放弃执行')
+    concurrent = fields.CharField(max_length=500, null=True, default=1, description='是否并发,(0允许,1禁止)')
+    create_time = fields.DatetimeField(description='创建时间', auto_now_add=True)
+    update_time = fields.DatetimeField(description='修改时间', auto_now_add=True)
+    create_by = fields.CharField(max_length=500, null=True, default=1, description='创建人')
+    update_by = fields.CharField(max_length=500, null=True, default=1, description='修改人')
+    remark = fields.CharField(max_length=500, null=True, description='备注')
+
+    __all__ = [
+        "Aft",
+        "Account",
+        'Mor',
+        'Nsw',
+        'Dict'
+    ]

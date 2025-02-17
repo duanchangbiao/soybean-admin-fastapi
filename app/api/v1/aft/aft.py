@@ -42,7 +42,7 @@ async def _(
     if "R_SUPER" not in user_role_codes:  # 超级管理员具有所有权限
         q &= Q(create_by=user_obj.nick_name)
     total, aft_objs = await aft_controller.list(page=current, page_size=size, search=q,
-                                                order=["-sort", "-remark", "-ctime", "-mtime", "id"])
+                                                order=["-sort", "-remark","update_status", "-apply_status","-ctime", "-mtime"])
     records = []
     for aft_obj in aft_objs:
         record = await aft_obj.to_dict(exclude_fields=["password"])

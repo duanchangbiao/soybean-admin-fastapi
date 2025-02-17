@@ -123,6 +123,7 @@ class LogDetailType(str, Enum):
     ApiGetList = "1301"
     ApiGetTree = "1302"
     ApiRefresh = "1303"
+    ApiScraper = "1304"
 
     ApiGetOne = "1311"
     ApiCreateOne = "1312"
