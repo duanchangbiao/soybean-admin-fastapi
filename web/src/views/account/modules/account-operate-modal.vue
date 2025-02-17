@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import {computed, reactive, ref, watch} from "vue";
 import {$t} from "@/locales";
-import {fetchAddAccount, fetchGetDictList, fetchGetRoleList, fetchUpdateAccount} from "@/service/api";
+import {fetchAddAccount, fetchGetDictList, fetchUpdateAccount} from "@/service/api";
 import {useNaiveForm} from "@/hooks/common/form";
-import {statusTypeOptions, updateStatusOptions} from "@/constants/business";
+import {statusTypeOptions} from "@/constants/business";
 import {translateOptions} from "@/utils/common";
 
 defineOptions({

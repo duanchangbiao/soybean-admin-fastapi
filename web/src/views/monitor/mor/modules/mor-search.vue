@@ -3,6 +3,8 @@ import {$t} from '@/locales';
 import {useNaiveForm} from "@/hooks/common/form";
 import {translateOptions} from "@/utils/common";
 import {aftTypeOptions, morTypeOptions} from "@/constants/business";
+import {onMounted, ref} from "vue";
+import {fetchGetDictList} from "@/service/api";
 
 const {formRef, validate, restoreValidation} = useNaiveForm();
 defineOptions({
@@ -29,6 +31,24 @@ async function search() {
   await validate();
   emit('search');
 }
+
+const DictOptions = ref<CommonType.Option<string>[]>([]);
+
+async function getDictOptions() {
+  const {error, data} = await fetchGetDictList({size: 1000, dictType: 'mor5_status', dictStatus: '1'});
+
+  if (!error) {
+    const options = data.records.map(item => ({
+      label: item.dictName,
+      value: item.dictName
+    }));
+    DictOptions.value = options;
+  }
+}
+
+onMounted(() => {
+  getDictOptions();
+});
 </script>
 
 <template>
@@ -46,7 +66,13 @@ async function search() {
         </NFormItemGi>
         <NFormItemGi span="24 s:8 m:4" :label="$t('page.business.mor.applyStatus')" path="applyStatus"
                      class="pr-24px">
-          <NInput v-model:value="model.applyStatus" :placeholder="$t('page.business.mor.form.applyStatus')"/>
+          <NSelect
+            v-model:value="model.applyStatus"
+            :placeholder="$t('page.business.aft.form.applyStatus')"
+            :options="DictOptions"
+            filterable
+            clearable
+          />
         </NFormItemGi>
         <NFormItemGi span="24 s:8 m:4" :label="$t('page.business.mor.remark')"
                      path="applyNumber" class="pr-24px">

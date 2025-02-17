@@ -2,7 +2,9 @@
 import {$t} from '@/locales';
 import {useNaiveForm} from "@/hooks/common/form";
 import {translateOptions} from "@/utils/common";
-import {aftTypeOptions, userGenderOptions} from "@/constants/business";
+import {aftTypeOptions} from "@/constants/business";
+import {onMounted, ref} from "vue";
+import {fetchGetDictList} from "@/service/api";
 
 const {formRef, validate, restoreValidation} = useNaiveForm();
 defineOptions({
