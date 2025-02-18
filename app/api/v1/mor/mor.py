@@ -29,7 +29,7 @@ async def _(
     if applyNumber:
         q &= Q(apply_number__contains=applyNumber)
     if applyStatus:
-        q &= Q(apply_status__contains=applyStatus)
+        q &= Q(apply_status=applyStatus)
     if morType:
         q &= Q(mor_type=morType)
     if remark:
