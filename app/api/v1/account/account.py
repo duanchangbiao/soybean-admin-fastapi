@@ -7,6 +7,7 @@ from app.api.v1.utils import insert_log
 from app.controllers import user_controller
 from app.controllers.account import account_controller
 from app.core.ctx import CTX_USER_ID
+from app.core.exceptions import HTTPException
 from app.models.system import LogType, LogDetailType, Role
 from app.models.system.business import Dict
 from app.schemas.account import AccountCreate, AccountUpdate
@@ -111,39 +112,43 @@ async def _(ids: str = Query(..., description="删除account列表, 用逗号隔
 @router.patch("/execute/{account_id}", summary="立即执行账户监控信息")
 async def _(account_id: int, account_in: AccountUpdate):
     dict_objs: list[Dict] = await account_controller.get_dict_by_id(account_in.by_account_modules)
-    for dict_obj in dict_objs:
-        print(dict_obj.dict_name, account_in)
-        retry, response = await scraper_utils.login(account=account_in)
-        if not retry:
-            return Success(msg="Scraper Failed", data={'Scraper_id': account_id}, code=4090)
-        if dict_obj.dict_name != 'NSW':
-            retry_l, response_l = await scraper_utils.get_license(index_text=response, type=1)
-            if not retry_l:
-                return Success(msg="Scraper Failed", data={'Scraper_id': account_id}, code=4090)
-
-            if dict_obj.dict_name == 'MOR9':
-                retry_m, response_m = await scraper_utils.get_mor9(response_l)
-                if not retry_m:
+    retry, response = await scraper_utils.login(account=account_in)
+    if not retry:
+        return Success(msg="Scraper Failed", data={'Scraper_id': account_id}, code=4090)
+    try:
+        for dict_obj in dict_objs:
+            print(dict_obj.dict_name, account_in)
+            if dict_obj.dict_name != 'NSW':
+                retry_l, response_l = await scraper_utils.get_license(index_text=response, type=1)
+                if not retry_l:
                     return Success(msg="Scraper Failed", data={'Scraper_id': account_id}, code=4090)
 
-            if dict_obj.dict_name == 'MOR5':
-                retry_m, response_m = await scraper_utils.get_mor5(response_l)
-                if not retry_m:
+                if dict_obj.dict_name == 'MOR9':
+                    retry_m, response_m = await scraper_utils.get_mor9(response_l)
+                    if not retry_m:
+                        return Success(msg="Scraper Failed", data={'Scraper_id': account_id}, code=4090)
+
+                if dict_obj.dict_name == 'MOR5':
+                    retry_m, response_m = await scraper_utils.get_mor5(response_l)
+                    if not retry_m:
+                        return Success(msg=f"Scraper Failed:{response_m}", data={'Scraper_id': account_id}, code=4090)
+                if dict_obj.dict_name == 'AFFA':
+                    retry_a, response_a = await scraper_utils.get_affa(response_l)
+                    if not retry_a:
+                        return Success(msg="Scraper Failed", data={'Scraper_id': account_id}, code=4090)
+                if dict_obj.dict_name == 'AFT':
+                    retry_a, response_a = await scraper_utils.get_aft(response_l)
+                    if not retry_a:
+                        return Success(msg="Scraper Failed", data={'Scraper_id': account_id}, code=4090)
+            if dict_obj.dict_name == 'NSW':
+                retry_n, response_n = await scraper_utils.get_license(index_text=response, type=2)
+                if not retry_n:
                     return Success(msg="Scraper Failed", data={'Scraper_id': account_id}, code=4090)
-            if dict_obj.dict_name == 'AFFA':
-                retry_a, response_a = await scraper_utils.get_affa(response_l)
-                if not retry_a:
-                    return Success(msg="Scraper Failed", data={'Scraper_id': account_id}, code=4090)
-            if dict_obj.dict_name == 'AFT':
-                retry_a, response_a = await scraper_utils.get_aft(response_l)
-                if not retry_a:
-                    return Success(msg="Scraper Failed", data={'Scraper_id': account_id}, code=4090)
-        if dict_obj.dict_name == 'NSW':
-            retry_n, response_n = await scraper_utils.get_license(index_text=response, type=2)
-            if not retry_n:
-                return Success(msg="Scraper Failed", data={'Scraper_id': account_id}, code=4090)
-            await scraper_utils.get_nsw(response_n)
+                await scraper_utils.get_nsw(response_n)
+    except Exception as e:
         await scraper_utils.logout()
+        raise HTTPException(code="4002", msg="proxy failed, 网络异常,请重试！")
+    await scraper_utils.logout()
     await account_controller.update(id=account_id, obj_in={"mtime": datetime.now()})
     await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.UserDeleteOne, by_user_id=0)
     return Success(msg="Scraper Successfully", data={'Scraper_id': account_id})

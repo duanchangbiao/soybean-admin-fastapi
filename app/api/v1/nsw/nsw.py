@@ -29,7 +29,7 @@ async def _(
     if applyNumber:
         q &= Q(apply_number__contains=applyNumber)
     if applyStatus:
-        q &= Q(apply_status__contains=applyStatus)
+        q &= Q(apply_status=applyStatus)
     if remark:
         q &= Q(remark__contains=remark)
     user_id = CTX_USER_ID.get()  # 从请求的token获取用户id

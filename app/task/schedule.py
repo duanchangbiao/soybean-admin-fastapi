@@ -16,7 +16,6 @@ async def get_scheduler_job():
         by_account_dict_list = [by_account_dict.dict_name for by_account_dict in account_obj.by_account_dict]
         if not len(by_account_dict_list):
             account_controller.update(id=account["id"], obj_in={"feedback": "未选择监控项,请添加监控项!"})
-        print(account)
         account_in = AccountUpdate(
             id=account["id"],
             nickname=account["nickname"],

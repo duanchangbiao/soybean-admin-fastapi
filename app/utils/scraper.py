@@ -34,6 +34,7 @@ class ScraperUtils:
     async def login(self, account: AccountUpdate):
         print('login scraper start!')
         self.account = account
+        requests.packages.urllib3.disable_warnings()
         response_login = self.session.get(url=self.url, headers=self.headers, verify=False, timeout=6)
         if response_login.status_code != 200:
             self.account.feedback = '用户登陆异常,请手动重试!'
@@ -53,6 +54,7 @@ class ScraperUtils:
             'redirect_uri': '',
             '_token': _token
         }
+        requests.packages.urllib3.disable_warnings()
         response = self.session.post(url=self.url, headers=self.headers, data=data, verify=False, timeout=6)
         if response.status_code != 200:
             self.account.feedback = '用户登陆异常,请手动重试!'
@@ -71,6 +73,7 @@ class ScraperUtils:
             self.account.feedback = '账号密码错误,请修改后重试！'
             await account_controller.update(id=self.account.id, obj_in=self.account)
             return False, ""
+        requests.packages.urllib3.disable_warnings()
         response_license = self.session.get(url[0], headers=self.headers, verify=False)
         if response_license.status_code != 200:
             self.account.feedback = '账号密码错误,请修改后重试！'
@@ -85,8 +88,9 @@ class ScraperUtils:
         if len(tree.xpath("//*[@id='top']/div/nav/div[2]/ul/li[7]/ul/li[3]/a/@href")) == 0:
             self.account.feedback = '账号密码错误,请修改后重试！'
             await account_controller.update(id=self.account.id, obj_in=self.account)
-            return False, ""
+            return False, self.account.feedback
         url = tree.xpath("//*[@id='top']/div/nav/div[2]/ul/li[7]/ul/li[3]/a/@href")[0]
+        requests.packages.urllib3.disable_warnings()
         response_mor5 = self.session.get("https://i.tisi.go.th" + url, headers=self.headers, verify=False)
         if response_mor5.status_code != 200:
             self.account.feedback = '账号密码错误,请修改后重试！'
@@ -166,6 +170,7 @@ class ScraperUtils:
             await account_controller.update(id=self.account.id, obj_in=self.account)
             return False, ""
         url = tree.xpath("//*[@id='top']/div/nav/div[2]/ul/li[7]/ul/li[8]/a/@href")[0]
+        requests.packages.urllib3.disable_warnings()
         response_mor9 = self.session.get("https://i.tisi.go.th" + url, headers=self.headers, verify=False, timeout=6)
         tree = etree.HTML(response_mor9.text, etree.HTMLParser())
         tr_list = tree.xpath("//*[@id='moao9List']/tbody/tr")
@@ -241,6 +246,7 @@ class ScraperUtils:
             await account_controller.update(id=self.account.id, obj_in=self.account)
             return False, ""
         url = tree.xpath("//*[@id='top']/div//ul[@class='nav menu nav-pills']/li[6]/ul/li[2]/a/@href")[0]
+        requests.packages.urllib3.disable_warnings()
         response_afft = self.session.get("https://i.tisi.go.th" + url, headers=self.headers, verify=False, timeout=6)
         tree = etree.HTML(response_afft.text, etree.HTMLParser())
         tr_list = tree.xpath("//*[@id='factoryList']/tbody/tr")
@@ -283,7 +289,6 @@ class ScraperUtils:
                     "update_status": 2,
                     "update_by": self.account.create_by,
                     "mtime": datetime.now(),
-                    "ctime": datetime.now(),
                 })
                 if status != affa.apply_status:
                     await aft_controller.update(id=affa.id, obj_in={
@@ -300,7 +305,6 @@ class ScraperUtils:
                     "apply_status": status,
                     "create_by": self.account.create_by,
                     "update_status": 2,
-                    "mtime": datetime.now(),
                     "ctime": datetime.now(),
                 })
                 await aft_controller.update_aft_account(aft=new_affa, aft_account_id=self.account.account_number)
@@ -317,6 +321,7 @@ class ScraperUtils:
             await account_controller.update(id=self.account.id, obj_in=self.account)
             return False, ""
         url = tree.xpath("//*[@id='top']/div//ul[@class='nav menu nav-pills']/li[6]/ul/li[3]/a/@href")[0]
+        requests.packages.urllib3.disable_warnings()
         response_aft = self.session.get("https://i.tisi.go.th" + url, headers=self.headers, verify=False, timeout=6)
         tree = etree.HTML(response_aft.text, etree.HTMLParser())
         tr_list = tree.xpath("//*[@id='productList']/tbody/tr")
@@ -359,7 +364,6 @@ class ScraperUtils:
                     "update_status": 2,
                     "update_by": self.account.create_by,
                     "mtime": datetime.now(),
-                    "ctime": datetime.now(),
                 })
                 if status != aft.apply_status:
                     await aft_controller.update(id=aft.id, obj_in={
@@ -376,7 +380,6 @@ class ScraperUtils:
                     "apply_status": status,
                     "create_by": self.account.create_by,
                     "update_status": 2,
-                    "mtime": datetime.now(),
                     "ctime": datetime.now(),
                 })
                 await aft_controller.update_aft_account(aft=new_aft, aft_account_id=self.account.account_number)
@@ -393,6 +396,7 @@ class ScraperUtils:
             await account_controller.update(id=self.account.id, obj_in=self.account)
             return False, ""
         url = tree.xpath("//body/div[@class='container-fluid']/div[@class='col-md-6']/div/a/@href")[0]
+        requests.packages.urllib3.disable_warnings()
         response_aft = self.session.get("https://appdb.tisi.go.th/TISINSW/" + url, headers=self.headers, verify=False,
                                         timeout=30)
         tree = etree.HTML(response_aft.text, etree.HTMLParser())
@@ -424,7 +428,6 @@ class ScraperUtils:
                     "update_status": 2,
                     "update_by": self.account.create_by,
                     "mtime": datetime.now(),
-                    "ctime": datetime.now(),
                 })
                 if item["NSW_APPLY_STATUS"] != nsw.apply_status:
                     await nsw_controller.update(id=nsw.id, obj_in={
@@ -439,7 +442,6 @@ class ScraperUtils:
                     "apply_status": item["NSW_APPLY_STATUS"],
                     "update_status": 2,
                     "update_by": self.account.create_by,
-                    "mtime": datetime.now(),
                     "ctime": datetime.now(),
                 })
                 await nsw_controller.update_nsw_account(nsw=new_nsw, nsw_account_id=self.account.account_number)
@@ -448,6 +450,7 @@ class ScraperUtils:
         await insert_log(log_type=LogType.ApiLog, log_detail_type=LogDetailType.UserCreateOne, by_user_id=0)
 
     async def logout(self):
+        requests.packages.urllib3.disable_warnings()
         self.session.get(url="https://sso.tisi.go.th/logout", headers=self.headers, verify=False, timeout=6)
         print('logout success!')
 
