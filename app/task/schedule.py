@@ -15,7 +15,7 @@ async def get_scheduler_job():
         await account_obj.fetch_related("by_account_dict")
         by_account_dict_list = [by_account_dict.dict_name for by_account_dict in account_obj.by_account_dict]
         if not len(by_account_dict_list):
-            account_controller.update(id=account["id"], obj_in={"feedback": "未选择监控项,请添加监控项!"})
+            await account_controller.update(id=account["id"], obj_in={"feedback": "未选择监控项,请添加监控项!"})
         account_in = AccountUpdate(
             id=account["id"],
             nickname=account["nickname"],
@@ -26,6 +26,7 @@ async def get_scheduler_job():
             mtime=account["mtime"],
             create_by=account["createBy"],
         )
+        print(f"监控信息:{account}")
         retry, response = await scraper_utils.login(account=account_in)
         if not retry:
             return Success(msg="Scraper Failed", data={'Scraper_id': account_obj.id}, code=4090)
