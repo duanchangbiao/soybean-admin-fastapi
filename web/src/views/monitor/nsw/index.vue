@@ -22,6 +22,11 @@ const {
 } = useTable({
   columns: () => [
     {
+      type: 'selection',
+      align: 'center',
+      width: 48
+    },
+    {
       key: 'index',
       title: $t('common.index'),
       dataIndex: 'index',

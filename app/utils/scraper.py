@@ -34,31 +34,37 @@ class ScraperUtils:
     async def login(self, account: AccountUpdate):
         print('login scraper start!')
         self.account = account
-        requests.packages.urllib3.disable_warnings()
-        response_login = self.session.get(url=self.url, headers=self.headers, verify=False, timeout=6)
-        if response_login.status_code != 200:
-            self.account.feedback = '用户登陆异常,请手动重试!'
-            await account_controller.update(id=self.account.id, obj_in=self.account)
-            return False, ""
-        tree = etree.HTML(response_login.text)
-        if not tree.xpath('//*[@name="_token"]/@value'):
-            print("解析login index error!")
+        try:
+            requests.packages.urllib3.disable_warnings()
+            response_login = self.session.get(url=self.url, headers=self.headers, verify=False, timeout=30)
+            if response_login.status_code != 200:
+                self.account.feedback = '用户登陆异常,请手动重试!'
+                await account_controller.update(id=self.account.id, obj_in=self.account)
+                return False, ""
+            tree = etree.HTML(response_login.text)
+            if not tree.xpath('//*[@name="_token"]/@value'):
+                print("解析login index error!")
+                self.account.feedback = '网络异常,请重启网络！'
+                await account_controller.update(id=self.account.id, obj_in=self.account)
+                await self.logout()
+                return False, ""
+            _token = tree.xpath('//*[@name="_token"]/@value')[0]
+            data = {
+                'username': self.account.account_number,
+                'password': self.account.password,
+                'redirect_uri': '',
+                '_token': _token
+            }
+            requests.packages.urllib3.disable_warnings()
+            response = self.session.post(url=self.url, headers=self.headers, data=data, verify=False, timeout=30)
+            if response.status_code != 200:
+                self.account.feedback = '用户登陆异常,请手动重试!'
+                await account_controller.update(id=self.account.id, obj_in=self.account, exclude={"by_account_modules"})
+                return False, ""
+        except Exception as e:
             self.account.feedback = '网络异常,请重启网络！'
             await account_controller.update(id=self.account.id, obj_in=self.account)
             await self.logout()
-            return False, ""
-        _token = tree.xpath('//*[@name="_token"]/@value')[0]
-        data = {
-            'username': self.account.account_number,
-            'password': self.account.password,
-            'redirect_uri': '',
-            '_token': _token
-        }
-        requests.packages.urllib3.disable_warnings()
-        response = self.session.post(url=self.url, headers=self.headers, data=data, verify=False, timeout=6)
-        if response.status_code != 200:
-            self.account.feedback = '用户登陆异常,请手动重试!'
-            await account_controller.update(id=self.account.id, obj_in=self.account, exclude={"by_account_modules"})
             return False, ""
         return True, response.text
 
