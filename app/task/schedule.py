@@ -26,10 +26,10 @@ async def get_scheduler_job():
             mtime=account["mtime"],
             create_by=account["createBy"],
         )
+        retry, response = await scraper_utils.login(account=account_in)
+        if not retry:
+            return Success(msg="Scraper Failed", data={'Scraper_id': account_obj.id}, code=4090)
         for by_account_dict in by_account_dict_list:
-            retry, response = await scraper_utils.login(account=account_in)
-            if not retry:
-                return Success(msg="Scraper Failed", data={'Scraper_id': account_obj.id}, code=4090)
             if by_account_dict != 'NSW':
                 retry_l, response_l = await scraper_utils.get_license(index_text=response, type=1)
                 if not retry_l:
@@ -55,6 +55,6 @@ async def get_scheduler_job():
                 if not retry_n:
                     return Success(msg="Scraper Failed", data={'Scraper_id': account_obj.id}, code=4090)
                 await scraper_utils.get_nsw(response_n)
-            await scraper_utils.logout()
+        await scraper_utils.logout()
         await account_controller.update(id=account_obj.id, obj_in={"mtime": datetime.now()})
         await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.ApiScraper, by_user_id=0)
