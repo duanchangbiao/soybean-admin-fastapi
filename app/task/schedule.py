@@ -35,12 +35,10 @@ async def get_scheduler_job():
                 retry_l, response_l = await scraper_utils.get_license(index_text=response, type=1)
                 if not retry_l:
                     return Success(msg="Scraper Failed", data={'Scraper_id': account_obj.id}, code=4090)
-
                 if by_account_dict == 'MOR9':
                     retry_m, response_m = await scraper_utils.get_mor9(response_l)
                     if not retry_m:
                         return Success(msg="Scraper Failed", data={'Scraper_id': account_obj.id}, code=4090)
-
                 if by_account_dict == 'MOR5':
                     retry_m, response_m = await scraper_utils.get_mor5(response_l)
                     if not retry_m:

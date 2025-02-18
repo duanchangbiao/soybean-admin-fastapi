@@ -35,9 +35,6 @@ class ScraperUtils:
         print('login scraper start!')
         self.account = account
         response_login = self.session.get(url=self.url, headers=self.headers, verify=False, timeout=6)
-        with open('./login.html', 'w', encoding='utf-8') as f:
-            f.write(response_login.text)
-            f.close()
         if response_login.status_code != 200:
             self.account.feedback = '用户登陆异常,请手动重试!'
             await account_controller.update(id=self.account.id, obj_in=self.account)
@@ -47,6 +44,7 @@ class ScraperUtils:
             print("解析login index error!")
             self.account.feedback = '网络异常,请重启网络！'
             await account_controller.update(id=self.account.id, obj_in=self.account)
+            await self.logout()
             return False, ""
         _token = tree.xpath('//*[@name="_token"]/@value')[0]
         data = {
@@ -456,6 +454,8 @@ class ScraperUtils:
     @staticmethod
     async def sendEmail(user, result):
         try:
+            if not result.remark:
+                return
             if result.__class__ == Aft:
                 title = f'TISI Alert:{result.aft_type}/{user} Adaptor have update!'
                 body = (f'----------------------------\n'
