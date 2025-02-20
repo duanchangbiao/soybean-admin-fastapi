@@ -122,12 +122,10 @@ async def _(account_id: int, account_in: AccountUpdate):
                 retry_l, response_l = await scraper_utils.get_license(index_text=response, type=1)
                 if not retry_l:
                     return Success(msg="Scraper Failed", data={'Scraper_id': account_id}, code=4090)
-
                 if dict_obj.dict_name == 'MOR9':
                     retry_m, response_m = await scraper_utils.get_mor9(response_l)
                     if not retry_m:
                         return Success(msg="Scraper Failed", data={'Scraper_id': account_id}, code=4090)
-
                 if dict_obj.dict_name == 'MOR5':
                     retry_m, response_m = await scraper_utils.get_mor5(response_l)
                     if not retry_m:
@@ -149,6 +147,5 @@ async def _(account_id: int, account_in: AccountUpdate):
         await scraper_utils.logout()
         raise HTTPException(code="4002", msg="proxy failed, 网络异常,请重试！")
     await scraper_utils.logout()
-    await account_controller.update(id=account_id, obj_in={"mtime": datetime.now()})
-    await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.UserDeleteOne, by_user_id=0)
+    await account_controller.update(id=account_id, obj_in={"feedback": "正常", "mtime": datetime.now()})
     return Success(msg="Scraper Successfully", data={'Scraper_id': account_id})

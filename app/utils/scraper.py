@@ -40,14 +40,14 @@ class ScraperUtils:
             if response_login.status_code != 200:
                 self.account.feedback = '用户登陆异常,请手动重试!'
                 await account_controller.update(id=self.account.id, obj_in=self.account)
-                return False, ""
+                return False, self.account.feedback
             tree = etree.HTML(response_login.text)
             if not tree.xpath('//*[@name="_token"]/@value'):
                 print("解析login index error!")
                 self.account.feedback = '网络异常,请重启网络！'
                 await account_controller.update(id=self.account.id, obj_in=self.account)
                 await self.logout()
-                return False, ""
+                return False, self.account.feedback
             _token = tree.xpath('//*[@name="_token"]/@value')[0]
             data = {
                 'username': self.account.account_number,
@@ -60,112 +60,108 @@ class ScraperUtils:
             if response.status_code != 200:
                 self.account.feedback = '用户登陆异常,请手动重试!'
                 await account_controller.update(id=self.account.id, obj_in=self.account, exclude={"by_account_modules"})
-                return False, ""
+                return False, self.account.feedback
         except Exception as e:
             self.account.feedback = '网络异常,请重启网络！'
             await account_controller.update(id=self.account.id, obj_in=self.account)
             await self.logout()
-            return False, ""
+            return False, self.account.feedback
         return True, response.text
 
     async def get_license(self, index_text, type: int):
         print('index.html scraper start!')
         tree = etree.HTML(index_text)
-        if type == 1:
-            url = tree.xpath("//div[@class='row colorbox-group-widget']/div[1]/a/@href")
-        else:
-            url = tree.xpath("//div[@class='row colorbox-group-widget']/div[2]/a/@href")
-        if len(url) == 0:
-            self.account.feedback = '账号密码错误,请修改后重试！'
-            await account_controller.update(id=self.account.id, obj_in=self.account)
-            return False, ""
-        requests.packages.urllib3.disable_warnings()
-        response_license = self.session.get(url[0], headers=self.headers, verify=False)
-        if response_license.status_code != 200:
-            self.account.feedback = '账号密码错误,请修改后重试！'
-            await account_controller.update(id=self.account.id, obj_in=self.account)
-            await account_controller.update(id=self.account.id, obj_in=self.account)
-            return False, ""
+        try:
+            if type == 1:
+                url = tree.xpath("//div[@class='row colorbox-group-widget']/div[1]/a/@href")
+            else:
+                url = tree.xpath("//div[@class='row colorbox-group-widget']/div[2]/a/@href")
+            requests.packages.urllib3.disable_warnings()
+            response_license = self.session.get(url[0], headers=self.headers, verify=False)
+            if response_license.status_code != 200:
+                self.account.feedback = '账号密码可能错误,请重试!'
+        except Exception as e:
+            await self.logout()
+            return False, "有账号正在登陆,请退出登陆重试"
         return True, response_license.text
 
     async def get_mor5(self, mor5_text):
         print('mor5.html scraper start!')
         tree = etree.HTML(mor5_text)
-        if len(tree.xpath("//*[@id='top']/div/nav/div[2]/ul/li[7]/ul/li[3]/a/@href")) == 0:
-            self.account.feedback = '账号密码错误,请修改后重试！'
-            await account_controller.update(id=self.account.id, obj_in=self.account)
-            return False, self.account.feedback
-        url = tree.xpath("//*[@id='top']/div/nav/div[2]/ul/li[7]/ul/li[3]/a/@href")[0]
-        requests.packages.urllib3.disable_warnings()
-        response_mor5 = self.session.get("https://i.tisi.go.th" + url, headers=self.headers, verify=False)
-        if response_mor5.status_code != 200:
-            self.account.feedback = '账号密码错误,请修改后重试！'
-            await account_controller.update(id=self.account.id, obj_in=self.account)
-            return False, ""
-        # 解析页面mor5
-        tree = etree.HTML(response_mor5.text, etree.HTMLParser())
-        tr_list = tree.xpath("//*[@id='moao5List']/tbody/tr")
-        for tr in tr_list:
-            item = {}
-            if tr.xpath("./td[2]/text()"):
-                if tr.xpath("./td[2]/text()")[0].strip() == "":
-                    item["MOR5_APPLY_CODE"] = tr.xpath("./td[2]/text()")[1].strip()
+        try:
+            if len(tree.xpath("//*[@id='top']/div/nav/div[2]/ul/li[7]/ul/li[3]/a/@href")) == 0:
+                self.account.feedback = '账号密码错误,请修改后重试！'
+                return False, self.account.feedback
+            url = tree.xpath("//*[@id='top']/div/nav/div[2]/ul/li[7]/ul/li[3]/a/@href")[0]
+            requests.packages.urllib3.disable_warnings()
+            response_mor5 = self.session.get("https://i.tisi.go.th" + url, headers=self.headers, verify=False)
+            if response_mor5.status_code != 200:
+                self.account.feedback = '账号密码错误,请修改后重试！'
+                return False, '账号密码错误,请修改后重试！'
+            # 解析页面mor5
+            tree = etree.HTML(response_mor5.text, etree.HTMLParser())
+            tr_list = tree.xpath("//*[@id='moao5List']/tbody/tr")
+            for tr in tr_list:
+                item = {}
+                if tr.xpath("./td[2]/text()"):
+                    if tr.xpath("./td[2]/text()")[0].strip() == "":
+                        item["MOR5_APPLY_CODE"] = tr.xpath("./td[2]/text()")[1].strip()
+                    else:
+                        item["MOR5_APPLY_CODE"] = tr.xpath("./td[2]/text()")[0].strip()
+                if tr.xpath("./td[3]/text()"):
+                    item["MOR5_APPLY_NAME"] = tr.xpath("./td[3]/text()")[0].strip()
+                if tr.xpath("./td[7]//text()"):
+                    item["MOR5_APPLY_DATE"] = "".join(tr.xpath("./td[7]//text()")).strip()
                 else:
-                    item["MOR5_APPLY_CODE"] = tr.xpath("./td[2]/text()")[0].strip()
-            if tr.xpath("./td[3]/text()"):
-                item["MOR5_APPLY_NAME"] = tr.xpath("./td[3]/text()")[0].strip()
-            if tr.xpath("./td[7]//text()"):
-                item["MOR5_APPLY_DATE"] = "".join(tr.xpath("./td[7]//text()")).strip()
-            else:
-                item["MOR5_APPLY_DATE"] = ""
-            if tr.xpath("./td[8]//span[@class='show_status']"):
-                str_list = "".join(tr.xpath("./td[8]//span[@class='show_status']//text()"))
-                item["MOR5_STATUS"] = str_list.strip()
-            else:
-                item["MOR5_STATUS"] = ""
-            # 获取状态
-            dict_obj: Dict = await dict_controller.get_by_dict_value(dict_value=item["MOR5_STATUS"],
-                                                                     dict_type="mor5_status")
-            if dict_obj:
-                status = dict_obj.dict_name
-            else:
-                status = "异常"
-            mor: Mor = await mor_controller.get_mor_by_apply_number(apply_number=item["MOR5_APPLY_CODE"])
-            if mor:
-                new_mor: Mor = await mor_controller.update(id=mor.id, obj_in={
-                    "apply_number": item["MOR5_APPLY_CODE"],
-                    "apply_date": item["MOR5_APPLY_DATE"],
-                    "apply_name": item["MOR5_APPLY_NAME"],
-                    "mor_type": "mor5",
-                    "apply_status": status,
-                    "update_by": self.account.update_by,
-                    "update_status": 2,
-                    "mtime": datetime.now(),
-                    "ctime": datetime.now(),
-                })
-                if status != mor.apply_status:
-                    await mor_controller.update(id=mor.id, obj_in={
-                        "update_status": 1,
+                    item["MOR5_APPLY_DATE"] = ""
+                if tr.xpath("./td[8]//span[@class='show_status']"):
+                    str_list = "".join(tr.xpath("./td[8]//span[@class='show_status']//text()"))
+                    item["MOR5_STATUS"] = str_list.strip()
+                else:
+                    item["MOR5_STATUS"] = ""
+                # 获取状态
+                dict_obj: Dict = await dict_controller.get_by_dict_value(dict_value=item["MOR5_STATUS"],
+                                                                         dict_type="mor5_status")
+                if dict_obj:
+                    status = dict_obj.dict_name
+                else:
+                    status = "异常"
+                mor: Mor = await mor_controller.get_mor_by_apply_number(apply_number=item["MOR5_APPLY_CODE"])
+                if mor:
+                    new_mor: Mor = await mor_controller.update(id=mor.id, obj_in={
+                        "apply_number": item["MOR5_APPLY_CODE"],
+                        "apply_date": item["MOR5_APPLY_DATE"],
+                        "apply_name": item["MOR5_APPLY_NAME"],
+                        "mor_type": "mor5",
+                        "apply_status": status,
+                        "update_by": self.account.update_by,
+                        "update_status": 2,
+                        "mtime": datetime.now(),
+                        "ctime": datetime.now(),
                     })
-                    mor.apply_status = status
-                    await self.sendEmail(user=self.account.nickname, result=mor)
-                await mor_controller.update_mor_account(mor=new_mor, mor_account_id=self.account.account_number)
-            else:
-                new_mor = await mor_controller.create(obj_in={
-                    "apply_number": item["MOR5_APPLY_CODE"],
-                    "apply_date": item["MOR5_APPLY_DATE"],
-                    "apply_name": item["MOR5_APPLY_NAME"],
-                    "mor_type": "mor5",
-                    "apply_status": status,
-                    "create_by": self.account.update_by,
-                    "update_status": 2,
-                    "mtime": datetime.now(),
-                    "ctime": datetime.now(),
-                })
-                await mor_controller.update_mor_account(mor=new_mor, mor_account_id=self.account.account_number)
-        self.account.feedback = '正常'
-        await account_controller.update(id=self.account.id, obj_in=self.account)
-        await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.UserCreateOne, by_user_id=0)
+                    if status != mor.apply_status:
+                        await mor_controller.update(id=mor.id, obj_in={
+                            "update_status": 1,
+                        })
+                        mor.apply_status = status
+                        await self.sendEmail(user=self.account.nickname, result=mor)
+                    await mor_controller.update_mor_account(mor=new_mor, mor_account_id=self.account.account_number)
+                else:
+                    new_mor = await mor_controller.create(obj_in={
+                        "apply_number": item["MOR5_APPLY_CODE"],
+                        "apply_date": item["MOR5_APPLY_DATE"],
+                        "apply_name": item["MOR5_APPLY_NAME"],
+                        "mor_type": "mor5",
+                        "apply_status": status,
+                        "create_by": self.account.update_by,
+                        "update_status": 2,
+                        "mtime": datetime.now(),
+                        "ctime": datetime.now(),
+                    })
+                    await mor_controller.update_mor_account(mor=new_mor, mor_account_id=self.account.account_number)
+        except Exception as e:
+            self.account.feedback = "MOR5数据采集发生错误,请手动重试!"
+            return False, self.account.feedback
         return True, "Mor5 scraper success"
 
     async def get_mor9(self, mor9_text):
@@ -173,75 +169,76 @@ class ScraperUtils:
         tree = etree.HTML(mor9_text)
         if len(tree.xpath("//*[@id='top']/div/nav/div[2]/ul/li[7]/ul/li[1]/a/@href")) == 0:
             self.account.feedback = '账号密码错误,请修改后重试！'
-            await account_controller.update(id=self.account.id, obj_in=self.account)
             return False, ""
-        url = tree.xpath("//*[@id='top']/div/nav/div[2]/ul/li[7]/ul/li[8]/a/@href")[0]
-        requests.packages.urllib3.disable_warnings()
-        response_mor9 = self.session.get("https://i.tisi.go.th" + url, headers=self.headers, verify=False, timeout=6)
-        tree = etree.HTML(response_mor9.text, etree.HTMLParser())
-        tr_list = tree.xpath("//*[@id='moao9List']/tbody/tr")
-        for tr in tr_list:
-            item = {}
-            if tr.xpath("./td[2]//text()"):
-                item["MOR9_APPLY_CODE"] = tr.xpath("./td[2]//text()")[0].strip()
-                if item["MOR9_APPLY_CODE"] == "":
-                    item["MOR9_APPLY_CODE"] = tr.xpath("./td[2]//text()")[1].strip()
-            if tr.xpath("./td[3]//text()"):
-                item["MOR9_APPLY_NAME"] = tr.xpath("./td[3]/text()")[0].strip()
-            if tr.xpath("./td[7]//text()"):
-                item["MOR9_LICENSE_CODE"] = tr.xpath("./td[7]//text()")[0].strip()
-            if tr.xpath("./td[8]//text()"):
-                item["MOR9_APPLY_DATE"] = tr.xpath("./td[8]//text()")[0].strip()
-            else:
-                item["MOR9_APPLY_DATE"] = None
-            if tr.xpath("./td[9]/p/span/text()"):
-                item["MOR9_STATUS"] = tr.xpath("./td[9]/p/span/text()")[0].strip()
-            else:
-                item["MOR9_STATUS"] = ""
+        try:
+            url = tree.xpath("//*[@id='top']/div/nav/div[2]/ul/li[7]/ul/li[8]/a/@href")[0]
+            requests.packages.urllib3.disable_warnings()
+            response_mor9 = self.session.get("https://i.tisi.go.th" + url, headers=self.headers, verify=False,
+                                             timeout=6)
+            tree = etree.HTML(response_mor9.text, etree.HTMLParser())
+            tr_list = tree.xpath("//*[@id='moao9List']/tbody/tr")
+            for tr in tr_list:
+                item = {}
+                if tr.xpath("./td[2]//text()"):
+                    item["MOR9_APPLY_CODE"] = tr.xpath("./td[2]//text()")[0].strip()
+                    if item["MOR9_APPLY_CODE"] == "":
+                        item["MOR9_APPLY_CODE"] = tr.xpath("./td[2]//text()")[1].strip()
+                if tr.xpath("./td[3]//text()"):
+                    item["MOR9_APPLY_NAME"] = tr.xpath("./td[3]/text()")[0].strip()
+                if tr.xpath("./td[7]//text()"):
+                    item["MOR9_LICENSE_CODE"] = tr.xpath("./td[7]//text()")[0].strip()
+                if tr.xpath("./td[8]//text()"):
+                    item["MOR9_APPLY_DATE"] = tr.xpath("./td[8]//text()")[0].strip()
+                else:
+                    item["MOR9_APPLY_DATE"] = None
+                if tr.xpath("./td[9]/p/span/text()"):
+                    item["MOR9_STATUS"] = tr.xpath("./td[9]/p/span/text()")[0].strip()
+                else:
+                    item["MOR9_STATUS"] = ""
 
-            dict_obj: Dict = await dict_controller.get_by_dict_value(dict_value=item["MOR9_STATUS"],
-                                                                     dict_type="mor9_status")
-            if dict_obj:
-                status = dict_obj.dict_name
-            else:
-                status = "异常"
-            mor: Mor = await mor_controller.get_mor_by_apply_number(apply_number=item["MOR9_APPLY_CODE"])
-            if mor:
-                await mor_controller.update(id=mor.id, obj_in={
-                    "apply_number": item["MOR9_APPLY_CODE"],
-                    "apply_date": item["MOR9_APPLY_DATE"],
-                    "apply_name": item["MOR9_APPLY_NAME"],
-                    "license_code": item["MOR9_LICENSE_CODE"],
-                    "mor_type": "mor9",
-                    "apply_status": status,
-                    "update_status": 2,
-                    "update_by": self.account.create_by,
-                    "mtime": datetime.now(),
-                    "ctime": datetime.now(),
-                })
-                if status != mor.apply_status:
+                dict_obj: Dict = await dict_controller.get_by_dict_value(dict_value=item["MOR9_STATUS"],
+                                                                         dict_type="mor9_status")
+                if dict_obj:
+                    status = dict_obj.dict_name
+                else:
+                    status = "异常"
+                mor: Mor = await mor_controller.get_mor_by_apply_number(apply_number=item["MOR9_APPLY_CODE"])
+                if mor:
                     await mor_controller.update(id=mor.id, obj_in={
-                        "update_status": 1,
+                        "apply_number": item["MOR9_APPLY_CODE"],
+                        "apply_date": item["MOR9_APPLY_DATE"],
+                        "apply_name": item["MOR9_APPLY_NAME"],
+                        "license_code": item["MOR9_LICENSE_CODE"],
+                        "mor_type": "mor9",
+                        "apply_status": status,
+                        "update_status": 2,
+                        "update_by": self.account.create_by,
+                        "mtime": datetime.now(),
+                        "ctime": datetime.now(),
                     })
-                    mor.apply_status = status
-                    await self.sendEmail(user=self.account.nickname, result=mor)
-            else:
-                new_mor = await mor_controller.create(obj_in={
-                    "apply_number": item["MOR9_APPLY_CODE"],
-                    "apply_date": item["MOR9_APPLY_DATE"],
-                    "apply_name": item["MOR9_APPLY_NAME"],
-                    "license_code": item["MOR9_LICENSE_CODE"],
-                    "mor_type": "mor9",
-                    "apply_status": status,
-                    "create_by": self.account.create_by,
-                    "update_status": 2,
-                    "mtime": datetime.now(),
-                    "ctime": datetime.now(),
-                })
-                await mor_controller.update_mor_account(mor=new_mor, mor_account_id=self.account.account_number)
-        self.account.feedback = '正常'
-        await account_controller.update(id=self.account.id, obj_in=self.account)
-        await insert_log(log_type=LogType.AdminLog, log_detail_type=LogDetailType.UserCreateOne, by_user_id=0)
+                    if status != mor.apply_status:
+                        await mor_controller.update(id=mor.id, obj_in={
+                            "update_status": 1,
+                        })
+                        mor.apply_status = status
+                        await self.sendEmail(user=self.account.nickname, result=mor)
+                else:
+                    new_mor = await mor_controller.create(obj_in={
+                        "apply_number": item["MOR9_APPLY_CODE"],
+                        "apply_date": item["MOR9_APPLY_DATE"],
+                        "apply_name": item["MOR9_APPLY_NAME"],
+                        "license_code": item["MOR9_LICENSE_CODE"],
+                        "mor_type": "mor9",
+                        "apply_status": status,
+                        "create_by": self.account.create_by,
+                        "update_status": 2,
+                        "mtime": datetime.now(),
+                        "ctime": datetime.now(),
+                    })
+                    await mor_controller.update_mor_account(mor=new_mor, mor_account_id=self.account.account_number)
+        except Exception as e:
+            self.account.feedback = 'MOR9采集失败,请手动重试'
+            return False, self.account.feedback
         return True, "Mor9 scraper success"
 
     async def get_affa(self, affa_text):
@@ -252,71 +249,73 @@ class ScraperUtils:
             await account_controller.update(id=self.account.id, obj_in=self.account)
             return False, ""
         url = tree.xpath("//*[@id='top']/div//ul[@class='nav menu nav-pills']/li[6]/ul/li[2]/a/@href")[0]
-        requests.packages.urllib3.disable_warnings()
-        response_afft = self.session.get("https://i.tisi.go.th" + url, headers=self.headers, verify=False, timeout=6)
-        tree = etree.HTML(response_afft.text, etree.HTMLParser())
-        tr_list = tree.xpath("//*[@id='factoryList']/tbody/tr")
-        for tr in tr_list:
-            item = {}
-            if tr.xpath("./td[2]//text()"):
-                item["AFFA_APPLY_CODE"] = tr.xpath("./td[2]//text()")[0].strip()
-                if item["AFFA_APPLY_CODE"] == "":
-                    item["AFFA_APPLY_CODE"] = tr.xpath("./td[2]//text()")[1].strip()
-            else:
-                item["AFFA_APPLY_CODE"] = ""
-            if tr.xpath("./td[5]//text()"):
-                item["AFFA_APPLY_LICENSE"] = tr.xpath("./td[5]//text()")[0].strip()
-            else:
-                item["AFFA_APPLY_LICENSE"] = ""
-            if tr.xpath("./td[6]/text()"):
-                item["AFFA_APPLY_DATE"] = "".join(tr.xpath("./td[6]//text()")).strip()
-            else:
-                item["AFFA_APPLY_DATE"] = ""
-            if tr.xpath("./td[7]/text()"):
-                str_list = "".join(tr.xpath("./td[7]//text()"))
-                item["AFFA_STATUS"] = str_list.strip()
-            else:
-                item["AFFA_STATUS"] = ""
+        try:
+            requests.packages.urllib3.disable_warnings()
+            response_afft = self.session.get("https://i.tisi.go.th" + url, headers=self.headers, verify=False,
+                                             timeout=6)
+            tree = etree.HTML(response_afft.text, etree.HTMLParser())
+            tr_list = tree.xpath("//*[@id='factoryList']/tbody/tr")
+            for tr in tr_list:
+                item = {}
+                if tr.xpath("./td[2]//text()"):
+                    item["AFFA_APPLY_CODE"] = tr.xpath("./td[2]//text()")[0].strip()
+                    if item["AFFA_APPLY_CODE"] == "":
+                        item["AFFA_APPLY_CODE"] = tr.xpath("./td[2]//text()")[1].strip()
+                else:
+                    item["AFFA_APPLY_CODE"] = ""
+                if tr.xpath("./td[5]//text()"):
+                    item["AFFA_APPLY_LICENSE"] = tr.xpath("./td[5]//text()")[0].strip()
+                else:
+                    item["AFFA_APPLY_LICENSE"] = ""
+                if tr.xpath("./td[6]/text()"):
+                    item["AFFA_APPLY_DATE"] = "".join(tr.xpath("./td[6]//text()")).strip()
+                else:
+                    item["AFFA_APPLY_DATE"] = ""
+                if tr.xpath("./td[7]/text()"):
+                    str_list = "".join(tr.xpath("./td[7]//text()"))
+                    item["AFFA_STATUS"] = str_list.strip()
+                else:
+                    item["AFFA_STATUS"] = ""
 
-            dict_obj: Dict = await dict_controller.get_by_dict_value(dict_value=item["AFFA_STATUS"],
-                                                                     dict_type="affa_status")
-            if dict_obj:
-                status = dict_obj.dict_name
-            else:
-                status = "异常"
-            affa: Aft = await aft_controller.get_aft_by_apply_number(apply_number=item["AFFA_APPLY_CODE"])
-            if affa:
-                await aft_controller.update(id=affa.id, obj_in={
-                    "apply_number": item["AFFA_APPLY_CODE"],
-                    "apply_date": item["AFFA_APPLY_DATE"],
-                    "apply_license": item["AFFA_APPLY_LICENSE"],
-                    "aft_type": "affa",
-                    "apply_status": status,
-                    "update_status": 2,
-                    "update_by": self.account.create_by,
-                    "mtime": datetime.now(),
-                })
-                if status != affa.apply_status:
+                dict_obj: Dict = await dict_controller.get_by_dict_value(dict_value=item["AFFA_STATUS"],
+                                                                         dict_type="affa_status")
+                if dict_obj:
+                    status = dict_obj.dict_name
+                else:
+                    status = "异常"
+                affa: Aft = await aft_controller.get_aft_by_apply_number(apply_number=item["AFFA_APPLY_CODE"])
+                if affa:
                     await aft_controller.update(id=affa.id, obj_in={
-                        "update_status": 1,
+                        "apply_number": item["AFFA_APPLY_CODE"],
+                        "apply_date": item["AFFA_APPLY_DATE"],
+                        "apply_license": item["AFFA_APPLY_LICENSE"],
+                        "aft_type": "affa",
+                        "apply_status": status,
+                        "update_status": 2,
+                        "update_by": self.account.create_by,
+                        "mtime": datetime.now(),
                     })
-                    affa.apply_status = status
-                    await self.sendEmail(user=self.account.nickname, result=affa)
-            else:
-                new_affa = await aft_controller.create(obj_in={
-                    "apply_number": item["AFFA_APPLY_CODE"],
-                    "apply_date": item["AFFA_APPLY_DATE"],
-                    "apply_license": item["AFFA_APPLY_LICENSE"],
-                    "aft_type": "affa",
-                    "apply_status": status,
-                    "create_by": self.account.create_by,
-                    "update_status": 2,
-                    "ctime": datetime.now(),
-                })
-                await aft_controller.update_aft_account(aft=new_affa, aft_account_id=self.account.account_number)
-        self.account.feedback = '正常'
-        await account_controller.update(id=self.account.id, obj_in=self.account)
-        await insert_log(log_type=LogType.ApiLog, log_detail_type=LogDetailType.UserCreateOne, by_user_id=0)
+                    if status != affa.apply_status:
+                        await aft_controller.update(id=affa.id, obj_in={
+                            "update_status": 1,
+                        })
+                        affa.apply_status = status
+                        await self.sendEmail(user=self.account.nickname, result=affa)
+                else:
+                    new_affa = await aft_controller.create(obj_in={
+                        "apply_number": item["AFFA_APPLY_CODE"],
+                        "apply_date": item["AFFA_APPLY_DATE"],
+                        "apply_license": item["AFFA_APPLY_LICENSE"],
+                        "aft_type": "affa",
+                        "apply_status": status,
+                        "create_by": self.account.create_by,
+                        "update_status": 2,
+                        "ctime": datetime.now(),
+                    })
+                    await aft_controller.update_aft_account(aft=new_affa, aft_account_id=self.account.account_number)
+        except Exception as e:
+            self.account.feedback = 'AFFA数据采集错误!请手动重试!'
+            return False, self.account.feedback
         return True, "Affa scraper success"
 
     async def get_aft(self, aft_text):
@@ -327,133 +326,129 @@ class ScraperUtils:
             await account_controller.update(id=self.account.id, obj_in=self.account)
             return False, ""
         url = tree.xpath("//*[@id='top']/div//ul[@class='nav menu nav-pills']/li[6]/ul/li[3]/a/@href")[0]
-        requests.packages.urllib3.disable_warnings()
-        response_aft = self.session.get("https://i.tisi.go.th" + url, headers=self.headers, verify=False, timeout=6)
-        tree = etree.HTML(response_aft.text, etree.HTMLParser())
-        tr_list = tree.xpath("//*[@id='productList']/tbody/tr")
-        for tr in tr_list:
-            item = {}
-            if tr.xpath("./td[2]//text()"):
-                item["AFT_APPLY_CODE"] = tr.xpath("./td[2]//text()")[0].strip()
-                if item["AFT_APPLY_CODE"] == "":
-                    item["AFT_APPLY_CODE"] = tr.xpath("./td[2]//text()")[1].strip()
-            else:
-                item["AFT_APPLY_CODE"] = ""
-            if tr.xpath("./td[5]//text()"):
-                item["AFT_APPLY_LICENSE"] = tr.xpath("./td[5]//text()")[0].strip()
-            else:
-                item["AFT_APPLY_LICENSE"] = ""
-            if tr.xpath("./td[6]/text()"):
-                item["AFT_APPLY_DATE"] = "".join(tr.xpath("./td[6]//text()")).strip()
-            else:
-                item["AFT_APPLY_DATE"] = ""
-            if tr.xpath("./td[7]/text()"):
-                str_list = "".join(tr.xpath("./td[7]//text()"))
-                item["AFT_STATUS"] = str_list.strip()
-            else:
-                item["AFT_STATUS"] = ""
+        try:
+            requests.packages.urllib3.disable_warnings()
+            response_aft = self.session.get("https://i.tisi.go.th" + url, headers=self.headers, verify=False, timeout=6)
+            tree = etree.HTML(response_aft.text, etree.HTMLParser())
+            tr_list = tree.xpath("//*[@id='productList']/tbody/tr")
+            for tr in tr_list:
+                item = {}
+                if tr.xpath("./td[2]//text()"):
+                    item["AFT_APPLY_CODE"] = tr.xpath("./td[2]//text()")[0].strip()
+                    if item["AFT_APPLY_CODE"] == "":
+                        item["AFT_APPLY_CODE"] = tr.xpath("./td[2]//text()")[1].strip()
+                else:
+                    item["AFT_APPLY_CODE"] = ""
+                if tr.xpath("./td[5]//text()"):
+                    item["AFT_APPLY_LICENSE"] = tr.xpath("./td[5]//text()")[0].strip()
+                else:
+                    item["AFT_APPLY_LICENSE"] = ""
+                if tr.xpath("./td[6]/text()"):
+                    item["AFT_APPLY_DATE"] = "".join(tr.xpath("./td[6]//text()")).strip()
+                else:
+                    item["AFT_APPLY_DATE"] = ""
+                if tr.xpath("./td[7]/text()"):
+                    str_list = "".join(tr.xpath("./td[7]//text()"))
+                    item["AFT_STATUS"] = str_list.strip()
+                else:
+                    item["AFT_STATUS"] = ""
 
-            dict_obj: Dict = await dict_controller.get_by_dict_value(dict_value=item["AFT_STATUS"],
-                                                                     dict_type="aft_status")
-            if dict_obj:
-                status = dict_obj.dict_name
-            else:
-                status = "异常"
-            aft: Aft = await aft_controller.get_aft_by_apply_number(apply_number=item["AFT_APPLY_CODE"])
-            if aft:
-                await aft_controller.update(id=aft.id, obj_in={
-                    "apply_number": item["AFT_APPLY_CODE"],
-                    "apply_date": item["AFT_APPLY_DATE"],
-                    "apply_license": item["AFT_APPLY_LICENSE"],
-                    "aft_type": "aft",
-                    "apply_status": status,
-                    "update_status": 2,
-                    "update_by": self.account.create_by,
-                    "mtime": datetime.now(),
-                })
-                if status != aft.apply_status:
+                dict_obj: Dict = await dict_controller.get_by_dict_value(dict_value=item["AFT_STATUS"],
+                                                                         dict_type="aft_status")
+                if dict_obj:
+                    status = dict_obj.dict_name
+                else:
+                    status = "异常"
+                aft: Aft = await aft_controller.get_aft_by_apply_number(apply_number=item["AFT_APPLY_CODE"])
+                if aft:
                     await aft_controller.update(id=aft.id, obj_in={
-                        "update_status": 1,
+                        "apply_number": item["AFT_APPLY_CODE"],
+                        "apply_date": item["AFT_APPLY_DATE"],
+                        "apply_license": item["AFT_APPLY_LICENSE"],
+                        "aft_type": "aft",
+                        "apply_status": status,
+                        "update_status": 2,
+                        "update_by": self.account.create_by,
+                        "mtime": datetime.now(),
                     })
-                    aft.apply_status = status
-                    await self.sendEmail(user=self.account.nickname, result=aft)
-            else:
-                new_aft = await aft_controller.create(obj_in={
-                    "apply_number": item["AFT_APPLY_CODE"],
-                    "apply_date": item["AFT_APPLY_DATE"],
-                    "apply_license": item["AFT_APPLY_LICENSE"],
-                    "aft_type": "aft",
-                    "apply_status": status,
-                    "create_by": self.account.create_by,
-                    "update_status": 2,
-                    "ctime": datetime.now(),
-                })
-                await aft_controller.update_aft_account(aft=new_aft, aft_account_id=self.account.account_number)
-        self.account.feedback = '正常'
-        await account_controller.update(id=self.account.id, obj_in=self.account)
-        await insert_log(log_type=LogType.ApiLog, log_detail_type=LogDetailType.UserCreateOne, by_user_id=0)
+                    if status != aft.apply_status:
+                        await aft_controller.update(id=aft.id, obj_in={
+                            "update_status": 1,
+                        })
+                        aft.apply_status = status
+                        await self.sendEmail(user=self.account.nickname, result=aft)
+                else:
+                    new_aft = await aft_controller.create(obj_in={
+                        "apply_number": item["AFT_APPLY_CODE"],
+                        "apply_date": item["AFT_APPLY_DATE"],
+                        "apply_license": item["AFT_APPLY_LICENSE"],
+                        "aft_type": "aft",
+                        "apply_status": status,
+                        "create_by": self.account.create_by,
+                        "update_status": 2,
+                        "ctime": datetime.now(),
+                    })
+                    await aft_controller.update_aft_account(aft=new_aft, aft_account_id=self.account.account_number)
+        except Exception as e:
+            self.account.feedback = 'AFT数据采集异常,请手动重试!'
+            return False, self.account.feedback
         return True, "Aft scraper success"
 
     async def get_nsw(self, aft_text):
         print('Nsw.html scraper start!')
         tree = etree.HTML(aft_text)
-        if len(tree.xpath("//body/div[@class='container-fluid']/div[@class='col-md-6']/div/a/@href")) == 0:
-            self.account.feedback = '账号密码错误,请修改后重试！'
-            await account_controller.update(id=self.account.id, obj_in=self.account)
-            return False, ""
-        url = tree.xpath("//body/div[@class='container-fluid']/div[@class='col-md-6']/div/a/@href")[0]
-        requests.packages.urllib3.disable_warnings()
-        response_aft = self.session.get("https://appdb.tisi.go.th/TISINSW/" + url, headers=self.headers, verify=False,
-                                        timeout=30)
-        tree = etree.HTML(response_aft.text, etree.HTMLParser())
-        tr_list = tree.xpath("//*[@id='table6']/tbody/tr")
-        for tr in tr_list:
-            item = {}
-            if tr.xpath("./td[1]/font/text()"):
-                item["NSW_CODE"] = tr.xpath("./td[1]/font/text()")[0].strip()
-            if tr.xpath("./td[6]/font/text()"):
-                item["NSW_APPLY_DATE"] = tr.xpath("./td[6]/font/text()")[0].strip()
-            else:
-                item["NSW_APPLY_DATE"] = ""
-            if tr.xpath("./td[9]/font/text()"):
-                item["NSW_APPLY_STATUS"] = tr.xpath("./td[9]/font/text()")[0].strip()
-            else:
-                item["NSW_APPLY_STATUS"] = ""
-            # dict_obj: Dict = await dict_controller.get_by_dict_value(dict_value=item["NSW_APPLY_STATUS"],
-            #                                                          dict_type="nsw_status")
-            # if dict_obj:
-            #     status = dict_obj.dict_name
-            # else:
-            #     status = "异常"
-            nsw: Nsw = await nsw_controller.get_nsw_by_apply_number(apply_number=item["NSW_CODE"])
-            if nsw:
-                await nsw_controller.update(id=nsw.id, obj_in={
-                    "apply_number": item["NSW_CODE"],
-                    "apply_date": item["NSW_APPLY_DATE"],
-                    "apply_status": item["NSW_APPLY_STATUS"],
-                    "update_status": 2,
-                    "update_by": self.account.create_by,
-                    "mtime": datetime.now(),
-                })
-                if item["NSW_APPLY_STATUS"] != nsw.apply_status:
+        try:
+            if len(tree.xpath("//body/div[@class='container-fluid']/div[@class='col-md-6']/div/a/@href")) == 0:
+                self.account.feedback = '账号密码错误,请修改后重试！'
+                return False, "账号密码错误,请修改后重试"
+            url = tree.xpath("//body/div[@class='container-fluid']/div[@class='col-md-6']/div/a/@href")[0]
+            requests.packages.urllib3.disable_warnings()
+            response_aft = self.session.get("https://appdb.tisi.go.th/TISINSW/" + url, headers=self.headers,
+                                            verify=False,
+                                            timeout=30)
+            tree = etree.HTML(response_aft.text, etree.HTMLParser())
+            tr_list = tree.xpath("//*[@id='table6']/tbody/tr")
+            for tr in tr_list:
+                item = {}
+                if tr.xpath("./td[1]/font/text()"):
+                    item["NSW_CODE"] = tr.xpath("./td[1]/font/text()")[0].strip()
+                if tr.xpath("./td[6]/font/text()"):
+                    item["NSW_APPLY_DATE"] = tr.xpath("./td[6]/font/text()")[0].strip()
+                else:
+                    item["NSW_APPLY_DATE"] = ""
+                if tr.xpath("./td[9]/font/text()"):
+                    item["NSW_APPLY_STATUS"] = tr.xpath("./td[9]/font/text()")[0].strip()
+                else:
+                    item["NSW_APPLY_STATUS"] = ""
+                nsw: Nsw = await nsw_controller.get_nsw_by_apply_number(apply_number=item["NSW_CODE"])
+                if nsw:
                     await nsw_controller.update(id=nsw.id, obj_in={
-                        "update_status": 1,
+                        "apply_number": item["NSW_CODE"],
+                        "apply_date": item["NSW_APPLY_DATE"],
+                        "apply_status": item["NSW_APPLY_STATUS"],
+                        "update_status": 2,
+                        "update_by": self.account.create_by,
+                        "mtime": datetime.now(),
                     })
-                    nsw.apply_status = item["NSW_APPLY_STATUS"]
-                    await self.sendEmail(user=self.account.nickname, result=nsw)
-            else:
-                new_nsw = await nsw_controller.create(obj_in={
-                    "apply_number": item["NSW_CODE"],
-                    "apply_date": item["NSW_APPLY_DATE"],
-                    "apply_status": item["NSW_APPLY_STATUS"],
-                    "update_status": 2,
-                    "update_by": self.account.create_by,
-                    "ctime": datetime.now(),
-                })
-                await nsw_controller.update_nsw_account(nsw=new_nsw, nsw_account_id=self.account.account_number)
-        self.account.feedback = '正常'
-        await account_controller.update(id=self.account.id, obj_in=self.account)
-        await insert_log(log_type=LogType.ApiLog, log_detail_type=LogDetailType.UserCreateOne, by_user_id=0)
+                    if item["NSW_APPLY_STATUS"] != nsw.apply_status:
+                        await nsw_controller.update(id=nsw.id, obj_in={
+                            "update_status": 1,
+                        })
+                        nsw.apply_status = item["NSW_APPLY_STATUS"]
+                        await self.sendEmail(user=self.account.nickname, result=nsw)
+                else:
+                    new_nsw = await nsw_controller.create(obj_in={
+                        "apply_number": item["NSW_CODE"],
+                        "apply_date": item["NSW_APPLY_DATE"],
+                        "apply_status": item["NSW_APPLY_STATUS"],
+                        "update_status": 2,
+                        "update_by": self.account.create_by,
+                        "ctime": datetime.now(),
+                    })
+                    await nsw_controller.update_nsw_account(nsw=new_nsw, nsw_account_id=self.account.account_number)
+        except Exception as e:
+            await self.logout()
+            return False, "NSW模块采集发生错误,请手动重试"
 
     async def logout(self):
         requests.packages.urllib3.disable_warnings()
