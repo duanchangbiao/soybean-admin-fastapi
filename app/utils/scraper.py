@@ -491,7 +491,7 @@ class ScraperUtils:
             fm = FastMail(fastapi_mail_config)
             message = MessageSchema(
                 subject=title,
-                recipients=["duanchangbiao@zhangkongapp.com", " tisi_alert@agileservices.co"],
+                recipients=[ " tisi_alert@agileservices.co"],
                 body=body,
                 subtype=MessageType.plain
             )
