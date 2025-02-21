@@ -69,7 +69,7 @@ async def get_user(account_id: int):
 @router.post("/add", summary="创建account")
 async def _(account_in: AccountCreate):
     if not account_in.by_account_modules:
-        return Success(code="4090", msg="The aft must have account number that exists.")
+        return Success(code="4090", msg="The account must have model that exists.")
     user_id = CTX_USER_ID.get()  # 从请求的token获取用户id
     user_obj = await user_controller.get(id=user_id)
     account_in.create_by = user_obj.nick_name

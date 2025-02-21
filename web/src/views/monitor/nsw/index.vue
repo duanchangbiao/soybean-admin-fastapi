@@ -7,6 +7,7 @@ import {fetchBatchDeleteNsw, fetchDeleteNsw, fetchGetNswList} from "@/service/ap
 import NswSearch from "@/views/monitor/nsw/modules/nsw-search.vue";
 import {updateStatusRecord} from "@/constants/business";
 import NswUpdateOperateModal from "@/views/monitor/nsw/modules/nsw-update-operate-modal.vue";
+import {useAuth} from "@/hooks/business/auth";
 
 const appStore = useAppStore();
 const {
@@ -157,6 +158,8 @@ const {
   // closeDrawer
 } = useTableOperate(data, getData);
 
+const {hasAuth} = useAuth();
+
 async function handleBatchDelete() {
   // request
   const {error} = await fetchBatchDeleteNsw({ids: checkedRowKeys.value});
@@ -197,7 +200,9 @@ function edit(id: number) {
           @add="handleAdd"
           @delete="handleBatchDelete"
           @refresh="getData"
-        />
+        >
+          <template #prefix><span v-if="!hasAuth('L_importReport')"></span></template>
+        </TableHeaderOperation>
       </template>
       <NDataTable
         v-model:checked-row-keys="checkedRowKeys"

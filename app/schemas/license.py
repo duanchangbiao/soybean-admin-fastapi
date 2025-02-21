@@ -29,3 +29,8 @@ class LicenseCreate(LicenseBase):
 
 class LicenseUpdate(LicenseBase):
     ...
+
+
+class LicenseReport(LicenseBase):
+    path: Annotated[str | None, Field(alias="path", title="路径")] = None
+    permit: Annotated[str | None, Field(alias="permit", title="前缀")] = None

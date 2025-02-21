@@ -2,13 +2,13 @@
 import {NButton, NPopconfirm} from 'naive-ui';
 import {$t} from '@/locales';
 import {useAppStore} from '@/store/modules/app';
-import {fetchBatchDeleteLicense, fetchDeleteLicense, fetchGetLicenseList} from '@/service/api';
+import {fetchBatchDeleteLicense, fetchDeleteLicense, fetchGetLicenseList, fetchSynchronousReport} from '@/service/api';
 import {useTable, useTableOperate} from '@/hooks/common/table';
 import CompanySearch from "@/views/company-info/moudules/company-search.vue";
 import CompanyOperateModal from "@/views/company-info/moudules/company-operate-modal.vue";
+import {useAuth} from "@/hooks/business/auth";
 
 const appStore = useAppStore();
-
 // 获取列表信息
 const {
   columns,
@@ -117,6 +117,7 @@ const {
   // closeDrawer
 } = useTableOperate(data, getData);
 
+const {hasAuth} = useAuth();
 
 async function handleDeleteLicense({id}: { id: number }) {
   // request
@@ -145,6 +146,11 @@ async function handleBatchDelete() {
 function edit(id: number) {
   handleEdit(id);
 }
+
+async function synchronous() {
+  await fetchSynchronousReport({path: "/", permit: "permit"})
+}
+
 </script>
 
 <template>
@@ -164,8 +170,11 @@ function edit(id: number) {
           table-id="license"
           @add="handleAdd"
           @delete="handleBatchDelete"
+          @synchronous="synchronous"
           @refresh="getData"
-        />
+        >
+          <template #prefix><span v-if="hasAuth('L_importReport')"></span></template>
+        </TableHeaderOperation>
       </template>
       <NDataTable
         v-model:checked-row-keys="checkedRowKeys"

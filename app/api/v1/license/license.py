@@ -5,7 +5,8 @@ from app.api.v1.utils import insert_log
 from app.controllers import license_controller
 from app.models.system import LogType, LogDetailType
 from app.schemas.base import SuccessExtra, Success, CommonIds
-from app.schemas.license import LicenseCreate, LicenseUpdate
+from app.schemas.license import LicenseCreate, LicenseUpdate, LicenseReport
+from app.utils.scraper_license import scraper_report
 
 router = APIRouter()
 
@@ -80,3 +81,14 @@ async def _(ids: str = Query(..., description="删除许可证ID列表, 用逗�
         await license_obj.delete()
         deleted_ids.append(int(license_id))
     return Success(msg="Deleted Successfully", data={"deleted_ids": deleted_ids})
+
+
+@router.post("/import", summary="导入证书")
+async def _(report: LicenseReport):
+    data = {
+        'data': report.permit,
+        'txt_tis': report.path,
+    }
+    response = await scraper_report.post_request(data)
+    await scraper_report.parse_html(response)
+    return Success(msg='Success', data={"info": "证书导入成功!"})

@@ -1,24 +1,25 @@
 <script setup lang="tsx">
-import { ref } from 'vue';
-import type { Ref } from 'vue';
-import { NButton, NPopconfirm, NTag } from 'naive-ui';
-import { useBoolean } from '@sa/hooks';
+import {ref} from 'vue';
+import type {Ref} from 'vue';
+import {NButton, NPopconfirm, NTag} from 'naive-ui';
+import {useBoolean} from '@sa/hooks';
 import {fetchDeleteMenu, fetchGetAllPages, fetchGetMenuList} from '@/service/api';
-import { useAppStore } from '@/store/modules/app';
-import { useTable, useTableOperate } from '@/hooks/common/table';
-import { $t } from '@/locales';
-import { yesOrNoRecord } from '@/constants/common';
-import { menuTypeRecord, statusTypeRecord } from '@/constants/business';
+import {useAppStore} from '@/store/modules/app';
+import {useTable, useTableOperate} from '@/hooks/common/table';
+import {$t} from '@/locales';
+import {yesOrNoRecord} from '@/constants/common';
+import {menuTypeRecord, statusTypeRecord} from '@/constants/business';
 import SvgIcon from '@/components/custom/svg-icon.vue';
-import MenuOperateModal, { type OperateType } from './modules/menu-operate-modal.vue';
+import MenuOperateModal, {type OperateType} from './modules/menu-operate-modal.vue';
+import {useAuth} from "@/hooks/business/auth";
 
 const appStore = useAppStore();
 
-const { bool: visible, setTrue: openModal } = useBoolean();
+const {bool: visible, setTrue: openModal} = useBoolean();
 
 const wrapperRef = ref<HTMLElement | null>(null);
 
-const { columns, columnChecks, data, loading, pagination, getData, getDataByPage } = useTable({
+const {columns, columnChecks, data, loading, pagination, getData, getDataByPage} = useTable({
   apiFn: fetchGetMenuList,
   columns: () => [
     {
@@ -53,7 +54,7 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
       align: 'center',
       minWidth: 120,
       render: row => {
-        const { i18nKey, menuName } = row;
+        const {i18nKey, menuName} = row;
 
         const label = i18nKey ? $t(i18nKey) : menuName;
 
@@ -72,7 +73,7 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
 
         return (
           <div class="flex-center">
-            <SvgIcon icon={icon} localIcon={localIcon} class="text-icon" />
+            <SvgIcon icon={icon} localIcon={localIcon} class="text-icon"/>
           </div>
         );
       }
@@ -170,10 +171,10 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
   ]
 });
 
-const { checkedRowKeys, onBatchDeleted, onDeleted } = useTableOperate(data, getData);
+const {checkedRowKeys, onBatchDeleted, onDeleted} = useTableOperate(data, getData);
 
 const operateType = ref<OperateType>('add');
-
+const {hasAuth} = useAuth();
 function handleAdd() {
   operateType.value = 'add';
   openModal();
@@ -186,8 +187,8 @@ async function handleBatchDelete() {
   onBatchDeleted();
 }
 
-async function handleDeleteMenu({ id }: { id: number }) {
-  const { error } = await fetchDeleteMenu({ id });
+async function handleDeleteMenu({id}: { id: number }) {
+  const {error} = await fetchDeleteMenu({id});
   if (!error) {
     await getData();
   }
@@ -195,7 +196,7 @@ async function handleDeleteMenu({ id }: { id: number }) {
 
 function handleDelete(id: number) {
   // request
-  handleDeleteMenu({ id })
+  handleDeleteMenu({id})
   onDeleted();
 }
 
@@ -204,7 +205,7 @@ const editingData: Ref<Api.SystemManage.Menu | null> = ref(null);
 
 function handleEdit(item: Api.SystemManage.Menu) {
   operateType.value = 'edit';
-  editingData.value = { ...item };
+  editingData.value = {...item};
 
   openModal();
 }
@@ -212,7 +213,7 @@ function handleEdit(item: Api.SystemManage.Menu) {
 function handleAddChildMenu(item: Api.SystemManage.Menu) {
   operateType.value = 'addChild';
 
-  editingData.value = { ...item };
+  editingData.value = {...item};
 
   openModal();
 }
@@ -220,7 +221,7 @@ function handleAddChildMenu(item: Api.SystemManage.Menu) {
 const allPages = ref<string[]>([]);
 
 async function getAllPages() {
-  const { data: pages } = await fetchGetAllPages();
+  const {data: pages} = await fetchGetAllPages();
   allPages.value = pages?.map(item => item.value) || [];
 }
 
@@ -244,7 +245,9 @@ init();
           @add="handleAdd"
           @delete="handleBatchDelete"
           @refresh="getData"
-        />
+        >
+          <template #prefix><span v-if="!hasAuth('L_importReport')"></span></template>
+        </TableHeaderOperation>
       </template>
       <NDataTable
         v-model:checked-row-keys="checkedRowKeys"

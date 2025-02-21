@@ -292,6 +292,7 @@ declare namespace App {
       common: {
         action: string;
         add: string;
+        synchronous: string;
         addSuccess: string;
         backToHome: string;
         batchDelete: string;
@@ -543,7 +544,7 @@ declare namespace App {
               affa: string;
               nsw: string;
             };
-            executeSuccess:string;
+            executeSuccess: string;
           };
           role: {
             title: string;
@@ -870,7 +871,7 @@ declare namespace App {
               morType: string;
               accountNumber: string;
               nickname: string;
-              sort:string;
+              sort: string;
               remark: string;
             };
             addMor: string;

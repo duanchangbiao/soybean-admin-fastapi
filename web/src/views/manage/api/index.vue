@@ -186,6 +186,7 @@ function edit(id: number) {
           @delete="handleBatchDelete"
           @refresh="getData"
         >
+          <template #prefix><span v-if="!hasAuth('L_importReport')"></span></template>
           <template #default>
             <NButton v-if="hasAuth('B_refreshAPI')" size="small" ghost type="primary" @click="handleRefreshAPI">
               <template #icon>

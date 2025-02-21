@@ -1,18 +1,18 @@
 <script setup lang="tsx">
-import { NButton, NTag } from 'naive-ui';
-import { watch } from 'vue';
-import { fetchBatchDeleteLog, fetchGetLogList } from '@/service/api';
-import { $t } from '@/locales';
-import { useAppStore } from '@/store/modules/app';
-import { logDetailTypeRecord, logTypeRecord } from '@/constants/business';
-import { useTable, useTableOperate } from '@/hooks/common/table';
-import { useAuth } from '@/hooks/business/auth';
+import {NButton, NTag} from 'naive-ui';
+import {watch} from 'vue';
+import {fetchBatchDeleteLog, fetchGetLogList} from '@/service/api';
+import {$t} from '@/locales';
+import {useAppStore} from '@/store/modules/app';
+import {logDetailTypeRecord, logTypeRecord} from '@/constants/business';
+import {useTable, useTableOperate} from '@/hooks/common/table';
+import {useAuth} from '@/hooks/business/auth';
 import LogOperateDrawer from './modules/log-operate-drawer.vue';
 import LogSearch from './modules/log-search.vue';
 
 const appStore = useAppStore();
 
-const { columns, columnChecks, data, getData, loading, mobilePagination, searchParams, resetSearchParams } = useTable({
+const {columns, columnChecks, data, getData, loading, mobilePagination, searchParams, resetSearchParams} = useTable({
   apiFn: fetchGetLogList,
   showTotal: true,
   apiParams: {
@@ -114,11 +114,11 @@ const { columns, columnChecks, data, getData, loading, mobilePagination, searchP
   ]
 });
 
-const { drawerVisible, operateType, checkedRowKeys, onBatchDeleted, editingData, handleEdit } = useTableOperate(
+const {drawerVisible, operateType, checkedRowKeys, onBatchDeleted, editingData, handleEdit} = useTableOperate(
   data,
   getData
 );
-const { hasAuth } = useAuth();
+const {hasAuth} = useAuth();
 
 async function handleadd() {
   // request
@@ -127,7 +127,7 @@ async function handleadd() {
 
 async function handleBatchDelete() {
   // request
-  const { error } = await fetchBatchDeleteLog({ ids: checkedRowKeys.value });
+  const {error} = await fetchBatchDeleteLog({ids: checkedRowKeys.value});
   if (!error) {
     onBatchDeleted();
   }
@@ -171,13 +171,13 @@ watch(
       }
     });
   },
-  { immediate: true }
+  {immediate: true}
 );
 </script>
 
 <template>
   <div class="min-h-500px flex-col-stretch gap-16px overflow-hidden lt-sm:overflow-auto">
-    <LogSearch v-model:model="searchParams" @reset="resetSearchParams" @search="getData" />
+    <LogSearch v-model:model="searchParams" @reset="resetSearchParams" @search="getData"/>
     <NCard :title="$t('page.manage.log.title')" :bordered="false" size="small" class="sm:flex-1-hidden card-wrapper">
       <template #header-extra>
         <TableHeaderOperation
@@ -189,6 +189,7 @@ watch(
           @delete="handleBatchDelete"
           @refresh="getData"
         >
+          <template #prefix><span v-if="!hasAuth('L_importReport')"></span></template>
           <template #default><span v-if="!hasAuth('B_Add_Del_Batch-del')"></span></template>
         </TableHeaderOperation>
       </template>

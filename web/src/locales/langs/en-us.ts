@@ -9,6 +9,7 @@ const local: App.I18n.Schema = {
   common: {
     action: 'Action',
     add: 'Add',
+    synchronous:'Synchronous',
     addSuccess: 'Add Success',
     backToHome: 'Back to home',
     batchApprove: 'Batch Approve',

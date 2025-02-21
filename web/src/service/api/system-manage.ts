@@ -340,6 +340,14 @@ export function fetchAddLicense(data?: Api.Business.LicenseAddParams) {
   });
 }
 
+export function fetchSynchronousReport(data?: { path: string, permit: string }) {
+  return request<Api.Business.LicencesList>({
+    url: '/license/import',
+    method: 'post',
+    data
+  })
+}
+
 export function fetchUpdateLicense(data?: Api.Business.LicenseUpdateParams) {
   return request<Api.Business.LicencesList, 'json'>({
     url: `/license/update/${data?.id}`,

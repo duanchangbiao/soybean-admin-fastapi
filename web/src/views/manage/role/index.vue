@@ -1,12 +1,13 @@
 <script setup lang="tsx">
-import { NButton, NPopconfirm, NTag } from 'naive-ui';
-import { fetchBatchDeleteRole, fetchDeleteRole, fetchGetRoleList } from '@/service/api';
-import { useAppStore } from '@/store/modules/app';
-import { useTable, useTableOperate } from '@/hooks/common/table';
-import { $t } from '@/locales';
-import { statusTypeRecord } from '@/constants/business';
+import {NButton, NPopconfirm, NTag} from 'naive-ui';
+import {fetchBatchDeleteRole, fetchDeleteRole, fetchGetRoleList} from '@/service/api';
+import {useAppStore} from '@/store/modules/app';
+import {useTable, useTableOperate} from '@/hooks/common/table';
+import {$t} from '@/locales';
+import {statusTypeRecord} from '@/constants/business';
 import RoleOperateDrawer from './modules/role-operate-drawer.vue';
 import RoleSearch from './modules/role-search.vue';
+import {useAuth} from "@/hooks/business/auth";
 
 const appStore = useAppStore();
 
@@ -118,9 +119,11 @@ const {
   // closeDrawer
 } = useTableOperate(data, getData);
 
+const {hasAuth} = useAuth();
+
 async function handleBatchDelete() {
   // request
-  const { error } = await fetchBatchDeleteRole({ ids: checkedRowKeys.value });
+  const {error} = await fetchBatchDeleteRole({ids: checkedRowKeys.value});
   if (!error) {
     onBatchDeleted();
   }
@@ -128,7 +131,7 @@ async function handleBatchDelete() {
 
 async function handleDelete(id: number) {
   // request
-  const { error } = await fetchDeleteRole({ id });
+  const {error} = await fetchDeleteRole({id});
   if (!error) {
     onDeleted();
   }
@@ -141,7 +144,7 @@ function edit(id: number) {
 
 <template>
   <div class="min-h-500px flex-col-stretch gap-16px overflow-hidden lt-sm:overflow-auto">
-    <RoleSearch v-model:model="searchParams" @reset="resetSearchParams" @search="getDataByPage" />
+    <RoleSearch v-model:model="searchParams" @reset="resetSearchParams" @search="getDataByPage"/>
     <NCard :title="$t('page.manage.role.title')" :bordered="false" size="small" class="sm:flex-1-hidden card-wrapper">
       <template #header-extra>
         <TableHeaderOperation
@@ -152,7 +155,9 @@ function edit(id: number) {
           @add="handleAdd"
           @delete="handleBatchDelete"
           @refresh="getData"
-        />
+        >
+          <template #prefix><span v-if="!hasAuth('L_importReport')"></span></template>
+        </TableHeaderOperation>
       </template>
       <NDataTable
         v-model:checked-row-keys="checkedRowKeys"

@@ -7,6 +7,7 @@ import {fetchBatchDeleteAft, fetchDeleteAft, fetchGetAftList} from "@/service/ap
 import AftSearch from "@/views/monitor/aft/modules/aft-search.vue";
 import AftUpdateOperateModal from "@/views/monitor/aft/modules/aft-update-operate-modal.vue";
 import {aftTypeRecord, updateStatusRecord,} from "@/constants/business";
+import {useAuth} from "@/hooks/business/auth";
 
 const appStore = useAppStore();
 
@@ -112,7 +113,7 @@ const {
           "审批通过": 'primary',
           "测试许可": 'primary',
           "进行中": "info",
-          "正在编写审厂报告":'info',
+          "正在编写审厂报告": 'info',
           "系统自动取消": 'warning',
           "异常": 'error'
         };
@@ -195,6 +196,7 @@ const {
   // closeDrawer
 } = useTableOperate(data, getData);
 
+const {hasAuth} = useAuth();
 
 async function handleBatchDelete() {
   // request
@@ -236,7 +238,9 @@ function edit(id: number) {
           @add="handleAdd"
           @delete="handleBatchDelete"
           @refresh="getData"
-        />
+        >
+          <template #prefix><span v-if="!hasAuth('L_importReport')"></span></template>
+        </TableHeaderOperation>
       </template>
       <NDataTable
         v-model:checked-row-keys="checkedRowKeys"

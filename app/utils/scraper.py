@@ -77,7 +77,7 @@ class ScraperUtils:
             else:
                 url = tree.xpath("//div[@class='row colorbox-group-widget']/div[2]/a/@href")
             requests.packages.urllib3.disable_warnings()
-            response_license = self.session.get(url[0], headers=self.headers, verify=False,timeout=30)
+            response_license = self.session.get(url[0], headers=self.headers, verify=False, timeout=30)
             if response_license.status_code != 200:
                 self.account.feedback = '账号密码可能错误,请重试!'
         except Exception as e:
@@ -144,7 +144,7 @@ class ScraperUtils:
                             "update_status": 1,
                         })
                         mor.apply_status = status
-                        await self.sendEmail(user=self.account.nickname, result=mor)
+                        await self.sendEmail(user=self.account, result=mor)
                     await mor_controller.update_mor_account(mor=new_mor, mor_account_id=self.account.account_number)
                 else:
                     new_mor = await mor_controller.create(obj_in={
@@ -221,7 +221,7 @@ class ScraperUtils:
                             "update_status": 1,
                         })
                         mor.apply_status = status
-                        await self.sendEmail(user=self.account.nickname, result=mor)
+                        await self.sendEmail(user=self.account, result=mor)
                 else:
                     new_mor = await mor_controller.create(obj_in={
                         "apply_number": item["MOR9_APPLY_CODE"],
@@ -300,7 +300,7 @@ class ScraperUtils:
                             "update_status": 1,
                         })
                         affa.apply_status = status
-                        await self.sendEmail(user=self.account.nickname, result=affa)
+                        await self.sendEmail(user=self.account, result=affa)
                 else:
                     new_affa = await aft_controller.create(obj_in={
                         "apply_number": item["AFFA_APPLY_CODE"],
@@ -328,7 +328,8 @@ class ScraperUtils:
         url = tree.xpath("//*[@id='top']/div//ul[@class='nav menu nav-pills']/li[6]/ul/li[3]/a/@href")[0]
         try:
             requests.packages.urllib3.disable_warnings()
-            response_aft = self.session.get("https://i.tisi.go.th" + url, headers=self.headers, verify=False, timeout=30)
+            response_aft = self.session.get("https://i.tisi.go.th" + url, headers=self.headers, verify=False,
+                                            timeout=30)
             tree = etree.HTML(response_aft.text, etree.HTMLParser())
             tr_list = tree.xpath("//*[@id='productList']/tbody/tr")
             for tr in tr_list:
@@ -376,7 +377,7 @@ class ScraperUtils:
                             "update_status": 1,
                         })
                         aft.apply_status = status
-                        await self.sendEmail(user=self.account.nickname, result=aft)
+                        await self.sendEmail(user=self.account, result=aft)
                 else:
                     new_aft = await aft_controller.create(obj_in={
                         "apply_number": item["AFT_APPLY_CODE"],
@@ -435,7 +436,7 @@ class ScraperUtils:
                             "update_status": 1,
                         })
                         nsw.apply_status = item["NSW_APPLY_STATUS"]
-                        await self.sendEmail(user=self.account.nickname, result=nsw)
+                        await self.sendEmail(user=self.account, result=nsw)
                 else:
                     new_nsw = await nsw_controller.create(obj_in={
                         "apply_number": item["NSW_CODE"],
@@ -456,43 +457,36 @@ class ScraperUtils:
         print('logout success!')
 
     @staticmethod
-    async def sendEmail(user, result):
+    async def sendEmail(user: AccountUpdate, result):
         try:
             if not result.remark:
                 return
             if result.__class__ == Aft:
-                title = f'TISI Alert:{result.aft_type}/{user} Adaptor have update!'
-                body = (f'----------------------------\n'
-                        f'Remark : {result.remark} \n'
-                        f'Client :{user}\n '
-                        f'{result.aft_type} No : {result.apply_number} \n'
-                        f'Current Status : {result.apply_status} \n'
-                        f'Current Date : {datetime.now()} \n'
-                        f'Quickly Check : https://sso.tisi.go.th/login \n'
-                        f'Account Number: {user}, \n')
+                title = f'【TISI Alert】 {str(result.aft_type).capitalize()}:【{result.remark}:{result.apply_status}】'
+                body = (f'【{result.remark} ：{result.apply_status}】\n\n'
+                        f'Client : {user.nickname}\n\n'
+                        f' {str(result.aft_type).capitalize()} No: {result.apply_number}\n\n'
+                        f'Current Date : {datetime.now()}\n\n'
+                        f' Quickly Check : https://sso.tisi.go.th/login\n\n'
+                        f' Account Number: {user.account_number}'
+                        )
             elif result.__class__ == Mor:
-                title = f'TISI Alert:{result.mor_type}/{user} Mor have update!'
-                body = (f'----------------------------\n'
-                        f'Remark : {result.remark} \n'
-                        f'Client :{user}\n '
-                        f'{result.mor_type} No : {result.apply_number} \n'
-                        f'----------------------------\n'
-                        f'Current Status : {result.apply_status} \n'
-                        f'Current Date : {datetime.now()} \n'
-                        f'Quickly Check : https://sso.tisi.go.th/login \n'
-                        f'Account Number: {user}, \n'
+                title = f'【TISI Alert】 {str(result.mor_type).capitalize()}:【{result.remark}:{result.apply_status}】'
+                body = (f'【{result.remark} ：{result.apply_status}】\n\n'
+                        f'Client : {user.nickname}\n\n'
+                        f'{str(result.mor_type).capitalize()}申请编号: {result.apply_number}\n\n'
+                        f'Current Date : {datetime.now()}\n\n'
+                        f'Quickly Check : https://sso.tisi.go.th/login\n\n'
+                        f'Account Number: {user.account_number}'
                         )
             else:
-                title = f'TISI Alert:NSW/{user} have update!'
-                body = (f'----------------------------\n'
-                        f'Remark : {result.remark} \n'
-                        f'Client :{user}\n '
-                        f'NSW No : {result.apply_number} \n'
-                        f'----------------------------\n'
-                        f'Current Status : {result.apply_status} \n'
-                        f'Current Date : {datetime.now()} \n'
-                        f'Quickly Check : https://sso.tisi.go.th/login \n'
-                        f'Account Number: {user}, \n'
+                title = f'【TISI Alert】 NSW : 【{result.remark}:{result.apply_status}】'
+                body = (f'【{result.remark} ：{result.apply_status}】\n\n'
+                        f'Client : {user.nickname}\n\n'
+                        f' 申请编号: {result.apply_number}\n\n'
+                        f'Current Date : {datetime.now()}\n\n'
+                        f' Quickly Check : https://sso.tisi.go.th/login\n\n'
+                        f' Account Number: {user.account_number}'
                         )
             fm = FastMail(fastapi_mail_config)
             message = MessageSchema(

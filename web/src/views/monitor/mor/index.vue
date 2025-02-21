@@ -7,6 +7,7 @@ import {fetchBatchDeleteMor, fetchDeleteMor, fetchGetMorList} from "@/service/ap
 import MorSearch from "@/views/monitor/mor/modules/mor-search.vue";
 import {morTypeRecord, updateStatusRecord} from "@/constants/business";
 import MorUpdateOperateModal from "@/views/monitor/mor/modules/mor-update-operate-modal.vue";
+import {useAuth} from "@/hooks/business/auth";
 
 const appStore = useAppStore();
 const {
@@ -192,6 +193,8 @@ const {
   // closeDrawer
 } = useTableOperate(data, getData);
 
+const {hasAuth} = useAuth();
+
 async function handleBatchDelete() {
   // request
   const {error} = await fetchBatchDeleteMor({ids: checkedRowKeys.value});
@@ -232,7 +235,9 @@ function edit(id: number) {
           @add="handleAdd"
           @delete="handleBatchDelete"
           @refresh="getData"
-        />
+        >
+          <template #prefix><span v-if="!hasAuth('L_importReport')"></span></template>
+        </TableHeaderOperation>
       </template>
       <NDataTable
         v-model:checked-row-keys="checkedRowKeys"
