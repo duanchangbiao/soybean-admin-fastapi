@@ -173,7 +173,8 @@ async function synchronous() {
           @synchronous="synchronous"
           @refresh="getData"
         >
-          <template #prefix><span v-if="hasAuth('L_importReport')"></span></template>
+          <template #prefix><span v-if="!hasAuth('L_importReport')"></span></template>
+          <template #default><span v-if="!hasAuth('B_Add_Del_Batch-del')"></span></template>
         </TableHeaderOperation>
       </template>
       <NDataTable

@@ -67,7 +67,7 @@ async def lifespan(_app: FastAPI):
         # await init_menus()
         # await refresh_api_list()
         # await init_users()
-        await SchedulerUtil.init_system_scheduler()
+        # await SchedulerUtil.init_system_scheduler()
         log.info(f'{_app.title}启动成功')
         await Log.create(log_type=LogType.SystemLog, log_detail_type=LogDetailType.SystemStart)
         yield

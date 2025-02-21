@@ -46,7 +46,6 @@ async def get_license(license_id: int):
 
 @router.post("/add", summary="创建许可信息")
 async def _(license_in: LicenseCreate):
-    print(license_in)
     license = await license_controller.model.exists(license_id=license_in.license_id)
     if license:
         return Success(code="4090", msg="The license with this code already exists in the system.")
@@ -89,6 +88,6 @@ async def _(report: LicenseReport):
         'data': report.permit,
         'txt_tis': report.path,
     }
-    response = await scraper_report.post_request(data)
-    await scraper_report.parse_html(response)
+    filePath = await scraper_report.post_request(data)
+    await scraper_report.parse_html(filePath)
     return Success(msg='Success', data={"info": "证书导入成功!"})

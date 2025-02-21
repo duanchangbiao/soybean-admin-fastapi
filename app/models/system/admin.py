@@ -178,8 +178,8 @@ class APILog(BaseModel):
 
 
 class LicenseReport(BaseModel):
-    id = fields.IntField(pk=True, description='许可证信息ID')
-    license_id = fields.CharField(null=True, max_length=128, description='许可证编号')
+    id = fields.IntField(pk=True, description='许可证信息ID', auto_increment=True, unique=True)
+    license_id = fields.CharField(null=True, max_length=128, description='许可证编号', unique=True)
     issuance_time = fields.CharField(null=True, max_length=128, description='许可时间')
     license_type = fields.CharField(null=True, max_length=500, description='TIS编号')
     license_company = fields.CharField(null=True, max_length=500, description='持牌公司')
@@ -190,8 +190,8 @@ class LicenseReport(BaseModel):
     factory_registration_number = fields.CharField(null=True, max_length=500, description='注册登记编号')
     factory_address = fields.CharField(null=True, max_length=500, description='注册登记编号')
     details = fields.TextField(null=True, max_length=50000, description='详细地址')
-    ctime = fields.DatetimeField(auto_now_add=True, description='创建时间')
-    mtime = fields.DatetimeField(auto_now_add=True, description='修改时间')
+    ctime = fields.DatetimeField(auto_now_add=True, null=True, description='创建时间')
+    mtime = fields.DatetimeField(auto_now_add=True, null=True, description='修改时间')
 
     class Meta:
         table = "sys_license_report"

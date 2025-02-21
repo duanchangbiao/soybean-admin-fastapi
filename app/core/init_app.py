@@ -50,7 +50,6 @@ def make_middlewares():
 
 
 def register_db(app: FastAPI):
-    print("注册数据库............")
     register_tortoise(
         app,
         config=APP_SETTINGS.TORTOISE_ORM,
