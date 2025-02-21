@@ -556,6 +556,7 @@ declare namespace Api {
       | 'licenseId'
       | 'companyName'
       | 'taxIdentificationNumber'
+      | 'issuanceTime'
     >;
     /** 分页查询参数 */
     type LicencesListParams = CommonType.RecordNullable<Pick<Api.Business.License, 'id'>> & BusinessLicenseParams;

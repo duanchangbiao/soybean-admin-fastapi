@@ -28,7 +28,8 @@ const {
     size: 10,
     licenseId: null,
     taxIdentificationNumber: null,
-    companyName: null
+    companyName: null,
+    issuanceTime: null
   },
   columns: () => [
     {

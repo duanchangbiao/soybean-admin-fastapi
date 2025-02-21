@@ -86,37 +86,48 @@ async def get_scheduler_job():
         try:
             retry, response = await scraper_utils.login(account=account_in)
             if not retry:
-                await account_controller.update(id=account["id"], obj_in={"feedback": "用户登陆失败!请重新登陆"})
+                await account_controller.update(id=account["id"],
+                                                obj_in={"feedback": "用户登陆失败!请重新登陆", "mtime": datetime.now()})
                 continue
             print(f"当前信息:{account},采集模块:{by_account_dict_list}")
             for account_dict in by_account_dict_list:
                 if account_dict == 'NSW':
                     retry_n, response_n = await scraper_utils.get_license(index_text=response, type=2)
                     if not retry_n:
-                        await account_controller.update(id=account["id"], obj_in={"feedback": response_n})
+                        await account_controller.update(id=account["id"],
+                                                        obj_in={"feedback": response_n, "mtime": datetime.now()})
                     await scraper_utils.get_nsw(response_n)
                 else:
                     retry_l, response_l = await scraper_utils.get_license(index_text=response, type=1)
                     if not retry_l:
-                        await account_controller.update(id=account["id"], obj_in={"feedback": response_l})
+                        await account_controller.update(id=account["id"],
+                                                        obj_in={"feedback": response_l, "mtime": datetime.now()})
                     if account_dict == 'MOR5':
                         retry_m, response_m = await scraper_utils.get_mor5(response_l)
                         if not retry_m:
-                            await account_controller.update(id=account["id"], obj_in={"feedback": response_m})
+                            await account_controller.update(id=account["id"],
+                                                            obj_in={"feedback": response_m, "mtime": datetime.now()})
 
                     elif account_dict == 'MOR9':
                         retry_m, response_m = await scraper_utils.get_mor9(response_l)
                         if not retry_m:
-                            await account_controller.update(id=account["id"], obj_in={"feedback": response_m})
+                            await account_controller.update(id=account["id"],
+                                                            obj_in={"feedback": response_m, "mtime": datetime.now()})
                     elif account_dict == 'AFT':
                         retry_a, response_a = await scraper_utils.get_aft(response_l)
                         if not retry_a:
-                            await account_controller.update(id=account["id"], obj_in={"feedback": response_a})
+                            await account_controller.update(id=account["id"],
+                                                            obj_in={"feedback": response_a, "mtime": datetime.now()})
                     else:
                         retry_a, response_a = await scraper_utils.get_affa(response_l)
                         if not retry_a:
-                            await account_controller.update(id=account["id"], obj_in={"feedback": response_a})
+                            await account_controller.update(id=account["id"],
+                                                            obj_in={"feedback": response_a, "mtime": datetime.now()})
+            account_in.mtime = datetime.now()
+            account_in.feedback = '账号正常'
+            await account_controller.update(id=account_in.id, obj_in=account_in, exclude={"by_account_modules"})
             await scraper_utils.logout()
-            await account_controller.update(id=account.id, obj_in={"feedback": "正常", "mtime": datetime.now()})
         except Exception as e:
-            await account_controller.update(id=account["id"], obj_in={"feedback": "数据采集发送错误,请手动重试!"})
+            await account_controller.update(id=account["id"], obj_in={"feedback": "数据采集发送错误,请手动重试!",
+                                                                      "mtime": datetime.now()})
+        await scraper_utils.logout()

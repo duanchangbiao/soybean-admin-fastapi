@@ -77,7 +77,7 @@ class ScraperUtils:
             else:
                 url = tree.xpath("//div[@class='row colorbox-group-widget']/div[2]/a/@href")
             requests.packages.urllib3.disable_warnings()
-            response_license = self.session.get(url[0], headers=self.headers, verify=False)
+            response_license = self.session.get(url[0], headers=self.headers, verify=False,timeout=30)
             if response_license.status_code != 200:
                 self.account.feedback = '账号密码可能错误,请重试!'
         except Exception as e:
@@ -174,7 +174,7 @@ class ScraperUtils:
             url = tree.xpath("//*[@id='top']/div/nav/div[2]/ul/li[7]/ul/li[8]/a/@href")[0]
             requests.packages.urllib3.disable_warnings()
             response_mor9 = self.session.get("https://i.tisi.go.th" + url, headers=self.headers, verify=False,
-                                             timeout=6)
+                                             timeout=30)
             tree = etree.HTML(response_mor9.text, etree.HTMLParser())
             tr_list = tree.xpath("//*[@id='moao9List']/tbody/tr")
             for tr in tr_list:
@@ -252,7 +252,7 @@ class ScraperUtils:
         try:
             requests.packages.urllib3.disable_warnings()
             response_afft = self.session.get("https://i.tisi.go.th" + url, headers=self.headers, verify=False,
-                                             timeout=6)
+                                             timeout=30)
             tree = etree.HTML(response_afft.text, etree.HTMLParser())
             tr_list = tree.xpath("//*[@id='factoryList']/tbody/tr")
             for tr in tr_list:
@@ -328,7 +328,7 @@ class ScraperUtils:
         url = tree.xpath("//*[@id='top']/div//ul[@class='nav menu nav-pills']/li[6]/ul/li[3]/a/@href")[0]
         try:
             requests.packages.urllib3.disable_warnings()
-            response_aft = self.session.get("https://i.tisi.go.th" + url, headers=self.headers, verify=False, timeout=6)
+            response_aft = self.session.get("https://i.tisi.go.th" + url, headers=self.headers, verify=False, timeout=30)
             tree = etree.HTML(response_aft.text, etree.HTMLParser())
             tr_list = tree.xpath("//*[@id='productList']/tbody/tr")
             for tr in tr_list:
@@ -452,7 +452,7 @@ class ScraperUtils:
 
     async def logout(self):
         requests.packages.urllib3.disable_warnings()
-        self.session.get(url="https://sso.tisi.go.th/logout", headers=self.headers, verify=False, timeout=6)
+        self.session.get(url="https://sso.tisi.go.th/logout", headers=self.headers, verify=False, timeout=30)
         print('logout success!')
 
     @staticmethod

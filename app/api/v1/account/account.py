@@ -146,6 +146,8 @@ async def _(account_id: int, account_in: AccountUpdate):
     except Exception as e:
         await scraper_utils.logout()
         raise HTTPException(code="4002", msg="proxy failed, 网络异常,请重试！")
+    account_in.mtime = datetime.now()
+    account_in.feedback = '账号正常'
+    await account_controller.update(id=account_id, obj_in=account_in, exclude={"by_account_modules"})
     await scraper_utils.logout()
-    await account_controller.update(id=account_id, obj_in={"feedback": "正常", "mtime": datetime.now()})
     return Success(msg="Scraper Successfully", data={'Scraper_id': account_id})

@@ -21,7 +21,7 @@ class NswController(CRUDBase[Nsw, NswCreate, NswUpdate]):
             nsw_account_id = int(nsw_account_id)
 
         account = await Account.get(account_number=nsw_account_id)
-        print("account info:", account.to_dict())
+        print("account info:", await account.to_dict())
         await nsw.by_nsw_account.clear()
         await nsw.by_nsw_account.add(account)
         return True

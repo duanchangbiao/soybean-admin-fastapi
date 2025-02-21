@@ -16,7 +16,8 @@ async def _(
         size: int = Query(10, description="每页数量"),
         licenseId: str = Query(None, description="角色名称"),
         companyName: str = Query(None, description="角色编码"),
-        taxIdentificationNumber: str = Query(None, description="用户状态")
+        taxIdentificationNumber: str = Query(None, description="用户状态"),
+        issuanceTime: str = Query(None, description="发放时间")
 ):
     q = Q()
     if licenseId:
@@ -25,6 +26,8 @@ async def _(
         q &= Q(company_name__contains=companyName)
     if taxIdentificationNumber:
         q &= Q(tax_identification_number__contains=taxIdentificationNumber)
+    if issuanceTime:
+        q &= Q(issuance_time__contains=issuanceTime)
 
     total, license_objs = await license_controller.list(page=current, page_size=size, search=q, order=["id"])
     records = [await license_obj.to_dict() for license_obj in license_objs]  # exclude_fields=["role_desc"]

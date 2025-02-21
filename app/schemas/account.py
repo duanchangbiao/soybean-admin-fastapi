@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Annotated
 
 from pydantic import BaseModel, Field
@@ -14,6 +15,8 @@ class BaseAccount(BaseModel):
     by_account_modules: Annotated[list[int] | None, Field(alias="accountMonitorList", title="account编码列表")] = None
     create_by: Annotated[str | None, Field(alias="createBy", description="创建人")] = None
     update_by: Annotated[str | None, Field(alias="updateBy", description="更新人")] = None
+    ctime: Annotated[datetime | None, Field(alias="Ctime", description="创建时间")] = None
+    mtime: Annotated[datetime | None, Field(alias="Mtime", description="修改时间")] = None
 
     class Config:
         populate_by_name = True
